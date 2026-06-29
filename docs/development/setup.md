@@ -5,7 +5,7 @@
 | Tool | Version | Purpose |
 |------|---------|---------|
 | [Bun](https://bun.sh) | v1.2+ | Runtime + package manager |
-| [PostgreSQL](https://www.postgresql.org) | 14+ | Database |
+| [PostgreSQL](https://www.postgresql.org) | 18+ | Database |
 | [Git](https://git-scm.com) | 2.30+ | Version control |
 
 ## Quick Start
@@ -42,8 +42,8 @@ This starts:
 
 **macOS** (Homebrew):
 ```bash
-brew install postgresql@16
-brew services start postgresql@16
+brew install postgresql@18
+brew services start postgresql@18
 createdb relayscope
 ```
 
@@ -54,7 +54,7 @@ docker run -d --name relayscope-pg \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=password \
   -p 5432:5432 \
-  postgres:16
+  postgres:18
 ```
 
 Update `.env`:

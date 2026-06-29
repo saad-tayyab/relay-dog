@@ -34,7 +34,7 @@ relayscope/
 ### Prerequisites
 
 - [Bun](https://bun.sh) v1.2+
-- [PostgreSQL](https://www.postgresql.org) 14+
+- [PostgreSQL](https://www.postgresql.org) 18+
 
 ### Setup
 

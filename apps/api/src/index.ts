@@ -52,12 +52,12 @@ app.onError((err, c) => {
 // ─── Start Server ───
 const port = parseInt(process.env.PORT || '3001', 10);
 
-const server = Bun.serve({
+Bun.serve({
   fetch: app.fetch,
   port,
 });
 
-console.log(`✅ API running at http://localhost:${server.port}`);
+// Server started
 
 // Start the monitoring job after server is up
 startMonitor(60_000); // Check relays every 60 seconds

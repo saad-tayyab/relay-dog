@@ -8,6 +8,9 @@ const relayRoutes = new Hono();
 
 // ─── GET /api/relays — List all relays with optional filters ───
 relayRoutes.get('/', async (c) => {
+  const page = parseInt(c.req.query('page') || '1', 10);
+  const limit = parseInt(c.req.query('limit') || '20', 10);
+
   const query: RelayQueryParams = {
     search: c.req.query('search') || undefined,
     nips: c.req.query('nips')?.split(',').map(Number) || undefined,
@@ -15,13 +18,13 @@ relayRoutes.get('/', async (c) => {
     paymentRequired: c.req.query('paymentRequired') === 'true' ? true : undefined,
     isOnline: c.req.query('isOnline') === 'true' ? true : undefined,
     country: c.req.query('country') || undefined,
-    page: parseInt(c.req.query('page') || '1', 10),
-    limit: parseInt(c.req.query('limit') || '20', 10),
+    page,
+    limit,
     sortBy: (c.req.query('sortBy') as RelayQueryParams['sortBy']) || 'name',
     sortOrder: (c.req.query('sortOrder') as RelayQueryParams['sortOrder']) || 'asc',
   };
 
-  const offset = (query.page! - 1) * query.limit!;
+  const offset = (page - 1) * limit;
   const conditions = [];
 
   if (query.search) {
@@ -51,7 +54,7 @@ relayRoutes.get('/', async (c) => {
     .leftJoin(healthChecks, eq(relays.id, healthChecks.relayId))
     .where(whereClause)
     .orderBy(desc(relays.updatedAt))
-    .limit(query.limit!)
+    .limit(limit)
     .offset(offset);
 
   // Deduplicate health checks (take latest per relay)
@@ -76,10 +79,10 @@ relayRoutes.get('/', async (c) => {
     success: true,
     data: Array.from(relayMap.values()),
     meta: {
-      page: query.page!,
-      limit: query.limit!,
+      page,
+      limit,
       total: count,
-      totalPages: Math.ceil(count / query.limit!),
+      totalPages: Math.ceil(count / limit),
     },
   });
 });

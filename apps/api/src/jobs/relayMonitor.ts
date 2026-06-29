@@ -172,9 +172,12 @@ async function runMonitoringCycle() {
     for (const { job, relay } of dueJobs) {
       try {
         await monitorRelay(job.relayId, relay.url);
-      } catch (_e) {}
+      } catch {
+        // Relay check failed — logged via health check record
+      }
     }
-  } catch (_e) {
+  } catch {
+    // Monitoring cycle failed — will retry on next interval
   } finally {
     isRunning = false;
   }

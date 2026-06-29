@@ -242,6 +242,7 @@ function RelayProfile({ info }: { info: RelayInfo }) {
             {info.software && (
               <span className="flex items-center gap-1.5">
                 <svg
+                  aria-hidden="true"
                   className="w-3.5 h-3.5"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -260,6 +261,7 @@ function RelayProfile({ info }: { info: RelayInfo }) {
             {info.version && (
               <span className="flex items-center gap-1.5">
                 <svg
+                  aria-hidden="true"
                   className="w-3.5 h-3.5"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -311,6 +313,7 @@ function NipBadgeGrid({ nips }: { nips: number[] }) {
                 <span className="font-bold">NIP-{n}</span>
                 {info?.desc && <span className="hidden sm:inline opacity-70">· {info.desc}</span>}
                 <svg
+                  aria-hidden="true"
                   className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -454,6 +457,7 @@ function ErrorMessage({ message, onRetry }: { message: string; onRetry?: () => v
     <div className="flex flex-col items-center justify-center py-16 text-center animate-fade-in">
       <div className="w-16 h-16 rounded-full bg-error-dim flex items-center justify-center mb-4">
         <svg
+          aria-hidden="true"
           className="w-8 h-8 text-error"
           fill="none"
           viewBox="0 0 24 24"
@@ -550,6 +554,7 @@ function App() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-accent-dim border border-accent-border flex items-center justify-center">
             <svg
+              aria-hidden="true"
               className="w-5 h-5 text-accent"
               fill="none"
               viewBox="0 0 24 24"
@@ -576,6 +581,7 @@ function App() {
             <div className="relative flex-1">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
                 <svg
+                  aria-hidden="true"
                   className="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -610,6 +616,7 @@ function App() {
               ) : (
                 <>
                   <svg
+                    aria-hidden="true"
                     className="w-4 h-4"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -665,6 +672,7 @@ function App() {
             <details className="group">
               <summary className="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2">
                 <svg
+                  aria-hidden="true"
                   className="w-4 h-4 transition-transform group-open:rotate-90"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -694,6 +702,7 @@ function App() {
           <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
             <div className="w-20 h-20 rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center mb-6">
               <svg
+                aria-hidden="true"
                 className="w-10 h-10 text-text-muted"
                 fill="none"
                 viewBox="0 0 24 24"

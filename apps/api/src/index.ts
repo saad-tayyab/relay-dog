@@ -1,4 +1,3 @@
-import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
@@ -53,15 +52,14 @@ app.onError((err, c) => {
 // ─── Start Server ───
 const port = parseInt(process.env.PORT || '3001', 10);
 
-serve(
-  {
-    fetch: app.fetch,
-    port,
-  },
-  (_info) => {
-    // Start the monitoring job after server is up
-    startMonitor(60_000); // Check relays every 60 seconds
-  },
-);
+const server = Bun.serve({
+  fetch: app.fetch,
+  port,
+});
+
+console.log(`✅ API running at http://localhost:${server.port}`);
+
+// Start the monitoring job after server is up
+startMonitor(60_000); // Check relays every 60 seconds
 
 export default app;

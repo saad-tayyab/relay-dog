@@ -1,0 +1,37 @@
+# ─── Auto detect text files and perform LF normalization ───
+* text=auto
+
+# ─── Source code ───
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+
+# ─── Config files ───
+.gitignore text eol=lf
+.gitattributes text eol=lf
+turbo.json text eol=lf
+package.json text eol=lf
+
+# ─── Binary / Images ───
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.svg text eol=lf
+
+# ─── Lock files ───
+bun.lock binary
+package-lock.json -diff
+
+# ─── Bun ───
+bun.lockb binary

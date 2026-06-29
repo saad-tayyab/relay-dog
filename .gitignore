@@ -1,0 +1,66 @@
+# ─── Dependencies ───
+node_modules/
+.bun/
+bun.lockb
+
+# ─── Build Outputs ───
+dist/
+build/
+output/
+*.tsbuildinfo
+
+# ─── Environment ───
+.env
+.env.*
+!.env.example
+!.env.template
+
+# ─── Database ───
+apps/api/drizzle/
+*.db
+*.sqlite
+
+# ─── IDE / Editor ───
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ─── OS ───
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# ─── Logs ───
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
+
+# ─── Testing / Coverage ───
+coverage/
+.nyc_output/
+*.lcov
+
+# ─── Turbo ───
+.turbo/
+
+# ─── Misc ───
+*.pem
+*.key
+*.cert
+*.crt
+.cache/
+tmp/
+temp/
+.vercel/
+.netlify/

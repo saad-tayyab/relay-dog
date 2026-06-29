@@ -1,0 +1,22 @@
+#!/bin/bash
+# pre-commit hook — runs type-check on staged files
+
+set -e
+
+echo "🔍 Running type checks..."
+
+# Check if turbo is available
+if ! command -v npx &> /dev/null; then
+  echo "⚠️  npx not found, skipping type-check"
+  exit 0
+fi
+
+# Run type-check across all packages
+npx turbo type-check 2>&1 || {
+  echo ""
+  echo "❌ Type check failed. Fix errors before committing."
+  echo "   Run: npx turbo type-check"
+  exit 1
+}
+
+echo "✅ Type checks passed"

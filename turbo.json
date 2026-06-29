@@ -3,17 +3,21 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**"],
+      "inputs": ["src/**", "package.json", "tsconfig.json"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
     "lint": {
-      "dependsOn": []
+      "dependsOn": [],
+      "inputs": ["src/**", "biome.json"]
     },
     "type-check": {
-      "dependsOn": ["^type-check"]
+      "dependsOn": ["^type-check"],
+      "inputs": ["src/**", "tsconfig.json"]
     }
-  }
+  },
+  "globalDependencies": ["turbo.json", "biome.json", "tsconfig.json"]
 }

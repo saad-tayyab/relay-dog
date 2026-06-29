@@ -9,15 +9,29 @@ const app = new Hono();
 
 // ─── Middleware ───
 app.use('*', logger());
+
+// CORS — origins from env, fallback to dev defaults
+const corsOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',')
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
 app.use(
   '*',
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: corsOrigins,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
   }),
 );
 app.use('/api/*', prettyJSON());
+
+// ─── Security Headers ───
+app.use('*', async (c, next) => {
+  await next();
+  c.header('X-Content-Type-Options', 'nosniff');
+  c.header('X-Frame-Options', 'DENY');
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+});
 
 // ─── Routes ───
 
@@ -49,15 +63,22 @@ app.onError((err, c) => {
   return c.json({ success: false, error: err.message || 'Internal server error' }, 500);
 });
 
-// ─── Start Server ───
+// ─── Start Server with Graceful Shutdown ───
 const port = parseInt(process.env.PORT || '3001', 10);
 
-Bun.serve({
+const server = Bun.serve({
   fetch: app.fetch,
   port,
 });
 
-// Server started
+// Graceful shutdown
+const shutdown = async () => {
+  server.stop();
+  process.exit(0);
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
 // Start the monitoring job after server is up
 startMonitor(60_000); // Check relays every 60 seconds

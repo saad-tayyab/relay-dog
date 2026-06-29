@@ -8,12 +8,16 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "lint": "turbo lint",
+    "lint": "bunx biome check .",
+    "lint:fix": "bunx biome check --write .",
+    "format": "bunx biome check --write .",
+    "type-check": "turbo type-check",
     "db:generate": "cd apps/api && bun run db:generate",
     "db:migrate": "cd apps/api && bun run db:migrate",
     "db:studio": "cd apps/api && bun run db:studio"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.1",
     "turbo": "^2",
     "typescript": "^6.0"
   },

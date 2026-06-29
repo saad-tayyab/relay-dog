@@ -1,15 +1,26 @@
 #!/bin/bash
-# pre-commit hook — runs type-check on staged files
+# pre-commit hook — runs Biome lint + format check, then type-check
 
 set -e
 
-echo "🔍 Running type checks..."
+echo "🔍 Running Biome checks..."
 
-# Check if turbo is available
-if ! command -v npx &> /dev/null; then
-  echo "⚠️  npx not found, skipping type-check"
+# Check if biome is available
+if ! command -v bunx &> /dev/null; then
+  echo "⚠️  bunx not found, skipping biome check"
   exit 0
 fi
+
+# Run Biome check (lint + format)
+bunx biome check . 2>&1 || {
+  echo ""
+  echo "❌ Biome check failed. Run: bunx biome check --write ."
+  exit 1
+}
+
+echo "✅ Biome checks passed"
+
+echo "🔍 Running type checks..."
 
 # Run type-check across all packages
 npx turbo type-check 2>&1 || {
@@ -19,4 +30,4 @@ npx turbo type-check 2>&1 || {
   exit 1
 }
 
-echo "✅ Type checks passed"
+echo "✅ All checks passed"

@@ -1,0 +1,176 @@
+# 🛠️ Development Setup
+
+## Prerequisites
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| [Bun](https://bun.sh) | v1.2+ | Runtime + package manager |
+| [PostgreSQL](https://www.postgresql.org) | 14+ | Database |
+| [Git](https://git-scm.com) | 2.30+ | Version control |
+
+## Quick Start
+
+```bash
+# 1. Clone the repo
+git clone <repo-url>
+cd relayscope
+
+# 2. Install dependencies
+bun install
+
+# 3. Set up environment
+cp .env.example .env
+# Edit .env with your PostgreSQL connection string
+
+# 4. Start PostgreSQL and create the database
+createdb relayscope
+
+# 5. Push schema to database
+bun run db:push
+
+# 6. Start dev servers
+npx turbo dev
+```
+
+This starts:
+- **Web**: http://localhost:5173 (Vite dev server)
+- **API**: http://localhost:3001 (Hono dev server)
+
+## Detailed Setup
+
+### 1. PostgreSQL
+
+**macOS** (Homebrew):
+```bash
+brew install postgresql@16
+brew services start postgresql@16
+createdb relayscope
+```
+
+**Docker** (alternative):
+```bash
+docker run -d --name relayscope-pg \
+  -e POSTGRES_DB=relayscope \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=password \
+  -p 5432:5432 \
+  postgres:16
+```
+
+Update `.env`:
+```
+DATABASE_URL=postgresql://postgres:password@localhost:5432/relayscope
+```
+
+### 2. Database Schema
+
+```bash
+# Generate migration files from schema
+bun run db:generate
+
+# Run migrations
+bun run db:migrate
+
+# Or push directly (dev only)
+bun run db:push
+
+# Visual database browser
+bun run db:studio
+```
+
+### 3. Dev Servers
+
+```bash
+# Start everything
+npx turbo dev
+
+# Start only web
+npx turbo dev --filter=@relayscope/web
+
+# Start only API
+npx turbo dev --filter=@relayscope/api
+```
+
+### 4. Git Hooks
+
+Git hooks are configured automatically via `core.hooksPath = .githooks`:
+
+- **pre-commit**: Runs `turbo type-check` across all packages
+- **commit-msg**: Enforces [Conventional Commits](https://conventionalcommits.org) format
+
+No manual setup needed — hooks run on `git commit`.
+
+## Project Structure
+
+```
+relayscope/
+├── apps/
+│   ├── web/                    # Vite + React frontend
+│   │   ├── src/
+│   │   │   ├── App.tsx         # Main app component
+│   │   │   ├── index.css       # Tailwind styles
+│   │   │   └── main.tsx        # React root
+│   │   └── vite.config.ts      # Vite config with API proxy
+│   └── api/                    # Hono + Bun backend
+│       ├── src/
+│       │   ├── index.ts        # Server entry point
+│       │   ├── routes/         # API endpoints
+│       │   ├── jobs/           # Background tasks
+│       │   └── db/             # Database schema + connection
+│       └── drizzle.config.ts
+├── packages/
+│   └── shared/                 # Shared TypeScript types
+│       └── src/types.ts
+├── docs/                       # Documentation
+├── turbo.json                  # Turborepo task config
+└── package.json                # Workspace root
+```
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npx turbo dev` | Start all dev servers |
+| `npx turbo build` | Build all packages |
+| `npx turbo type-check` | Run TypeScript checks |
+| `bun run db:generate` | Generate Drizzle migrations |
+| `bun run db:migrate` | Run migrations |
+| `bun run db:push` | Push schema (dev) |
+| `bun run db:studio` | Open Drizzle Studio |
+
+## Troubleshooting
+
+### Port already in use
+
+```bash
+# Kill processes on port 5173 or 3001
+lsof -ti:5173 | xargs kill -9
+lsof -ti:3001 | xargs kill -9
+```
+
+### Database connection refused
+
+```bash
+# Check PostgreSQL is running
+pg_isready
+
+# Check connection
+psql postgresql://localhost:5432/relayscope
+```
+
+### Type errors after pulling
+
+```bash
+# Reinstall dependencies
+rm -rf node_modules bun.lock
+bun install
+```
+
+### Turborepo cache issues
+
+```bash
+# Clear turbo cache
+npx turbo daemon clean
+# Or
+rm -rf .turbo
+```

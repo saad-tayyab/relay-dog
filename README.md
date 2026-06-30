@@ -1,35 +1,111 @@
-# 🐕 Relay Scope
+# 🐕 Relay Dog
 
-**Nostr relay inspector** — "Postman meets Wireshark, for Nostr relays."
+> **Nostr relay inspector & developer toolkit** — "Postman meets Wireshark, for Nostr relays."
 
-Paste a relay URL and get a complete picture: what it supports, how it behaves, what's flowing through it in real time, and how healthy it is.
+Paste a relay URL and get a complete picture: what it supports, how it behaves, what's flowing through it in real time, and how healthy it is. Then use the built-in toolkit to compose events, convert keys, verify identities, and more — all from one place.
 
-## Tech Stack
+![Version](https://img.shields.io/badge/version-0.8.0-blue)
+![Phase](https://img.shields.io/badge/phase-8%20complete-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-| Layer | Technology |
-|-------|-----------|
-| **Runtime** | [Bun](https://bun.sh) |
-| **Monorepo** | [Turborepo](https://turbo.build) |
-| **Web** | [Svelte 5](https://svelte.dev) + [Vite](https://vite.dev) + [Tailwind CSS v4](https://tailwindcss.com) |
-| **API** | [Hono](https://hono.dev) (HTTP framework) |
-| **Database** | [PostgreSQL](https://www.postgresql.org) + [Drizzle ORM](https://orm.drizzle.team) |
-| **Language** | [TypeScript](https://typescriptlang.org) 6.0 (strict mode) |
+---
 
-## Project Structure
+## ✨ Features
+
+### ⚡ Inspector
+
+- **NIP-11 Info** — Fetch and render relay info documents with NIP badge grid
+- **Connection Checks** — HTTP, CORS, and WebSocket reachability testing
+- **Latency Metrics** — WebSocket round-trip, HTTP latency, EOSE timing
+- **Write Test** — Verify relay accepts signed events
+- **Fee Display** — Admission, subscription, and per-event fee breakdown
+- **Limitations Panel** — Auth requirements, max sizes, restrictions
+
+### 🔐 Live Stream
+
+- **WebSocket Connection** — Auto-reconnect with exponential backoff
+- **REQ Builder** — Filter by kinds, authors, limit, since/until
+- **Event Feed** — Live event stream with auto-scroll and EOSE detection
+- **NIP-42 Auth** — Challenge-response authentication support
+- **Event Deduplication** — Kind-based color coding and duplicate filtering
+
+### 🔐 Event Verifier
+
+- **Signature Verification** — Client-side Schnorr signature validation
+- **Event ID Check** — SHA-256 canonical serialization verification
+- **Tag Decoder** — Parse and display event tags with context
+- **Edit & Re-publish** — Jump to publisher with pre-filled event data
+
+### ✍️ Event Publisher
+
+- **Event Composer** — Create events with kind selector, content editor, and tag builder
+- **Tag Editor** — Preset tags (e, p, t, d, expiration, relay) plus custom tags
+- **NIP-07 Signing** — Sign events via browser extension (Alby, nos2x, etc.)
+- **Relay Publishing** — Publish signed events to any relay
+- **Event Deleter** — Mass-delete events via NIP-09 kind 5 deletion requests
+
+### 🧰 Developer Toolkit
+
+| Tool | Description |
+|------|-------------|
+| **🔑 Key Converter** | Convert between npub, nsec, and hex formats (NIP-19) |
+| **📧 NIP-05 Checker** | Verify NIP-05 identifiers against DNS resolution |
+| **📱 QR Code Generator** | Generate QR codes for npub keys, relay URLs, events |
+| **💾 Backup & Restore** | Export/import events to/from JSON files |
+
+### 📂 Relay Directory
+
+- **NIP-66 Discovery** — Find relays via monitor announcements
+- **Relay Comparison** — Side-by-side NIP support and health comparison
+- **Uptime Sparklines** — Visual uptime history over 7/30 day periods
+- **Advanced Filtering** — Search by name, NIPs, auth, payment, country
+
+---
+
+## 🏗️ Architecture
 
 ```
 relayscope/
 ├── apps/
-│   ├── web/          # Vite + Svelte 5 frontend
-│   └── api/          # Hono + Bun REST API
+│   ├── web/              # Svelte 5 + Vite + Tailwind v4
+│   │   ├── src/
+│   │   │   ├── components/
+│   │   │   │   ├── nav/          # NavBar, MobileNav
+│   │   │   │   ├── inspector/    # InspectorSection
+│   │   │   │   ├── publisher/    # EventComposer, EventDeleter, TagEditor
+│   │   │   │   ├── tools/        # KeyConverter, Nip05Checker, QRCode, Backup
+│   │   │   │   └── verifier/     # EventVerifier, VerificationPanel
+│   │   │   ├── composables/      # Svelte 5 runes composables
+│   │   │   ├── stores/           # relaySocket.svelte.ts
+│   │   │   └── utils/            # router, keys, nip05, backup, relay, nostrVerify
+│   │   └── package.json
+│   └── api/              # Hono + Bun REST API
+│       └── package.json
 ├── packages/
-│   └── shared/       # Shared TypeScript types
-├── docs/             # Architecture & audit docs
+│   ├── shared/           # Shared TypeScript types
+│   └── config/           # Biome, TypeScript configs
+├── docs/                 # Architecture & feature specs
 ├── turbo.json
 └── package.json
 ```
 
-## Getting Started
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Runtime** | [Bun](https://bun.sh) 1.3 |
+| **Monorepo** | [Turborepo](https://turbo.build) |
+| **Web** | [Svelte 5](https://svelte.dev) + [Vite](https://vite.dev) + [Tailwind CSS v4](https://tailwindcss.com) |
+| **API** | [Hono](https://hono.dev) (HTTP framework) |
+| **Database** | [PostgreSQL](https://www.postgresql.org) + [Drizzle ORM](https://orm.drizzle.team) |
+| **Linting** | [Biome](https://biomejs.dev) |
+| **Language** | [TypeScript](https://typescriptlang.org) 6.0 (strict mode) |
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -39,6 +115,10 @@ relayscope/
 ### Setup
 
 ```bash
+# Clone the repo
+git clone https://github.com/your-username/relayscope.git
+cd relayscope
+
 # Install dependencies
 bun install
 
@@ -59,22 +139,31 @@ bun run dev
 - **Web**: http://localhost:5173
 - **API**: http://localhost:3001
 
-### Commands
+---
+
+## 📦 Commands
 
 ```bash
-bun install              # Install all dependencies
-bun run build            # Build all packages
+# Development
 bun run dev              # Start all dev servers
+bun install              # Install all dependencies
+
+# Build & Verify
+bun run build            # Build all packages
 bun run type-check       # Type-check all packages
 bun run lint             # Lint all packages
 bun run lint:fix         # Auto-fix lint issues
+
+# Database
 bun run db:generate      # Generate Drizzle migrations
 bun run db:migrate       # Run migrations
 bun run db:push          # Push schema directly (dev)
 bun run db:studio        # Open Drizzle Studio
 ```
 
-## API Endpoints
+---
+
+## 🔌 API Endpoints
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
@@ -87,9 +176,26 @@ bun run db:studio        # Open Drizzle Studio
 | `GET` | `/api/relays/:id/history` | — | Health check history |
 | `GET` | `/api/relays/:id/nip11` | — | NIP-11 snapshot history |
 
-**Auth**: `Authorization: Bearer <API_KEY>` header required on mutating endpoints (POST, PUT, DELETE).
+**Auth**: `Authorization: Bearer <API_KEY>` header required on mutating endpoints.
 
-## Security (Phase 6)
+---
+
+## 📋 Development Phases
+
+| Phase | Feature | Status |
+|-------|---------|--------|
+| 1 | NIP-11 Viewer | ✅ Complete |
+| 2 | Live Event Stream | ✅ Complete |
+| 3 | Event Verifier | ✅ Complete |
+| 4 | Auth & Health Dashboard | ✅ Complete |
+| 5 | Relay Directory | ✅ Complete |
+| 6 | Security Hardening | ✅ Complete |
+| 7 | NIP Compliance | ✅ Complete |
+| 8 | Developer Toolkit Expansion | ✅ Complete |
+
+---
+
+## 🔒 Security
 
 - **API key auth** on all mutating endpoints
 - **SSRF protection** — internal/private URLs blocked
@@ -100,46 +206,31 @@ bun run db:studio        # Open Drizzle Studio
 - **Pagination cap** — max limit of 100 regardless of request
 - **Docker network isolation** — PostgreSQL binds to `127.0.0.1` only
 
-## Features
+---
 
-### Phase 1 — NIP-11 Viewer ✅
-- Fetch and render relay info document
-- NIP badge grid with links to specs
-- Limitations panel (auth required, max sizes, etc.)
-- Connection status checks (HTTP, CORS, WebSocket)
+## 🧪 Testing
 
-### Phase 2 — Live Event Stream ✅
-- WebSocket connection with auto-reconnect (exponential backoff)
-- REQ subscription builder (kinds, authors, limit, since/until)
-- Live event feed with auto-scroll and EOSE detection
-- Event deduplication and kind-based color coding
+All tools are client-side and work directly in the browser:
 
-### Phase 3 — Event Verifier ✅
-- Client-side Schnorr signature verification
-- Event ID verification
-- Tag decoder with context
+1. **Key Converter** — Paste any npub, nsec, or hex key → see all formats
+2. **NIP-05 Checker** — Enter `user@domain.com` → verify identity resolution
+3. **QR Code** — Paste content → generate/download QR code
+4. **Event Publisher** — Compose event → sign with NIP-07 → publish to relay
+5. **Event Deleter** — Enter event IDs → send NIP-09 deletion request
+6. **Backup** — Enter pubkey + relay → download event backup as JSON
 
-### Phase 4 — Auth & Health Dashboard ✅
-- NIP-42 AUTH handling
-- Latency measurement
-- Write test capability
+---
 
-### Phase 5 — Relay Directory ✅
-- NIP-66 relay discovery
-- Side-by-side comparison
-- Uptime sparklines
+## 📄 Documentation
 
-### Phase 6 — Security Hardening ✅
-- API key auth middleware (P0)
-- SSRF protection (P0)
-- Rate limiting per IP
-- Zod input validation
-- Mass assignment prevention
-- Security headers on all responses
-- Pagination limits
-- CI pipeline (lint, type-check, build)
-- Dependency audit
+- [Architecture Overview](docs/architecture/overview.md)
+- [Style Guide](docs/development/style-guide.md)
+- [Phase Specs](docs/features/) — Detailed feature specifications for each phase
+- [NIP Reference](docs/features/nip-reference.md) — Nostr Implementation Possibilities reference
+- [Prompt Guidelines](docs/prompts/best-practices.md)
 
-## License
+---
+
+## 📜 License
 
 MIT

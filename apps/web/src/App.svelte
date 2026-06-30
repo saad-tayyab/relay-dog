@@ -2,30 +2,21 @@
 import { relaySocket } from './lib/stores/relaySocket.svelte';
 import type { ConnectionStatus, RelayInfo } from './utils/relay';
 import { checkConnections, fetchNip11, normalizeUrl } from './utils/relay';
+import { getHashSection, type Section, setHashSection } from './utils/router';
 import './index.css';
 
 // Components
-import AuthStatusBadge from './components/AuthStatusBadge.svelte';
-import ConnectionPanel from './components/ConnectionPanel.svelte';
-import ConnectionStatusPanel from './components/ConnectionStatusPanel.svelte';
-import ErrorMessage from './components/ErrorMessage.svelte';
-import EventFeed from './components/EventFeed.svelte';
-import FeeDisplay from './components/FeeDisplay.svelte';
-import FilterBuilder from './components/FilterBuilder.svelte';
-import LatencyPanel from './components/LatencyPanel.svelte';
-import LimitationsPanel from './components/LimitationsPanel.svelte';
-import LoadingSpinner from './components/LoadingSpinner.svelte';
-import NipBadgeGrid from './components/NipBadgeGrid.svelte';
+import InspectorSection from './components/inspector/InspectorSection.svelte';
+import MobileNav from './components/nav/MobileNav.svelte';
+import NavBar from './components/nav/NavBar.svelte';
+import PublisherSection from './components/publisher/PublisherSection.svelte';
 import RelayDirectory from './components/RelayDirectory.svelte';
-import RelayProfile from './components/RelayProfile.svelte';
+import ToolsSection from './components/tools/ToolsSection.svelte';
 import EventVerifier from './components/verifier/EventVerifier.svelte';
-import WriteTestPanel from './components/WriteTestPanel.svelte';
 
 // Composables
 import { useLatencyMeasurement } from './lib/composables/useLatencyMeasurement.svelte';
 import { useWriteTest } from './lib/composables/useWriteTest.svelte';
-
-type Tab = 'nip11' | 'stream' | 'verifier' | 'directory';
 
 const POPULAR_RELAYS = [
   'relay.damus.io',
@@ -44,8 +35,9 @@ let relayInfo = $state<RelayInfo | null>(null);
 let connectionStatus = $state<ConnectionStatus | null>(null);
 let loading = $state(false);
 let error = $state<string | null>(null);
-let activeTab = $state<Tab>('nip11');
+let activeSection = $state<Section>(getHashSection());
 let dbRelayId = $state<string | null>(null);
+let prefilledEvent = $state<unknown>(null);
 
 const normalizedUrl = $derived(normalizeUrl(url));
 
@@ -58,13 +50,27 @@ const latency = useLatencyMeasurement();
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const writeTest = useWriteTest();
 
-// ─── Derived State ───
+// ─── Navigation ───
 
-const isNip11Tab = $derived(activeTab === 'nip11');
-const isStreamTab = $derived(activeTab === 'stream');
-const isVerifierTab = $derived(activeTab === 'verifier');
-const isDirectoryTab = $derived(activeTab === 'directory');
-const hasRelay = $derived(normalizedUrl.length > 0);
+function handleNavigate(section: Section) {
+  activeSection = section;
+  setHashSection(section);
+}
+
+// Listen for hash changes (back/forward)
+$effect(() => {
+  function onHashChange() {
+    activeSection = getHashSection();
+  }
+  window.addEventListener('hashchange', onHashChange);
+  return () => window.removeEventListener('hashchange', onHashChange);
+});
+
+function handleEditAndRepublish(event: unknown) {
+  prefilledEvent = event;
+  activeSection = 'publisher';
+  setHashSection('publisher');
+}
 
 // ─── Actions ───
 
@@ -156,12 +162,12 @@ function handleQuickPick(relay: string) {
       <span
         class="ml-auto text-[10px] font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted"
       >
-        Phase 5
+        Phase 8
       </span>
     </div>
   </header>
 
-  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
     <!-- URL Input -->
     <form onsubmit={handleSubmit} class="mb-8 animate-fade-in">
       <div class="flex gap-2">
@@ -234,226 +240,119 @@ function handleQuickPick(relay: string) {
       </div>
     </form>
 
-    <!-- Tab Toggle -->
-    <div class="flex gap-1 p-1 mb-6 rounded-xl bg-dark-surface border border-dark-border">
-      <button
-        type="button"
-        onclick={() => (activeTab = 'nip11')}
-        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isNip11Tab
-          ? 'bg-dark-card border border-dark-border text-text-primary'
-          : 'text-text-muted hover:text-text-secondary'}"
-      >
-        NIP-11 Info
-      </button>
-      <button
-        type="button"
-        onclick={() => (activeTab = 'stream')}
-        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isStreamTab
-          ? 'bg-dark-card border border-dark-border text-text-primary'
-          : 'text-text-muted hover:text-text-secondary'}"
-      >
-        Live Stream
-        {#if socket.events.length > 0}
-          <span
-            class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent"
-          >
-            {socket.events.length.toLocaleString()}
-          </span>
-        {/if}
-      </button>
-      <button
-        type="button"
-        onclick={() => (activeTab = 'verifier')}
-        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isVerifierTab
-          ? 'bg-dark-card border border-dark-border text-text-primary'
-          : 'text-text-muted hover:text-text-secondary'}"
-      >
-        🔐 Event Verifier
-      </button>
-      <button
-        type="button"
-        onclick={() => (activeTab = 'directory')}
-        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isDirectoryTab
-          ? 'bg-dark-card border border-dark-border text-text-primary'
-          : 'text-text-muted hover:text-text-secondary'}"
-      >
-        📂 Directory
-      </button>
-    </div>
+    <!-- Navigation -->
+    <NavBar {activeSection} onNavigate={handleNavigate} eventCount={socket.events.length} />
 
-    <!-- NIP-11 Tab -->
-    {#if isNip11Tab}
-      {#if loading}
-        <LoadingSpinner />
-      {/if}
-
-      {#if !loading && error && !relayInfo}
-        <ErrorMessage message={error} onRetry={() => handleFetch()} />
-      {/if}
-
-      {#if !loading && relayInfo}
-        <div class="space-y-5">
-          <RelayProfile relayId={dbRelayId ?? undefined} relay={{ url: normalizedUrl }} info={relayInfo} />
-          <NipBadgeGrid nips={relayInfo.supported_nips || []} />
-          <LimitationsPanel limitation={relayInfo.limitation} />
-          <ConnectionStatusPanel status={connectionStatus} />
-
-          <!-- Latency & Performance -->
-          <LatencyPanel
-            metrics={latency.metrics}
-            measuring={latency.measuring}
-            onMeasure={() => latency.measureAll(normalizedUrl)}
-          />
-
-          <!-- Write Test -->
-          <WriteTestPanel
-            status={writeTest.status}
-            latencyMs={writeTest.latencyMs}
-            error={writeTest.error}
-            eventId={writeTest.eventId}
-            onRunTest={() => writeTest.runTest(normalizedUrl)}
-          />
-
-          <!-- Fee Display -->
-          {#if relayInfo?.fees}
-            <FeeDisplay fees={relayInfo.fees} />
-          {/if}
-
-          <!-- Raw JSON toggle -->
-          <details class="group">
-            <summary
-              class="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2"
-            >
-              <svg
-                aria-hidden="true"
-                class="w-4 h-4 transition-transform group-open:rotate-90"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-              Raw NIP-11 JSON
-            </summary>
-            <pre
-              class="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
-                relayInfo,
-                null,
-                2,
-              )}</pre>
-          </details>
-
-          <!-- Error details if connection had issues -->
-          {#if !loading && error && relayInfo}
-            <div
-              class="px-4 py-3 rounded-xl bg-warning-dim border border-warning/20 text-sm text-warning"
-            >
-              ⚠ {error}
-            </div>
-          {/if}
-        </div>
-      {/if}
-
-      {#if !loading && !error && !relayInfo}
-        <div class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
-          <div
-            class="w-20 h-20 rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center mb-6"
-          >
-            <svg
-              aria-hidden="true"
-              class="w-10 h-10 text-text-muted"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="1"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-              <circle cx="12" cy="12" r="10" />
-            </svg>
-          </div>
-          <h2 class="text-xl font-semibold text-text-primary mb-2">
-            Inspect a Nostr Relay
-          </h2>
-          <p class="text-text-muted text-sm max-w-sm mb-6">
-            Enter a relay URL above to fetch its NIP-11 info document, check connection status, and
-            explore supported features.
-          </p>
-          <div class="flex flex-wrap justify-center gap-2 text-xs text-text-muted">
-            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-              NIP-11 Info
-            </span>
-            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-              Connection Checks
-            </span>
-            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-              NIP Badge Grid
-            </span>
-            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-              NIP-42 Auth
-            </span>
-            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-              Latency Metrics
-            </span>
-            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-              Write Test
-            </span>
-            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-              Relay Directory
-            </span>
-          </div>
-        </div>
-      {/if}
+    <!-- Inspector Section -->
+    {#if activeSection === 'inspector'}
+      <InspectorSection
+        url={normalizedUrl}
+        {relayInfo}
+        {connectionStatus}
+        {loading}
+        {error}
+        {socket}
+        {latency}
+        {writeTest}
+        {dbRelayId}
+        onRetry={() => handleFetch()}
+      />
     {/if}
 
-    <!-- Live Stream Tab -->
-    {#if isStreamTab}
-      <div class="space-y-5 animate-fade-in">
-        <!-- Auth Status -->
-        {#if socket.status === 'connected' || socket.authStatus !== 'anonymous'}
-          <AuthStatusBadge status={socket.authStatus} onAuthenticate={socket.authenticate} />
-        {/if}
-        {#if socket.authError}
-          <div class="px-4 py-3 rounded-xl bg-error-dim border border-error/20 text-sm text-error">
-            ⚠ {socket.authError}
-          </div>
-        {/if}
-        <ConnectionPanel
-          relayUrl={normalizedUrl}
-          status={socket.status}
-          eventCount={socket.events.length}
-          eose={socket.eose}
-          eoseHints={socket.eoseHints}
-          error={socket.error}
-          notices={socket.notices}
-          onConnect={socket.connect}
-          onDisconnect={socket.disconnect}
-        />
-        <FilterBuilder connected={socket.status === 'connected'} onSend={socket.send} />
-        <EventFeed events={socket.events} />
-      </div>
+    <!-- Event Verifier Section -->
+    {#if activeSection === 'verifier'}
+      <EventVerifier onEditAndRepublish={handleEditAndRepublish} />
     {/if}
 
-    <!-- Event Verifier Tab -->
-    {#if isVerifierTab}
-      <EventVerifier />
+    <!-- Publisher Section -->
+    {#if activeSection === 'publisher'}
+      <PublisherSection targetRelay={normalizedUrl} {prefilledEvent} />
     {/if}
 
-    <!-- Directory Tab -->
-    {#if isDirectoryTab}
+    <!-- Tools Section -->
+    {#if activeSection === 'tools'}
+      <ToolsSection />
+    {/if}
+
+    <!-- Directory Section -->
+    {#if activeSection === 'directory'}
       <RelayDirectory
         onSelectRelay={(relayUrl) => {
           url = relayUrl;
-          activeTab = 'nip11';
+          activeSection = 'inspector';
+          setHashSection('inspector');
           handleFetch(relayUrl);
         }}
       />
     {/if}
+
+    <!-- Empty State -->
+    {#if !loading && !error && !relayInfo && activeSection === 'inspector'}
+      <div class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+        <div
+          class="w-20 h-20 rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center mb-6"
+        >
+          <svg
+            aria-hidden="true"
+            class="w-10 h-10 text-text-muted"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-semibold text-text-primary mb-2">
+          Inspect a Nostr Relay
+        </h2>
+        <p class="text-text-muted text-sm max-w-sm mb-6">
+          Enter a relay URL above to fetch its NIP-11 info document, check connection status, and
+          explore supported features.
+        </p>
+        <div class="flex flex-wrap justify-center gap-2 text-xs text-text-muted">
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            NIP-11 Info
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            Connection Checks
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            Live Stream
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            Event Verifier
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            Event Publisher
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            Key Converter
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            NIP-05 Checker
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            QR Code
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            Backup & Restore
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+            Relay Directory
+          </span>
+        </div>
+      </div>
+    {/if}
   </main>
+
+  <!-- Mobile Navigation -->
+  <MobileNav {activeSection} onNavigate={handleNavigate} />
 
   <!-- Footer -->
   <footer class="border-t border-dark-border mt-auto">
@@ -461,7 +360,7 @@ function handleQuickPick(relay: string) {
       class="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between text-xs text-text-muted"
     >
       <span>Relay Dog · Nostr Relay Inspector</span>
-      <span class="font-mono">v0.1.0</span>
+      <span class="font-mono">v0.8.0</span>
     </div>
   </footer>
 </div>

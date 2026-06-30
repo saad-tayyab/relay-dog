@@ -12,7 +12,7 @@ Phase 4  ████████████████████  Auth & He
 Phase 5  ████████████████████  Relay Directory & Comparison      ✅ Done
 Phase 6  ████████████████████  Security Hardening                ✅ Done
 Phase 7  ████████████████████  NIP Compliance & Modernization    ✅ Done
-Phase 8  ░░░░░░░░░░░░░░░░░░░░  Developer Toolkit Expansion      📋 Planned
+Phase 8  ████████████████████  Developer Toolkit Expansion       ✅ Done
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅
@@ -166,7 +166,7 @@ Bring relay-dog in line with the latest NIP specs (June 2026). Fix outdated type
 
 ---
 
-## Phase 8: Developer Toolkit Expansion 📋
+## Phase 8: Developer Toolkit Expansion ✅
 
 > *Weekends 12–14*
 

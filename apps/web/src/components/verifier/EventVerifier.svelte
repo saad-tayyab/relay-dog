@@ -5,6 +5,8 @@ import EventInput from './EventInput.svelte';
 import TagDecoder from './TagDecoder.svelte';
 import VerificationPanel from './VerificationPanel.svelte';
 
+let { onEditAndRepublish }: { onEditAndRepublish?: (event: NostrEvent) => void } = $props();
+
 let event = $state<NostrEvent | null>(null);
 
 function handleEvent(parsed: NostrEvent): void {
@@ -18,7 +20,7 @@ function handleEvent(parsed: NostrEvent): void {
   {#if event}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="lg:col-span-1">
-        <VerificationPanel {event} />
+        <VerificationPanel {event} {onEditAndRepublish} />
       </div>
       <div class="lg:col-span-1">
         <EventDetails {event} />

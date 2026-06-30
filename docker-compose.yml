@@ -21,6 +21,19 @@ services:
         limits:
           cpus: '1.0'
           memory: 512M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_READ_SEARCH
+    tmpfs:
+      - /tmp
+      - /run/postgresql
 
 volumes:
   pgdata:

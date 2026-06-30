@@ -1,8 +1,7 @@
 {
   "extends": "@relayscope/tsconfig/bun.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src"
+    "outDir": "./dist"
   },
-  "include": ["src"]
+  "include": ["src", "drizzle.config.ts"]
 }

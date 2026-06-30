@@ -1,0 +1,27 @@
+import { createMiddleware } from 'hono/factory';
+
+/**
+ * Requires `Authorization: Bearer <API_KEY>` on mutating routes.
+ * In production, API_KEY must be set at startup (see index.ts).
+ * In development, requests are allowed when API_KEY is unset (with a one-time warning).
+ */
+export const requireApiKey = createMiddleware(async (c, next) => {
+  const expected = process.env.API_KEY;
+
+  if (!expected) {
+    if (process.env.NODE_ENV === 'production') {
+      return c.json({ success: false, error: 'Unauthorized' }, 401);
+    }
+    await next();
+    return;
+  }
+
+  const authHeader = c.req.header('Authorization');
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  if (!token || token !== expected) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
+  }
+
+  await next();
+});

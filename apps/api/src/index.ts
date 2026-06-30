@@ -2,18 +2,47 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
+import { rateLimiter } from 'hono-rate-limiter';
 import { startMonitor } from './jobs/relayMonitor';
 import directoryRoutes from './routes/directory';
 import relayRoutes from './routes/relays';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction && !process.env.API_KEY) {
+  process.stderr.write('API_KEY is required in production\n');
+  process.exit(1);
+}
+
 const app = new Hono();
 
-// ─── Middleware ───
-app.use('*', logger());
+function clientIp(c: { req: { header: (name: string) => string | undefined } }): string {
+  return (
+    c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip') || 'unknown'
+  );
+}
 
-// CORS — origins from env, fallback to dev defaults
+const writeRateLimit = rateLimiter({
+  windowMs: 60 * 1000,
+  limit: 20,
+  keyGenerator: clientIp,
+  message: { success: false, error: 'Too many requests' },
+});
+
+const readRateLimit = rateLimiter({
+  windowMs: 60 * 1000,
+  limit: 200,
+  keyGenerator: clientIp,
+  message: { success: false, error: 'Too many requests' },
+});
+
+// ─── Middleware ───
+if (!isProduction) {
+  app.use('*', logger());
+}
+
 const corsOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(',')
+  ? process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
   : ['http://localhost:5173', 'http://localhost:3000'];
 
 app.use(
@@ -24,19 +53,33 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization'],
   }),
 );
-app.use('/api/*', prettyJSON());
+
+if (!isProduction) {
+  app.use('/api/*', prettyJSON());
+}
+
+app.use('/api/*', async (c, next) => {
+  const isWrite = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(c.req.method);
+  if (isWrite) {
+    return writeRateLimit(c, next);
+  }
+  return readRateLimit(c, next);
+});
 
 // ─── Security Headers ───
 app.use('*', async (c, next) => {
   await next();
   c.header('X-Content-Type-Options', 'nosniff');
-  c.header('X-Frame-Options', 'DENY');
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  c.header('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
+  c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (isProduction) {
+    c.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
 });
 
 // ─── Routes ───
 
-// Health check
 app.get('/', (c) => {
   return c.json({
     name: 'Relay Scope API',
@@ -46,15 +89,11 @@ app.get('/', (c) => {
   });
 });
 
-// API health
 app.get('/api/health', (c) => {
   return c.json({ status: 'ok', uptime: process.uptime() });
 });
 
-// Relay routes
 app.route('/api/relays', relayRoutes);
-
-// Directory routes
 app.route('/api/directory', directoryRoutes);
 
 // ─── 404 Handler ───
@@ -64,7 +103,9 @@ app.notFound((c) => {
 
 // ─── Error Handler ───
 app.onError((err, c) => {
-  return c.json({ success: false, error: err.message || 'Internal server error' }, 500);
+  process.stderr.write(`${err.stack ?? err.message ?? err}\n`);
+  const message = isProduction ? 'Internal server error' : err.message || 'Internal server error';
+  return c.json({ success: false, error: message }, 500);
 });
 
 // ─── Start Server with Graceful Shutdown ───
@@ -75,7 +116,6 @@ const server = Bun.serve({
   port,
 });
 
-// Graceful shutdown
 const shutdown = async () => {
   server.stop();
   process.exit(0);
@@ -84,8 +124,5 @@ const shutdown = async () => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-// Start the monitoring job after server is up
-startMonitor(60_000); // Check relays every 60 seconds
-
-// Note: no `export default app` — Bun 1.3 auto-serves default exports with
-// a `fetch` method, which conflicts with the explicit Bun.serve() above.
+const monitorInterval = parseInt(process.env.MONITOR_INTERVAL_MS || '60000', 10);
+startMonitor(monitorInterval);

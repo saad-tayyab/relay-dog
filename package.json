@@ -6,21 +6,21 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "lint": "bunx biome check .",
-    "lint:fix": "bunx biome check --write .",
-    "format": "bunx biome check --write .",
-    "type-check": "turbo type-check",
-    "db:generate": "cd apps/api && bun run db:generate",
-    "db:migrate": "cd apps/api && bun run db:migrate",
-    "db:studio": "cd apps/api && bun run db:studio"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint && bun run lint:root",
+    "lint:fix": "biome check --write .",
+    "format": "biome check --write .",
+    "type-check": "turbo run type-check",
+    "db:generate": "bun run --filter @relayscope/api db:generate",
+    "db:migrate": "bun run --filter @relayscope/api db:migrate",
+    "db:studio": "bun run --filter @relayscope/api db:studio",
+    "lint:root": "biome check biome.json turbo.json docs .github CONTRIBUTING.md README.md package.json"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.1",
-    "dotenv": "^17.4.2",
-    "turbo": "^2",
+    "turbo": "^2.10.2",
     "typescript": "^6.0"
   },
-  "packageManager": "bun@1.2.17"
+  "packageManager": "bun@1.3.14"
 }

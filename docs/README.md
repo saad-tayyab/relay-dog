@@ -7,7 +7,7 @@ Welcome to the Relay Scope documentation. This is the single source of truth for
 ```
 docs/
 ├── README.md                          # You are here
-├── roadmap.md                         # Full 5-phase project plan
+├── roadmap.md                         # Full 7-phase project plan
 │
 ├── architecture/
 │   ├── overview.md                    # System architecture + Mermaid diagrams
@@ -37,7 +37,9 @@ docs/
 │   ├── phase-2-events.md              # Live event stream (planned)
 │   ├── phase-3-verifier.md            # Event verifier (planned)
 │   ├── phase-4-auth.md               # Auth & health (planned)
-│   └── phase-5-directory.md          # Relay directory (planned)
+│   ├── phase-5-directory.md          # Relay directory (complete ✅)
+│   ├── phase-6-security-hardening.md # Security hardening (complete ✅)
+│   └── phase-7-nip-compliance.md     # NIP compliance (planned)
 │
 ├── prompts/
 │   └── best-practices.md             # AI prompt engineering practices

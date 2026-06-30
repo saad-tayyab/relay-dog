@@ -54,6 +54,15 @@ export function useNip42Auth() {
     if (type !== 'AUTH') return false;
 
     const challenge = parsed[1] as string;
+    if (
+      typeof challenge !== 'string' ||
+      challenge.length === 0 ||
+      challenge.length > 256 ||
+      !/^[\x20-\x7E]+$/.test(challenge)
+    ) {
+      return false;
+    }
+
     pendingChallenge = challenge;
     state = { ...state, status: 'auth_required', challenge };
     return true;
@@ -83,6 +92,14 @@ export function useNip42Auth() {
     state = { ...state, status: 'authenticating', error: null };
 
     try {
+      let normalizedRelayUrl: string;
+      try {
+        normalizedRelayUrl = new URL(relayUrl).href;
+      } catch {
+        state = { ...state, status: 'auth_failed', error: 'Invalid relay URL' };
+        return null;
+      }
+
       const pubkey = await window.nostr.getPublicKey();
       const now = Math.floor(Date.now() / 1000);
 
@@ -90,7 +107,7 @@ export function useNip42Auth() {
         kind: 22242,
         content: '',
         tags: [
-          ['relay', relayUrl],
+          ['relay', normalizedRelayUrl],
           ['challenge', pendingChallenge],
         ],
         created_at: now,

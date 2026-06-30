@@ -9,7 +9,8 @@
     ".": "./src/types.ts"
   },
   "scripts": {
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "lint": "biome check ."
   },
   "devDependencies": {
     "typescript": "^6.0.3"

@@ -11,12 +11,12 @@ Nostr Implementation Possessions (NIPs) are protocol specifications that extend 
 | **NIP-07** | Browser Extension | 4 | ✅ | `window.nostr` API for signing events and getting public keys. Used for AUTH flow |
 | **NIP-11** | Relay Information | 1 | ✅ | HTTP endpoint returning relay metadata: name, description, supported NIPs, limitations. Fetched with `Accept: application/nostr+json` |
 | **NIP-19** | Bech32 Encoding | 3 | ✅ | Encodes pubkeys (`npub`), event IDs (`nevent`), and profiles (`nprofile`) in human-readable bech32 format |
-| **NIP-40** | Expiration Timestamp | 6 | 📋 | `["expiration", "unix_timestamp"]` tag. Events past expiration should be ignored by clients and dropped by relays |
-| **NIP-42** | Relay Authentication | 4 | ✅ | AUTH challenge/response flow. Relay sends `AUTH` message, client signs and sends back. Required for auth-gated relays |
-| **NIP-50** | Search Capability | 6 | 📋 | `search` field in REQ filters for content-based search. Extensions: `include:spam`, `domain:`, `language:` |
-| **NIP-65** | Relay List Metadata | 5 | 📋 | `kind:10002` events containing relay URLs for read/write. Used for relay discovery and popularity metrics |
-| **NIP-66** | Relay & Channel Discovery | 5 | 📋 | `kind:30166` events from relay monitors indicating relay liveness. `kind:10166` for monitor announcements. RTT, network type, requirements |
-| **NIP-67** | EOSE Completeness Hint | 6 | 📋 | Extends EOSE with 3rd element: `["finish"]` (all events sent) or `["more"]` (more available). Removes pagination guesswork |
+| **NIP-40** | Expiration Timestamp | 7 | 📋 | `["expiration", "unix_timestamp"]` tag. Events past expiration should be ignored by clients and dropped by relays |
+| **NIP-42** | Relay Authentication | 4, 6, 7 | ✅ / 📋 | Phase 4: AUTH flow. Phase 6: challenge + URL validation. Phase 7: prefix display, timing warnings |
+| **NIP-50** | Search Capability | 7 | 📋 | `search` field in REQ filters for content-based search. Extensions: `include:spam`, `domain:`, `language:` |
+| **NIP-65** | Relay List Metadata | 7 | 📋 | `kind:10002` events containing relay URLs for read/write. Used for relay discovery and popularity metrics |
+| **NIP-66** | Relay & Channel Discovery | 5 (spec), 7 | 📋 | Phase 5 spec only. Phase 7: `kind:30166` monitor integration, `relay_discoveries` table |
+| **NIP-67** | EOSE Completeness Hint | 7 | 📋 | Extends EOSE with 3rd element: `["finish"]` (all events sent) or `["more"]` (more available). Removes pagination guesswork |
 
 ## NIP Details
 

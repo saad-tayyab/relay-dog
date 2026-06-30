@@ -1,6 +1,6 @@
 # 🗺️ Roadmap
 
-Relay Scope is built in 6 phases, each delivering standalone value while building toward a complete Nostr relay inspector.
+Relay Scope is built in 7 phases, each delivering standalone value while building toward a complete Nostr relay inspector.
 
 ## Status
 
@@ -10,7 +10,8 @@ Phase 2  ████████████████████  Live Even
 Phase 3  ████████████████████  Event Verifier & Inspector        ✅ Done
 Phase 4  ████████████████████  Auth & Health Dashboard           ✅ Done
 Phase 5  ████████████████████  Relay Directory & Comparison      ✅ Done
-Phase 6  ░░░░░░░░░░░░░░░░░░░░  NIP Compliance & Modernization    📋 Planned
+Phase 6  ████████████████████  Security Hardening                ✅ Done
+Phase 7  ░░░░░░░░░░░░░░░░░░░░  NIP Compliance & Modernization    📋 Planned
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅
@@ -115,26 +116,52 @@ Go from a single-relay inspector to a directory. Users can browse known relays, 
 
 ---
 
-## Phase 6: NIP Compliance & Protocol Modernization 📋
+## Phase 6: Security Hardening ✅
+
+> *Post Phase 5 audit*
+
+Full-stack security hardening required before any internet-facing production deploy.
+
+**What ships:**
+- API key auth on mutating routes (`POST`, `PUT`, `DELETE`, health check trigger)
+- SSRF protection on all server-side relay URL fetches
+- PUT mass assignment fix with Zod field whitelist
+- Rate limiting (20 write / 200 read req/min per IP)
+- Docker hardening (localhost bind, env password, healthcheck, resource limits)
+- Production error handler with sanitized health check messages
+- Security headers (HSTS, CSP, Permissions-Policy) on API and SPA
+- Zod input validation on relay create/update
+- CI dependency scanning (`bun audit` + OSV Scanner)
+- Frontend: https-only relay icons, NIP-42 challenge validation
+
+**NIPs**: N/A (infrastructure and API security)
+
+**New dependencies**: `zod`, `@hono/zod-validator`, `hono-rate-limiter`
+
+**Removed dependencies**: `node-cron` (unused)
+
+---
+
+## Phase 7: NIP Compliance & Protocol Modernization 📋
 
 > *Weekend 10–11*
 
-Bring relay-dog in line with the latest NIP specs (June 2026). Fix outdated types, implement missing protocol features, and add Zod validation.
+Bring relay-dog in line with the latest NIP specs (June 2026). Fix outdated types, implement missing protocol features, and add NIP validation schemas in the **shared package** (API DTO schemas already shipped in Phase 6).
 
 **What ships:**
 - Updated NIP-11 types with all current fields (banner, pubkey, fees, etc.)
-- NIP-66 relay discovery — consume kind:30166 events from monitors
+- NIP-66 relay discovery — consume kind:30166 events from monitors (Phase 5 spec was not implemented)
 - NIP-67 EOSE completeness hints — show "all events received" vs. "more available"
 - NIP-65 relay list display — show read/write popularity per relay
-- NIP-50 search filter — content search for relays that support it
+- NIP-50 search filter — forward `search` to relays that support it (directory ILIKE already exists)
 - NIP-40 expiration — expired event indicators
-- NIP-42 auth hardening — timing verification, prefix display
-- Zod validation schemas for all NIP data
+- NIP-42 auth hardening — OK/CLOSED prefix display, timing warnings (challenge validation done in Phase 6)
+- Zod NIP schemas in `packages/shared` (optional consolidation of API DTO schemas from Phase 6)
 - Deprecated incorrect types (FeeInfo, posting_limit, relay_limitation)
 
-**NIPs**: NIP-11 (updated), NIP-40, NIP-42 (hardened), NIP-50, NIP-65, NIP-66 (integrated), NIP-67
+**NIPs**: NIP-11 (updated), NIP-40, NIP-42 (display/timing), NIP-50, NIP-65, NIP-66 (integrated), NIP-67
 
-**New dependencies**: `zod`
+**New dependencies**: `zod` in `packages/shared` (already in `apps/api` from Phase 6)
 
 ---
 
@@ -147,4 +174,5 @@ Bring relay-dog in line with the latest NIP specs (June 2026). Fix outdated type
 | 3 | 1 weekend | Medium | None | None (client-side) |
 | 4 | 2 weekends | **Hard** | Auth endpoints | health_checks expansion |
 | 5 | 2–3 weekends | Medium | Directory endpoints | monitoring_jobs expansion |
-| 6 | 1–2 weekends | Medium | 3 endpoints | relay_discoveries, relay_list_entries |
+| 6 | 1 weekend | Medium | Auth + rate limits | None |
+| 7 | 1–2 weekends | Medium | 3 endpoints | relay_discoveries, relay_list_entries |

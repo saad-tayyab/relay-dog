@@ -11,7 +11,27 @@ export function normalizeUrl(raw: string): string {
   ) {
     url = `wss://${url}`;
   }
-  return url;
+  try {
+    const parsed = new URL(url);
+    if (!['ws:', 'wss:', 'http:', 'https:'].includes(parsed.protocol)) {
+      return '';
+    }
+    return parsed.href;
+  } catch {
+    return '';
+  }
+}
+
+/** Returns icon URL only when it uses a safe https scheme. */
+export function safeHttpsIconUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') return null;
+    return parsed.href;
+  } catch {
+    return null;
+  }
 }
 
 export function wsToHttp(url: string): string {

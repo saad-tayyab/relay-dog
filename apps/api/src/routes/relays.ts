@@ -1,27 +1,74 @@
-import type { CreateRelayDto, RelayQueryParams } from '@relayscope/shared';
+import { zValidator } from '@hono/zod-validator';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { db } from '../db';
 import { healthChecks, relayInfoSnapshots, relays } from '../db/schema';
+import { categorizeError } from '../lib/errors';
+import { createRelaySchema, updateRelaySchema } from '../lib/schemas';
+import { assertSafeUrl } from '../lib/ssrf';
+import { requireApiKey } from '../middleware/auth';
 
 const relayRoutes = new Hono();
 
+const MAX_PAGE_LIMIT = 100;
+
+function parsePageLimit(rawPage: string | undefined, rawLimit: string | undefined) {
+  const page = Math.max(1, parseInt(rawPage || '1', 10) || 1);
+  const limit = Math.min(Math.max(1, parseInt(rawLimit || '20', 10) || 20), MAX_PAGE_LIMIT);
+  return { page, limit };
+}
+
+function normalizeRelayUrl(raw: string): string {
+  let url = raw.trim();
+  if (
+    !url.startsWith('wss://') &&
+    !url.startsWith('ws://') &&
+    !url.startsWith('https://') &&
+    !url.startsWith('http://')
+  ) {
+    url = `wss://${url}`;
+  }
+  assertSafeUrl(url);
+  return url;
+}
+
+function toHttpUrl(url: string): string {
+  const httpUrl = url
+    .replace(/^wss:\/\//, 'https://')
+    .replace(/^ws:\/\//, 'http://')
+    .replace(/\/$/, '');
+  assertSafeUrl(httpUrl);
+  return httpUrl;
+}
+
+function toWsUrl(url: string): string {
+  const wsUrl = url.startsWith('http')
+    ? url.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://')
+    : url;
+  assertSafeUrl(wsUrl);
+  return wsUrl;
+}
+
 // ─── GET /api/relays — List all relays with optional filters ───
 relayRoutes.get('/', async (c) => {
-  const page = parseInt(c.req.query('page') || '1', 10);
-  const limit = parseInt(c.req.query('limit') || '20', 10);
+  const { page, limit } = parsePageLimit(c.req.query('page'), c.req.query('limit'));
 
-  const query: RelayQueryParams = {
+  const query = {
     search: c.req.query('search') || undefined,
-    nips: c.req.query('nips')?.split(',').map(Number) || undefined,
+    nips:
+      c.req
+        .query('nips')
+        ?.split(',')
+        .map(Number)
+        .filter((n) => Number.isInteger(n)) || undefined,
     authRequired: c.req.query('authRequired') === 'true' ? true : undefined,
     paymentRequired: c.req.query('paymentRequired') === 'true' ? true : undefined,
     isOnline: c.req.query('isOnline') === 'true' ? true : undefined,
     country: c.req.query('country') || undefined,
     page,
     limit,
-    sortBy: (c.req.query('sortBy') as RelayQueryParams['sortBy']) || 'name',
-    sortOrder: (c.req.query('sortOrder') as RelayQueryParams['sortOrder']) || 'asc',
+    sortBy: (c.req.query('sortBy') as 'name' | 'url' | 'lastChecked' | 'latency') || 'name',
+    sortOrder: (c.req.query('sortOrder') as 'asc' | 'desc') || 'asc',
   };
 
   const offset = (page - 1) * limit;
@@ -38,13 +85,11 @@ relayRoutes.get('/', async (c) => {
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  // Get total count
   const [{ count }] = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(relays)
     .where(whereClause);
 
-  // Get relays with latest health check
   const results = await db
     .select({
       relay: relays,
@@ -57,7 +102,6 @@ relayRoutes.get('/', async (c) => {
     .limit(limit)
     .offset(offset);
 
-  // Deduplicate health checks (take latest per relay)
   const relayMap = new Map();
   for (const row of results) {
     const existing = relayMap.get(row.relay.id);
@@ -105,7 +149,6 @@ relayRoutes.get('/:id', async (c) => {
     return c.json({ success: false, error: 'Relay not found' }, 404);
   }
 
-  // Get latest NIP-11 snapshot
   const [latestInfo] = await db
     .select()
     .from(relayInfoSnapshots)
@@ -124,37 +167,24 @@ relayRoutes.get('/:id', async (c) => {
 });
 
 // ─── POST /api/relays — Add a new relay ───
-relayRoutes.post('/', async (c) => {
-  const body = await c.req.json<CreateRelayDto>();
+relayRoutes.post('/', requireApiKey, zValidator('json', createRelaySchema), async (c) => {
+  const body = c.req.valid('json');
 
-  if (!body.url) {
-    return c.json({ success: false, error: 'URL is required' }, 400);
+  let url: string;
+  try {
+    url = normalizeRelayUrl(body.url);
+  } catch {
+    return c.json({ success: false, error: 'Invalid or disallowed relay URL' }, 400);
   }
 
-  // Normalize URL
-  let url = body.url.trim();
-  if (
-    !url.startsWith('wss://') &&
-    !url.startsWith('ws://') &&
-    !url.startsWith('https://') &&
-    !url.startsWith('http://')
-  ) {
-    url = `wss://${url}`;
-  }
-
-  // Check if already exists
   const [existing] = await db.select().from(relays).where(eq(relays.url, url)).limit(1);
   if (existing) {
     return c.json({ success: false, error: 'Relay already exists', data: existing }, 409);
   }
 
-  // Fetch NIP-11 info
   let nip11Data: Record<string, unknown> = {};
   try {
-    const httpUrl = url
-      .replace(/^wss:\/\//, 'https://')
-      .replace(/^ws:\/\//, 'http://')
-      .replace(/\/$/, '');
+    const httpUrl = toHttpUrl(url);
     const res = await fetch(httpUrl, {
       headers: { Accept: 'application/nostr+json' },
       signal: AbortSignal.timeout(10000),
@@ -181,7 +211,6 @@ relayRoutes.post('/', async (c) => {
     })
     .returning();
 
-  // Store NIP-11 snapshot if we got data
   if (Object.keys(nip11Data).length > 0) {
     await db.insert(relayInfoSnapshots).values({
       relayId: newRelay.id,
@@ -194,14 +223,18 @@ relayRoutes.post('/', async (c) => {
 });
 
 // ─── PUT /api/relays/:id — Update relay ───
-relayRoutes.put('/:id', async (c) => {
+relayRoutes.put('/:id', requireApiKey, zValidator('json', updateRelaySchema), async (c) => {
   const id = c.req.param('id');
-  const body = await c.req.json();
+  const body = c.req.valid('json');
+
+  const fields = Object.fromEntries(
+    Object.entries(body).filter(([, value]) => value !== undefined),
+  );
 
   const [updated] = await db
     .update(relays)
     .set({
-      ...body,
+      ...fields,
       updatedAt: new Date(),
     })
     .where(eq(relays.id, id))
@@ -215,7 +248,7 @@ relayRoutes.put('/:id', async (c) => {
 });
 
 // ─── DELETE /api/relays/:id — Remove relay ───
-relayRoutes.delete('/:id', async (c) => {
+relayRoutes.delete('/:id', requireApiKey, async (c) => {
   const id = c.req.param('id');
 
   const [deleted] = await db.delete(relays).where(eq(relays.id, id)).returning();
@@ -228,7 +261,7 @@ relayRoutes.delete('/:id', async (c) => {
 });
 
 // ─── POST /api/relays/:id/check — Run health check on a relay ───
-relayRoutes.post('/:id/check', async (c) => {
+relayRoutes.post('/:id/check', requireApiKey, async (c) => {
   const id = c.req.param('id');
 
   const [relay] = await db.select().from(relays).where(eq(relays.id, id)).limit(1);
@@ -236,13 +269,14 @@ relayRoutes.post('/:id/check', async (c) => {
     return c.json({ success: false, error: 'Relay not found' }, 404);
   }
 
-  const httpUrl = relay.url
-    .replace(/^wss:\/\//, 'https://')
-    .replace(/^ws:\/\//, 'http://')
-    .replace(/\/$/, '');
-  const wsUrl = relay.url.startsWith('http')
-    ? relay.url.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://')
-    : relay.url;
+  let httpUrl: string;
+  let wsUrl: string;
+  try {
+    httpUrl = toHttpUrl(relay.url);
+    wsUrl = toWsUrl(relay.url);
+  } catch {
+    return c.json({ success: false, error: 'Invalid or disallowed relay URL' }, 400);
+  }
 
   let httpReachable = false;
   let corsConfigured = false;
@@ -251,7 +285,6 @@ relayRoutes.post('/:id/check', async (c) => {
   let httpStatusCode: number | null = null;
   let errorMessage: string | null = null;
 
-  // HTTP check
   try {
     const start = performance.now();
     const res = await fetch(httpUrl, {
@@ -263,12 +296,11 @@ relayRoutes.post('/:id/check', async (c) => {
     latencyMs = Math.round(performance.now() - start);
     httpReachable = res.ok;
     httpStatusCode = res.status;
-    corsConfigured = true; // If we got here without CORS error, it's configured
+    corsConfigured = true;
   } catch (e: unknown) {
-    errorMessage = e instanceof Error ? e.message : 'HTTP check failed';
+    errorMessage = categorizeError(e);
   }
 
-  // WebSocket check
   try {
     const ws = new WebSocket(wsUrl);
     await new Promise<void>((resolve, reject) => {
@@ -288,10 +320,9 @@ relayRoutes.post('/:id/check', async (c) => {
       };
     });
   } catch (e: unknown) {
-    if (!errorMessage) errorMessage = e instanceof Error ? e.message : 'WebSocket check failed';
+    if (!errorMessage) errorMessage = categorizeError(e);
   }
 
-  // Store health check
   const [healthCheck] = await db
     .insert(healthChecks)
     .values({
@@ -305,7 +336,6 @@ relayRoutes.post('/:id/check', async (c) => {
     })
     .returning();
 
-  // Update relay timestamps
   await db.update(relays).set({ updatedAt: new Date() }).where(eq(relays.id, id));
 
   return c.json({ success: true, data: healthCheck });
@@ -314,7 +344,7 @@ relayRoutes.post('/:id/check', async (c) => {
 // ─── GET /api/relays/:id/history — Get health check history ───
 relayRoutes.get('/:id/history', async (c) => {
   const id = c.req.param('id');
-  const limit = parseInt(c.req.query('limit') || '50', 10);
+  const { limit } = parsePageLimit('1', c.req.query('limit') || '50');
 
   const history = await db
     .select()
@@ -329,7 +359,7 @@ relayRoutes.get('/:id/history', async (c) => {
 // ─── GET /api/relays/:id/nip11 — Get NIP-11 history ───
 relayRoutes.get('/:id/nip11', async (c) => {
   const id = c.req.param('id');
-  const limit = parseInt(c.req.query('limit') || '20', 10);
+  const { limit } = parsePageLimit('1', c.req.query('limit') || '20');
 
   const snapshots = await db
     .select()

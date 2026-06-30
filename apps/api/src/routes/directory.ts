@@ -44,7 +44,12 @@ directoryRoutes.get('/', async (c) => {
 
   const filters: DirectoryFilters = {
     search: c.req.query('search') || undefined,
-    nips: c.req.query('nips')?.split(',').map(Number).filter(Boolean) || undefined,
+    nips:
+      c.req
+        .query('nips')
+        ?.split(',')
+        .map(Number)
+        .filter((n) => Number.isInteger(n) && n >= 0) || undefined,
     authRequired: c.req.query('authRequired') === 'true' ? true : undefined,
     paymentRequired: c.req.query('paymentRequired') === 'true' ? true : undefined,
     country: c.req.query('country') || undefined,

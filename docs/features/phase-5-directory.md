@@ -19,10 +19,13 @@ Go from a single-relay inspector to a directory. Users can browse known relays, 
 ## Features
 
 ### Relay Discovery (NIP-66)
-- Query `kind:30166` events from relay monitors
-- Extract relay URLs from monitor events
-- Auto-add discovered relays to directory
-- Periodic re-scan for new relays
+
+> **Deferred to Phase 7:** The items below were specified for Phase 5 but **not implemented**. Directory browse, filter, and compare shipped; NIP-66 monitor integration (`GET /api/discover`, auto-add from `kind:30166`) is planned for [Phase 7 — NIP Compliance](phase-7-nip-compliance.md).
+
+- Query `kind:30166` events from relay monitors *(Phase 7)*
+- Extract relay URLs from monitor events *(Phase 7)*
+- Auto-add discovered relays to directory *(Phase 7)*
+- Periodic re-scan for new relays *(Phase 7)*
 
 ### Filter & Search
 - **NIP filter**: Show only relays supporting specific NIPs (e.g., "NIP-42 auth")
@@ -115,9 +118,9 @@ Directory/
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/api/discover` | Trigger NIP-66 relay discovery |
+| `GET` | `/api/discover` | Trigger NIP-66 relay discovery *(deferred — Phase 7)* |
 | `GET` | `/api/directory` | Browse directory with filters |
-| `GET` | `/api/compare/:id1/:id2` | Compare two relays |
+| `GET` | `/api/directory/compare/:id1/:id2` | Compare two relays |
 
 ## Database Changes
 
@@ -141,4 +144,4 @@ Directory/
 
 ---
 
-*Previous: [Phase 4 — Auth & Health Dashboard](phase-4-auth.md) | Next: [Phase 6 — NIP Compliance & Modernization](phase-6-nip-compliance.md)*
+*Previous: [Phase 4 — Auth & Health Dashboard](phase-4-auth.md) | Next: [Phase 6 — Security Hardening](phase-6-security-hardening.md)*

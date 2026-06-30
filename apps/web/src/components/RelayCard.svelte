@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { DirectoryRelay } from '@relayscope/shared';
+import { safeHttpsIconUrl } from '../utils/relay';
 import SectionCard from './SectionCard.svelte';
 
 let {
@@ -11,6 +12,8 @@ let {
   onSelect: (id: string) => void;
   selected: boolean;
 } = $props();
+
+const iconUrl = $derived(safeHttpsIconUrl(relay.icon));
 
 function handleImageError(e: Event) {
   const img = e.target as HTMLImageElement;
@@ -37,11 +40,12 @@ const nipCount = $derived(relay.supportedNips.length);
 >
   <SectionCard className="cursor-pointer">
     <div class="flex items-start gap-3">
-      {#if relay.icon}
+      {#if iconUrl}
         <img
-          src={relay.icon}
+          src={iconUrl}
           alt=""
           class="w-10 h-10 rounded-lg border border-dark-border object-cover shrink-0"
+          referrerpolicy="no-referrer"
           onerror={handleImageError}
         />
       {:else}

@@ -19,6 +19,14 @@ let {
 } = $props();
 
 const iconUrl = $derived(safeHttpsIconUrl(info.icon));
+
+function softwareHref(raw: string): string {
+  return raw.replace(/^git\+/, '');
+}
+
+function isSoftwareUrl(raw: string): boolean {
+  return /^git\+https?:\/\//.test(raw) || /^https?:\/\//.test(raw);
+}
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const discovery = useRelayDiscovery();
 let popularity = $state<RelayPopularity | null>(null);
@@ -77,7 +85,16 @@ $effect(() => {
                 d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
               />
             </svg>
-            {info.software}
+            {#if isSoftwareUrl(info.software)}
+              <a
+                href={softwareHref(info.software)}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors"
+              >{info.software}</a>
+            {:else}
+              {info.software}
+            {/if}
           </span>
         {/if}
         {#if info.version}

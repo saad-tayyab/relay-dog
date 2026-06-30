@@ -43,6 +43,14 @@ const latencyDisplay = $derived(
 );
 
 const nipCount = $derived(relay.supportedNips.length);
+
+function softwareHref(raw: string): string {
+  return raw.replace(/^git\+/, '');
+}
+
+function isSoftwareUrl(raw: string): boolean {
+  return /^git\+https?:\/\//.test(raw) || /^https?:\/\//.test(raw);
+}
 </script>
 
 <button
@@ -114,22 +122,32 @@ const nipCount = $derived(relay.supportedNips.length);
           <span>{latencyDisplay}</span>
           {#if relay.software}
             <span>·</span>
-            <span>{relay.software}</span>
+            {#if isSoftwareUrl(relay.software)}
+              <a
+                href={softwareHref(relay.software)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onclick={(e) => e.stopPropagation()}
+                class="hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors"
+              >{relay.software}</a>
+            {:else}
+              <span>{relay.software}</span>
+            {/if}
           {/if}
         </div>
       </div>
 
-      <!-- Inspect icon — visible on hover -->
-      <div class="shrink-0 flex flex-col items-center gap-2">
+      <!-- Actions — always visible on mobile, hover-reveal on desktop -->
+      <div class="shrink-0 flex flex-col items-center gap-1">
         <button
           type="button"
           onclick={handleInspect}
-          class="opacity-0 group-hover:opacity-100 transition-all p-1.5 rounded-lg hover:bg-accent-dim hover:text-accent text-text-muted"
+          class="sm:opacity-0 sm:group-hover:opacity-100 transition-all p-2 rounded-lg hover:bg-accent-dim hover:text-accent text-text-muted"
           title="Inspect relay"
         >
           <svg
             aria-hidden="true"
-            class="w-4 h-4"
+            class="w-5 h-5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -143,15 +161,18 @@ const nipCount = $derived(relay.supportedNips.length);
           </svg>
         </button>
 
-        <input
-          type="checkbox"
-          checked={selected}
-          class="w-4 h-4 rounded border-dark-border text-accent focus:ring-accent-border"
-          onclick={(e) => {
-            e.stopPropagation();
-            onSelect(relay.id);
-          }}
-        />
+        <label class="relative flex items-center justify-center p-1 cursor-pointer" title="Compare">
+          <input
+            type="checkbox"
+            checked={selected}
+            class="peer w-5 h-5 rounded border-dark-border text-accent focus:ring-accent-border cursor-pointer"
+            onclick={(e) => {
+              e.stopPropagation();
+              onSelect(relay.id);
+            }}
+          />
+          <span class="absolute w-5 h-5 rounded border border-dark-border peer-checked:border-accent peer-checked:bg-accent/20 pointer-events-none transition-all"></span>
+        </label>
       </div>
     </div>
   </SectionCard>

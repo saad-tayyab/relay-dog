@@ -1,5 +1,5 @@
 import type { DirectoryFilters, DirectoryRelay, RelayLimitation } from '@relayscope/shared';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { db } from '../db';
 import { healthChecks, relays } from '../db/schema';
@@ -138,7 +138,7 @@ directoryRoutes.get('/', async (c) => {
   const allHC = await db
     .select()
     .from(healthChecks)
-    .where(sql`${healthChecks.relayId} = ANY(${relayIds})`)
+    .where(inArray(healthChecks.relayId, relayIds))
     .orderBy(desc(healthChecks.checkedAt));
 
   // Build a lookup map: relayId → latest health check

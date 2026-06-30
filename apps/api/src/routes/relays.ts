@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { db } from '../db';
 import { healthChecks, relayInfoSnapshots, relays } from '../db/schema';
@@ -117,7 +117,7 @@ relayRoutes.get('/', async (c) => {
   const allHC = await db
     .select()
     .from(healthChecks)
-    .where(sql`${healthChecks.relayId} = ANY(${relayIds})`)
+    .where(inArray(healthChecks.relayId, relayIds))
     .orderBy(desc(healthChecks.checkedAt));
 
   const hcMap = new Map<string, typeof healthChecks.$inferSelect>();

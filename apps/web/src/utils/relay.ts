@@ -45,6 +45,7 @@ export async function fetchNip11(url: string): Promise<RelayInfo> {
   const httpUrl = wsToHttp(url);
   const res = await fetch(httpUrl, {
     headers: { Accept: 'application/nostr+json' },
+    signal: AbortSignal.timeout(10_000),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
   return res.json();
@@ -76,6 +77,7 @@ export async function checkConnections(relayUrl: string): Promise<ConnectionStat
       method: 'GET',
       headers: { Accept: 'application/nostr+json' },
       mode: 'cors',
+      signal: AbortSignal.timeout(10_000),
     });
     status.latencyMs = Math.round(performance.now() - start);
     if (res.ok) {
@@ -97,7 +99,11 @@ export async function checkConnections(relayUrl: string): Promise<ConnectionStat
     status.corsDetail = 'Cross-origin headers present';
   } else if (status.http === 'error') {
     try {
-      await fetch(httpUrl, { method: 'HEAD', mode: 'no-cors' });
+      await fetch(httpUrl, {
+        method: 'HEAD',
+        mode: 'no-cors',
+        signal: AbortSignal.timeout(5_000),
+      });
       status.cors = 'error';
       status.corsDetail = 'Blocked — relay may not set CORS headers';
     } catch {

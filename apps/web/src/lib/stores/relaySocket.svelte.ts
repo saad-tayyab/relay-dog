@@ -1,4 +1,5 @@
 import type { NostrEvent } from '@relayscope/shared';
+import { useNip42Auth } from '../composables/useNip42Auth.svelte';
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -24,6 +25,10 @@ export function relaySocket(getRelayUrl: () => string) {
   });
   let notices = $state<string[]>([]);
   let error = $state<string | null>(null);
+
+  // ─── NIP-42 Auth ───
+  // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
+  const auth = useNip42Auth();
 
   // ─── Non-reactive Refs ───
   let ws: WebSocket | null = null;
@@ -53,6 +58,7 @@ export function relaySocket(getRelayUrl: () => string) {
     eventIds.clear();
     eoseReceived = false;
     backoff = INITIAL_DELAY_MS;
+    auth.reset();
   }
 
   // ─── Public API ───
@@ -102,6 +108,12 @@ export function relaySocket(getRelayUrl: () => string) {
     };
 
     socket.onmessage = (event: MessageEvent) => {
+      // Check for AUTH challenge first
+      if (auth.handleRawMessage(String(event.data))) {
+        // AUTH detected — user needs to call authenticate()
+        return;
+      }
+
       let parsed: unknown;
       try {
         parsed = JSON.parse(String(event.data));
@@ -176,6 +188,16 @@ export function relaySocket(getRelayUrl: () => string) {
     }
   }
 
+  async function authenticate(): Promise<boolean> {
+    const url = getRelayUrl();
+    const authMsg = await auth.authenticate(url);
+    if (authMsg && ws?.readyState === WebSocket.OPEN) {
+      ws.send(authMsg);
+      return true;
+    }
+    return false;
+  }
+
   // ─── Lifecycle: Reset on URL change or unmount ───
 
   $effect(() => {
@@ -221,8 +243,21 @@ export function relaySocket(getRelayUrl: () => string) {
     get error() {
       return error;
     },
+    get authStatus() {
+      return auth.status;
+    },
+    get authChallenge() {
+      return auth.challenge;
+    },
+    get authError() {
+      return auth.error;
+    },
+    get authPubkey() {
+      return auth.pubkey;
+    },
     connect,
     disconnect,
     send,
+    authenticate,
   };
 }

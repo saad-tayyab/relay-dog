@@ -5,16 +5,24 @@ import { checkConnections, fetchNip11, normalizeUrl } from './utils/relay';
 import './index.css';
 
 // Components
+import AuthStatusBadge from './components/AuthStatusBadge.svelte';
 import ConnectionPanel from './components/ConnectionPanel.svelte';
 import ConnectionStatusPanel from './components/ConnectionStatusPanel.svelte';
 import ErrorMessage from './components/ErrorMessage.svelte';
 import EventFeed from './components/EventFeed.svelte';
+import FeeDisplay from './components/FeeDisplay.svelte';
 import FilterBuilder from './components/FilterBuilder.svelte';
+import LatencyPanel from './components/LatencyPanel.svelte';
 import LimitationsPanel from './components/LimitationsPanel.svelte';
 import LoadingSpinner from './components/LoadingSpinner.svelte';
 import NipBadgeGrid from './components/NipBadgeGrid.svelte';
 import RelayProfile from './components/RelayProfile.svelte';
 import EventVerifier from './components/verifier/EventVerifier.svelte';
+import WriteTestPanel from './components/WriteTestPanel.svelte';
+
+// Composables
+import { useLatencyMeasurement } from './lib/composables/useLatencyMeasurement.svelte';
+import { useWriteTest } from './lib/composables/useWriteTest.svelte';
 
 type Tab = 'nip11' | 'stream' | 'verifier';
 
@@ -42,6 +50,12 @@ const normalizedUrl = $derived(normalizeUrl(url));
 // WebSocket store — reactive to URL changes via getter
 const socket = relaySocket(() => normalizedUrl);
 
+// Composable instances
+// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
+const latency = useLatencyMeasurement();
+// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
+const writeTest = useWriteTest();
+
 // ─── Derived State ───
 
 const isNip11Tab = $derived(activeTab === 'nip11');
@@ -60,21 +74,31 @@ async function handleFetch(targetUrl?: string) {
   error = null;
   relayInfo = null;
   connectionStatus = null;
+  latency.reset();
+  writeTest.reset();
 
   try {
-    const [info, connStatus] = await Promise.all([
+    const [infoResult, connResult] = await Promise.allSettled([
       fetchNip11(normalized),
       checkConnections(normalized),
     ]);
-    relayInfo = info;
-    connectionStatus = connStatus;
+
+    // NIP-11 info
+    if (infoResult.status === 'fulfilled') {
+      relayInfo = infoResult.value;
+    } else {
+      error =
+        infoResult.reason instanceof Error
+          ? infoResult.reason.message
+          : 'Failed to fetch NIP-11 info';
+    }
+
+    // Connection status (always available from allSettled)
+    if (connResult.status === 'fulfilled') {
+      connectionStatus = connResult.value;
+    }
   } catch (e: unknown) {
     error = e instanceof Error ? e.message : 'Unknown error occurred';
-    try {
-      connectionStatus = await checkConnections(normalized);
-    } catch {
-      // Connection check also failed
-    }
   } finally {
     loading = false;
   }
@@ -116,7 +140,7 @@ function handleQuickPick(relay: string) {
       <span
         class="ml-auto text-[10px] font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted"
       >
-        Phase 3
+        Phase 4
       </span>
     </div>
   </header>
@@ -249,6 +273,27 @@ function handleQuickPick(relay: string) {
           <LimitationsPanel limitation={relayInfo.limitation} />
           <ConnectionStatusPanel status={connectionStatus} />
 
+          <!-- Latency & Performance -->
+          <LatencyPanel
+            metrics={latency.metrics}
+            measuring={latency.measuring}
+            onMeasure={() => latency.measureAll(normalizedUrl)}
+          />
+
+          <!-- Write Test -->
+          <WriteTestPanel
+            status={writeTest.status}
+            latencyMs={writeTest.latencyMs}
+            error={writeTest.error}
+            eventId={writeTest.eventId}
+            onRunTest={() => writeTest.runTest(normalizedUrl)}
+          />
+
+          <!-- Fee Display -->
+          {#if relayInfo?.limitation}
+            <FeeDisplay limitation={relayInfo.limitation} />
+          {/if}
+
           <!-- Raw JSON toggle -->
           <details class="group">
             <summary
@@ -323,6 +368,15 @@ function handleQuickPick(relay: string) {
             <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
               NIP Badge Grid
             </span>
+            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+              NIP-42 Auth
+            </span>
+            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+              Latency Metrics
+            </span>
+            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+              Write Test
+            </span>
           </div>
         </div>
       {/if}
@@ -331,6 +385,15 @@ function handleQuickPick(relay: string) {
     <!-- Live Stream Tab -->
     {#if isStreamTab}
       <div class="space-y-5 animate-fade-in">
+        <!-- Auth Status -->
+        {#if socket.status === 'connected' || socket.authStatus !== 'anonymous'}
+          <AuthStatusBadge status={socket.authStatus} onAuthenticate={socket.authenticate} />
+        {/if}
+        {#if socket.authError}
+          <div class="px-4 py-3 rounded-xl bg-error-dim border border-error/20 text-sm text-error">
+            ⚠ {socket.authError}
+          </div>
+        {/if}
         <ConnectionPanel
           relayUrl={normalizedUrl}
           status={socket.status}

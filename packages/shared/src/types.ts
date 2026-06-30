@@ -122,6 +122,59 @@ export type NostrMessageType =
   | { type: 'CLOSED'; subscriptionId: string; reason: string }
   | { type: 'AUTH'; challenge: string };
 
+// ─── NIP-42 AUTH Types ───
+
+export type AuthStatus =
+  | 'anonymous'
+  | 'auth_required'
+  | 'authenticating'
+  | 'authenticated'
+  | 'auth_failed';
+
+export interface AuthState {
+  status: AuthStatus;
+  challenge: string | null;
+  error: string | null;
+  pubkey: string | null;
+}
+
+export interface AuthEvent {
+  kind: 22242;
+  content: '';
+  tags: ['relay', string][];
+  created_at: number;
+  pubkey: string;
+  sig: string;
+  id: string;
+}
+
+// ─── Latency & Health Metrics ───
+
+export interface LatencyMetrics {
+  wsRoundTripMs: number | null;
+  httpLatencyMs: number | null;
+  eoseTimeMs: number | null;
+  eoseEventCount: number;
+}
+
+export interface FeeInfo {
+  admission: number | null;
+  subscription: number | null;
+  perEvent: number | null;
+  currency: string; // 'sats' or 'usd'
+}
+
+// ─── Write Test ───
+
+export type WriteTestStatus = 'idle' | 'testing' | 'success' | 'failed';
+
+export interface WriteTestResult {
+  status: WriteTestStatus;
+  latencyMs: number | null;
+  error: string | null;
+  eventId: string | null;
+}
+
 // ─── NIP Info Display ───
 
 export interface NipDisplayInfo {

@@ -10,18 +10,18 @@ Paste a relay URL and get a complete picture: what it supports, how it behaves, 
 |-------|-----------|
 | **Runtime** | [Bun](https://bun.sh) |
 | **Monorepo** | [Turborepo](https://turbo.build) |
-| **Web** | [React 19](https://react.dev) + [Vite](https://vite.dev) + [Tailwind CSS v4](https://tailwindcss.com) |
+| **Web** | [Svelte 5](https://svelte.dev) + [Vite](https://vite.dev) + [Tailwind CSS v4](https://tailwindcss.com) |
 | **API** | [Hono](https://hono.dev) (HTTP framework) |
 | **Database** | [PostgreSQL](https://www.postgresql.org) + [Drizzle ORM](https://orm.drizzle.team) |
 | **Scheduler** | [node-cron](https://nodecron.com) / Bun timers |
-| **Language** | [TypeScript](https://typescriptlang.org) (strict mode) |
+| **Language** | [TypeScript](https://typescriptlang.org) 6.0 (strict mode) |
 
 ## Project Structure
 
 ```
 relayscope/
 ├── apps/
-│   ├── web/          # Vite + React frontend
+│   ├── web/          # Vite + Svelte 5 frontend
 │   └── api/          # Hono + Bun REST API
 ├── packages/
 │   └── shared/       # Shared TypeScript types
@@ -51,7 +51,7 @@ bun run db:generate
 bun run db:migrate
 
 # Start dev servers (web + API)
-npx turbo dev
+bunx turbo dev
 ```
 
 - **Web**: http://localhost:5173
@@ -61,8 +61,10 @@ npx turbo dev
 
 ```bash
 bun install              # Install all dependencies
-npx turbo build          # Build all packages
-npx turbo dev            # Start all dev servers
+bunx turbo build         # Build all packages
+bunx turbo dev           # Start all dev servers
+bunx turbo type-check    # Type-check all packages
+bunx biome check .       # Lint + format check
 bun run db:generate      # Generate Drizzle migrations
 bun run db:migrate       # Run migrations
 bun run db:push          # Push schema directly (dev)
@@ -90,10 +92,11 @@ bun run db:studio        # Open Drizzle Studio
 - Limitations panel (auth required, max sizes, etc.)
 - Connection status checks (HTTP, CORS, WebSocket)
 
-### Phase 2 — Live Event Stream (planned)
-- WebSocket connection with real-time status
-- REQ subscription builder
-- Live event feed with kind labels
+### Phase 2 — Live Event Stream ✅
+- WebSocket connection with auto-reconnect (exponential backoff)
+- REQ subscription builder (kinds, authors, limit, since/until)
+- Live event feed with auto-scroll and EOSE detection
+- Event deduplication and kind-based color coding
 
 ### Phase 3 — Event Verifier (planned)
 - Client-side Schnorr signature verification

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "type-check": "svelte-check --tsconfig ./tsconfig.json"
+    "type-check": "svelte-check --tsconfig ./tsconfig.json",
+    "lint": "biome check ."
   },
   "dependencies": {
     "@relayscope/shared": "workspace:*",

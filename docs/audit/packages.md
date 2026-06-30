@@ -9,7 +9,7 @@ Version tracking for all dependencies. Updated each time packages are modified.
 | Package | Version | Latest | Status | Updated |
 |---------|---------|--------|--------|---------|
 | bun | 1.3.14 | 1.3.14 | ✅ Current | 2026-06-30 |
-| turbo | 2.10.1 | 2.10.1 | ✅ Current | 2026-06-30 |
+| turbo | 2.10.2 | 2.10.2 | ✅ Current | 2026-06-30 |
 | typescript | 6.0.3 | 6.0.3 | ✅ Current | 2026-06-30 |
 
 ### Frontend (apps/web)
@@ -19,7 +19,7 @@ Version tracking for all dependencies. Updated each time packages are modified.
 | svelte | 5.56.4 | 5.56.4 | ✅ Current | 2026-06-30 |
 | @sveltejs/vite-plugin-svelte | 7.1.2 | 7.1.2 | ✅ Current | 2026-06-30 |
 | svelte-check | 4.1.0 | 4.1.0 | ✅ Current | 2026-06-30 |
-| vite | 8.1.0 | 8.1.0 | ✅ Current | 2026-06-30 |
+| vite | 8.1.0 | 8.1.2 | ⏳ Patch available (npm; Bun registry on 8.1.0) | 2026-06-30 |
 | tailwindcss | 4.3.2 | 4.3.2 | ✅ Current | 2026-06-30 |
 | @tailwindcss/vite | 4.3.2 | 4.3.2 | ✅ Current | 2026-06-30 |
 | nostr-tools | 2.23.8 | 2.23.8 | ✅ Current | 2026-06-30 |
@@ -29,13 +29,15 @@ Version tracking for all dependencies. Updated each time packages are modified.
 | Package | Version | Latest | Status | Updated |
 |---------|---------|--------|--------|---------|
 | hono | 4.12.27 | 4.12.27 | ✅ Current | 2026-06-30 |
+| @hono/zod-validator | 0.8.0 | 0.8.0 | ✅ Current | 2026-06-30 |
+| hono-rate-limiter | 0.5.3 | 0.5.3 | ✅ Current | 2026-06-30 |
+| zod | 4.4.3 | 4.4.3 | ✅ Current | 2026-06-30 |
 | drizzle-orm | 1.0.0-rc.4 | 1.0.0-rc.4 | ⚠️ RC | 2026-06-30 |
 | drizzle-kit | 1.0.0-rc.4 | 1.0.0-rc.4 | ⚠️ RC | 2026-06-30 |
 | postgres | 3.4.9 | 3.4.9 | ✅ Current | 2026-06-30 |
-| node-cron | 4.5.0 | 4.5.0 | ✅ Current | 2026-06-30 |
+| dotenv | 17.4.2 | 17.4.2 | ✅ Current | 2026-06-30 |
 | @types/bun | 1.3.14 | 1.3.14 | ✅ Current | 2026-06-30 |
 | @types/node | 26.0.1 | 26.0.1 | ✅ Current | 2026-06-30 |
-| @types/node-cron | 3.0.11 | 3.0.11 | ✅ Current | 2026-06-30 |
 
 ### Code Quality
 
@@ -63,6 +65,8 @@ Version tracking for all dependencies. Updated each time packages are modified.
 | 2026-06-30 | Added nostr-tools | nostr-tools 2.23.8 (Phase 3: Event Verifier) |
 | 2026-06-30 | Drizzle ORM v1 RC | drizzle-orm 0.45.2→1.0.0-rc.4, drizzle-kit 0.31.10→1.0.0-rc.4, added defineRelations(), drizzle() object syntax |
 | 2026-06-30 | Vite 8 plugin compat | svelte 5.35→5.56, @sveltejs/vite-plugin-svelte 5.0→7.1.2 (Vite 8 support) |
+| 2026-06-30 | Phase 6 security hardening | Added zod 4.4.3, @hono/zod-validator 0.8.0, hono-rate-limiter 0.5.3. Removed node-cron, @types/node-cron. Moved dotenv to apps/api devDependencies |
+| 2026-06-30 | Turbo/repo hygiene | turbo 2.10.1→2.10.2, packageManager bun 1.2.17→1.3.14, lint wired through turbo, dotenv moved to apps/api |
 
 ---
 
@@ -79,9 +83,9 @@ bun update
 bun add package@latest
 
 # After updating, verify
-bunx biome check .
-bunx turbo build --force
-bunx turbo type-check --force
+bun run lint
+bun run type-check
+bun run build
 ```
 
 ## Audit Checklist
@@ -89,10 +93,10 @@ bunx turbo type-check --force
 When updating packages, verify:
 
 - [ ] `bun install` succeeds
-- [ ] `bunx biome check .` passes
-- [ ] `bunx turbo build --force` succeeds
-- [ ] `bunx turbo type-check --force` passes
-- [ ] Dev servers start (`turbo dev`)
+- [ ] `bun run lint` passes
+- [ ] `bun run type-check` passes
+- [ ] `bun run build` succeeds
+- [ ] Dev servers start (`bun run dev`)
 - [ ] No runtime errors in browser
 - [ ] Update this audit doc with new versions
 - [ ] Commit with `chore(deps):` prefix

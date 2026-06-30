@@ -144,7 +144,7 @@ $effect(() => {
     <button
       type="button"
       onclick={loadExample}
-      class="text-xs text-accent hover:text-accent/80 transition-colors"
+      class="min-h-[44px] text-xs px-3 py-2 text-accent hover:text-accent/80 transition-colors"
     >
       Load Example
     </button>
@@ -157,13 +157,18 @@ $effect(() => {
     oninput={handleInput}
     placeholder="Paste Nostr event JSON here..."
     rows={8}
-    class="w-full px-4 py-3 rounded-xl bg-dark-surface border text-sm text-text-primary placeholder:text-text-muted font-mono leading-relaxed resize-none focus:outline-none transition-colors {error
+    aria-invalid={!!error}
+    aria-describedby="event-input-feedback"
+    class="w-full px-4 py-3 rounded-xl bg-dark-surface border text-sm text-text-primary placeholder:text-text-muted font-mono leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-accent/50 transition-colors {error
       ? 'border-error/50 focus:border-error'
       : isValid
         ? 'border-success/50 focus:border-success'
         : 'border-dark-border focus:border-accent-border'}"
   ></textarea>
 
+  <div id="event-input-feedback" role="status" aria-live="polite" class="sr-only">
+    {error || (isValid ? 'Valid event JSON' : '')}
+  </div>
   {#if error}
     <p class="text-xs text-error flex items-center gap-1.5">
       <svg

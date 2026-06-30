@@ -90,8 +90,9 @@ async function copyImage() {
       {#each [200, 300, 500] as s (s)}
         <button
           type="button"
+          aria-pressed={size === s}
           onclick={() => { size = s as 200 | 300 | 500; generateQR(); }}
-          class="px-3 py-1 rounded-lg text-xs transition-all {size === s
+          class="min-h-[44px] px-3 py-2 rounded-lg text-xs transition-all {size === s
             ? 'bg-accent text-white'
             : 'bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary'}"
         >
@@ -104,22 +105,24 @@ async function copyImage() {
     {#if qrDataUrl}
       <div class="flex flex-col items-center gap-4">
         <div class="p-4 rounded-xl bg-white">
-          <img src={qrDataUrl} alt="QR Code" width={size} height={size} />
+          <img src={qrDataUrl} alt="QR code for: {input.slice(0, 50)}{input.length > 50 ? '...' : ''}" width={size} height={size} />
         </div>
 
         <!-- Actions -->
         <div class="flex gap-2">
           <button
             type="button"
+            aria-label="Download QR code as PNG"
             onclick={downloadQR}
-            class="px-4 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent transition-all"
+            class="min-h-[44px] px-4 py-2.5 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent transition-all"
           >
             Download PNG
           </button>
           <button
             type="button"
+            aria-label="Copy QR code image to clipboard"
             onclick={copyImage}
-            class="px-4 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent transition-all"
+            class="min-h-[44px] px-4 py-2.5 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent transition-all"
           >
             Copy Image
           </button>

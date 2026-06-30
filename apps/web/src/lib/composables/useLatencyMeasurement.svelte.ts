@@ -50,6 +50,7 @@ export function useLatencyMeasurement() {
 
       ws.onerror = () => {
         clearTimeout(timeout);
+        ws.close();
         resolve(null);
       };
     });
@@ -79,6 +80,7 @@ export function useLatencyMeasurement() {
    * Run all latency measurements for a relay.
    */
   async function measureAll(url: string): Promise<void> {
+    if (measuring) return; // Concurrency guard
     measuring = true;
     try {
       const [wsMs, httpMs] = await Promise.all([measureWsLatency(url), measureHttpLatency(url)]);

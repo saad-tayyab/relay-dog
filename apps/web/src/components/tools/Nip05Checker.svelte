@@ -38,16 +38,16 @@ async function handleCheck() {
   }
 }
 
-function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text);
-}
+import { createClipboard } from '../../lib/composables/useCopyToClipboard.svelte';
+
+const clipboard = createClipboard();
 </script>
 
 <SectionCard>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">NIP-05 Checker</h3>
-      <span class="text-[10px] text-text-muted">NIP-05</span>
+      <span class="text-xs text-text-muted">NIP-05</span>
     </div>
 
     <!-- Input -->
@@ -92,6 +92,12 @@ function copyToClipboard(text: string) {
       {/if}
     </button>
 
+    {#if !identifier.includes('@') && identifier.length > 0}
+      <p class="text-xs text-warning">
+        NIP-05 identifier must contain @ (e.g., user@example.com)
+      </p>
+    {/if}
+
     <!-- Result -->
     {#if result}
       <div class="space-y-3">
@@ -130,13 +136,14 @@ function copyToClipboard(text: string) {
         {#if result.resolvedPubkey}
           <div class="space-y-1">
             <div class="flex items-center justify-between">
-              <span class="text-[10px] text-text-muted">Resolved pubkey (hex)</span>
+              <span class="text-xs text-text-muted">Resolved pubkey (hex)</span>
               <button
                 type="button"
-                onclick={() => copyToClipboard(result!.resolvedPubkey!)}
-                class="text-[10px] text-accent hover:underline"
+                aria-label="Copy to clipboard"
+                onclick={() => clipboard.copy(result!.resolvedPubkey!)}
+                class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
               >
-                Copy
+                {clipboard.copied ? '✓ Copied' : 'Copy'}
               </button>
             </div>
             <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
@@ -147,13 +154,14 @@ function copyToClipboard(text: string) {
           {#if result.npub}
             <div class="space-y-1">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] text-text-muted">npub</span>
+                <span class="text-xs text-text-muted">npub</span>
                 <button
                   type="button"
-                  onclick={() => copyToClipboard(result!.npub!)}
-                  class="text-[10px] text-accent hover:underline"
+                  aria-label="Copy to clipboard"
+                  onclick={() => clipboard.copy(result!.npub!)}
+                  class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
                 >
-                  Copy
+                  {clipboard.copied ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
               <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
@@ -171,7 +179,7 @@ function copyToClipboard(text: string) {
             >
               Raw JSON Response
             </summary>
-            <pre class="mt-2 p-3 rounded-lg bg-dark-surface border border-dark-border text-[10px] text-text-secondary overflow-x-auto font-mono">{JSON.stringify(
+            <pre class="mt-2 p-3 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono">{JSON.stringify(
                 result.rawResponse,
                 null,
                 2,
@@ -184,7 +192,7 @@ function copyToClipboard(text: string) {
     <!-- History -->
     {#if history.length > 0}
       <div class="border-t border-dark-border pt-3">
-        <p class="text-[10px] text-text-muted mb-2">Recent checks</p>
+        <p class="text-xs text-text-muted mb-2">Recent checks</p>
         <div class="space-y-1">
           {#each history as item (item.identifier)}
             <button

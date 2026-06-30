@@ -23,6 +23,7 @@ function truncateHex(hex: string, chars = 8): string {
 
   <!-- Signature check -->
   <div
+    role="status"
     class="flex items-start gap-3 p-3 rounded-lg {sigResult
       ? 'bg-success-dim border border-success/20'
       : 'bg-error-dim border border-error/20'}"
@@ -64,6 +65,7 @@ function truncateHex(hex: string, chars = 8): string {
 
   <!-- Event ID check -->
   <div
+    role="status"
     class="flex items-start gap-3 p-3 rounded-lg {idResult.matches
       ? 'bg-success-dim border border-success/20'
       : 'bg-error-dim border border-error/20'}"
@@ -130,10 +132,11 @@ function truncateHex(hex: string, chars = 8): string {
   {#if onEditAndRepublish}
     <button
       type="button"
+      aria-label="Edit and republish this event"
       onclick={() => onEditAndRepublish(event)}
-      class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent hover:border-accent-border transition-all"
+      class="w-full min-h-[44px] px-3 py-2.5 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent hover:border-accent-border transition-all"
     >
-      ✍️ Edit & Re-publish
+      <span aria-hidden="true">✍️</span> Edit & Re-publish
     </button>
   {/if}
 </SectionCard>

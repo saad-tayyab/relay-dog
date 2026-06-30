@@ -104,9 +104,27 @@ export async function importFromFile(file: File): Promise<NostrEvent[]> {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const events = JSON.parse(reader.result as string);
-        if (!Array.isArray(events)) {
+        const raw = JSON.parse(reader.result as string);
+        if (!Array.isArray(raw)) {
           throw new Error('Invalid backup file: expected array of events');
+        }
+        // Validate each event has required Nostr fields
+        const requiredFields = ['id', 'pubkey', 'sig', 'kind', 'created_at', 'tags', 'content'];
+        const events = raw.filter((e: Record<string, unknown>, i: number) => {
+          if (typeof e !== 'object' || e === null) {
+            // Skip invalid event silently
+            return false;
+          }
+          for (const field of requiredFields) {
+            if (!(field in e)) {
+              // Skip event with missing field silently
+              return false;
+            }
+          }
+          return true;
+        });
+        if (events.length === 0) {
+          throw new Error('No valid Nostr events found in backup file');
         }
         resolve(events);
       } catch (e) {

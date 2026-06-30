@@ -17,6 +17,8 @@ let relayUrl = $state('');
 let kinds = $state('0,1,3');
 let limit = $state('1000');
 let fetching = $state(false);
+let backupError = $state<string | null>(null);
+let backupSuccess = $state<string | null>(null);
 
 // Restore state
 let importedEvents = $state<NostrEvent[]>([]);
@@ -38,8 +40,10 @@ async function handleBackup() {
 
     const events = await fetchEventsForBackup(options);
     exportToFile(events, authorPubkey);
+    backupSuccess = `Exported ${events.length} events`;
+    backupError = null;
   } catch (e) {
-    alert(`Backup failed: ${e instanceof Error ? e.message : 'Unknown error'}`);
+    backupError = e instanceof Error ? e.message : 'Unknown error';
   } finally {
     fetching = false;
   }
@@ -54,7 +58,7 @@ async function handleFileImport(e: Event) {
     importedEvents = await importFromFile(file);
     restoreResult = null;
   } catch (err) {
-    alert(`Import failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    backupError = err instanceof Error ? err.message : 'Unknown error';
   }
 }
 
@@ -62,11 +66,7 @@ async function handleRestore() {
   if (importedEvents.length === 0 || !relayUrl) return;
 
   if (!window.nostr) {
-    alert('No NIP-07 signer detected');
-    return;
-  }
-
-  if (!confirm(`Restore ${importedEvents.length} events to ${relayUrl}?`)) {
+    backupError = 'No NIP-07 signer detected. Please install a Nostr wallet extension.';
     return;
   }
 
@@ -102,29 +102,48 @@ const importedKindsBreakdown = $derived.by(() => {
       <span class="text-[10px] text-text-muted">NIP-01</span>
     </div>
 
-    <!-- Tab Toggle -->
-    <div class="flex gap-1 p-1 rounded-lg bg-dark-surface border border-dark-border">
+    <!-- Error/Success Feedback -->
+    {#if backupError}
+      <div role="alert" class="px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-xs text-error">
+        <span aria-hidden="true">⚠</span> {backupError}
+      </div>
+    {/if}
+    {#if backupSuccess}
+      <div role="status" class="px-3 py-2 rounded-lg bg-success-dim border border-success/20 text-xs text-success">
+        <span aria-hidden="true">✓</span> {backupSuccess}
+      </div>
+    {/if}
+
+    <!-- Tab Toggle (uses AccessibleTabs pattern) -->
+    <div role="tablist" aria-label="Backup and restore" class="flex gap-1 p-1 rounded-lg bg-dark-surface border border-dark-border">
       <button
-        type="button"
+        role="tab"
+        aria-selected={activeTab === 'backup'}
+        id="tab-backup"
+        aria-controls="tabpanel-backup"
         onclick={() => (activeTab = 'backup')}
-        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {activeTab === 'backup'
+        class="flex-1 min-h-[44px] py-2 px-4 rounded-lg text-sm font-medium transition-all {activeTab === 'backup'
           ? 'bg-dark-card border border-dark-border text-text-primary'
           : 'text-text-muted hover:text-text-secondary'}"
       >
-        💾 Backup
+        <span aria-hidden="true">💾</span> Backup
       </button>
       <button
-        type="button"
+        role="tab"
+        aria-selected={activeTab === 'restore'}
+        id="tab-restore"
+        aria-controls="tabpanel-restore"
         onclick={() => (activeTab = 'restore')}
-        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {activeTab === 'restore'
+        class="flex-1 min-h-[44px] py-2 px-4 rounded-lg text-sm font-medium transition-all {activeTab === 'restore'
           ? 'bg-dark-card border border-dark-border text-text-primary'
           : 'text-text-muted hover:text-text-secondary'}"
       >
-        📤 Restore
+        <span aria-hidden="true">📤</span> Restore
       </button>
     </div>
 
     {#if activeTab === 'backup'}
+      <div role="tabpanel" id="tabpanel-backup" aria-labelledby="tab-backup">
       <!-- Backup Form -->
       <div class="space-y-3">
         <div>
@@ -189,7 +208,9 @@ const importedKindsBreakdown = $derived.by(() => {
           {/if}
         </button>
       </div>
+      </div>
     {:else}
+      <div role="tabpanel" id="tabpanel-restore" aria-labelledby="tab-restore">
       <!-- Restore Form -->
       <div class="space-y-3">
         <!-- File Import -->
@@ -212,7 +233,7 @@ const importedKindsBreakdown = $derived.by(() => {
             <p class="text-xs text-text-muted mb-2">
               {importedEvents.length} events imported
             </p>
-            <div class="flex flex-wrap gap-2 text-[10px]">
+            <div class="flex flex-wrap gap-2 text-xs">
               {#each Object.entries(importedKindsBreakdown) as [kind, count] (kind)}
                 <span class="px-2 py-0.5 rounded bg-dark-border text-text-secondary">
                   kind {kind}: {count}
@@ -251,7 +272,14 @@ const importedKindsBreakdown = $derived.by(() => {
 
           <!-- Progress Bar -->
           {#if restoring}
-            <div class="h-2 rounded-full bg-dark-surface overflow-hidden">
+            <div
+              role="progressbar"
+              aria-valuenow={restoreProgress.restored}
+              aria-valuemin={0}
+              aria-valuemax={restoreProgress.total}
+              aria-label="Restore progress"
+              class="h-2 rounded-full bg-dark-surface overflow-hidden"
+            >
               <div
                 class="h-full bg-accent transition-all duration-300"
                 style="width: {(restoreProgress.restored / restoreProgress.total) * 100}%"
@@ -262,6 +290,7 @@ const importedKindsBreakdown = $derived.by(() => {
           <!-- Result -->
           {#if restoreResult}
             <div
+              role="status"
               class="px-3 py-2 rounded-lg text-xs {restoreResult.errors.length === 0
                 ? 'bg-success/10 border border-success/20 text-success'
                 : 'bg-warning-dim border border-warning/20 text-warning'}"
@@ -273,6 +302,7 @@ const importedKindsBreakdown = $derived.by(() => {
             </div>
           {/if}
         {/if}
+      </div>
       </div>
     {/if}
   </div>

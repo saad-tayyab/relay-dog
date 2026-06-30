@@ -1,4 +1,4 @@
-import { relaySocket } from '../stores/relaySocket.svelte';
+import { SimplePool } from 'nostr-tools/pool';
 
 export interface EventComposerState {
   kind: number;
@@ -15,6 +15,9 @@ export interface PublishResult {
   latencyMs: number;
 }
 
+// Maximum event content size per NIP-01 (relays typically enforce 65KB)
+const MAX_CONTENT_LENGTH = 65536;
+
 export function useEventComposer() {
   let state = $state<EventComposerState>({
     kind: 1,
@@ -28,7 +31,7 @@ export function useEventComposer() {
   let result = $state<PublishResult | null>(null);
 
   function setKind(kind: number) {
-    state = { ...state, kind };
+    state = { ...state, kind: Math.max(0, Math.floor(kind)) };
   }
 
   function setContent(content: string) {
@@ -85,8 +88,26 @@ export function useEventComposer() {
   }
 
   async function publish(): Promise<PublishResult> {
+    // Concurrency guard
+    if (publishing) {
+      return { success: false, error: 'Already publishing', latencyMs: 0 };
+    }
+
     if (!state.targetRelay) {
       return { success: false, error: 'No target relay specified', latencyMs: 0 };
+    }
+
+    if (!state.content.trim()) {
+      return { success: false, error: 'Content is empty', latencyMs: 0 };
+    }
+
+    // Content size validation (NIP-01)
+    if (state.content.length > MAX_CONTENT_LENGTH) {
+      return {
+        success: false,
+        error: `Content exceeds maximum length (${state.content.length}/${MAX_CONTENT_LENGTH})`,
+        latencyMs: 0,
+      };
     }
 
     // Check for NIP-07 signer
@@ -99,51 +120,41 @@ export function useEventComposer() {
     const start = performance.now();
 
     try {
-      // Build unsigned event
-      const unsignedEvent = {
+      // Sign via NIP-07
+      const signedEvent = await window.nostr.signEvent({
         kind: state.kind,
         content: state.content,
         tags: state.tags,
         created_at: state.createdAt,
-      };
-
-      // Sign via NIP-07
-      const signedEvent = await window.nostr.signEvent(unsignedEvent);
-      const latencyMs = performance.now() - start;
-
-      // Publish to relay
-      const socket = relaySocket(() => state.targetRelay);
-      await socket.connect();
-
-      // Wait for connection
-      if (socket.status !== 'connected') {
-        throw new Error('Failed to connect to relay');
-      }
-
-      // Send EVENT message
-      const response = await new Promise<unknown>((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error('Publish timeout')), 10_000);
-
-        socket.send(JSON.stringify(['EVENT', signedEvent]));
-
-        // Listen for OK response — for now just resolve after a delay
-        // In a real implementation, we'd listen for the OK message
-        setTimeout(() => {
-          clearTimeout(timeout);
-          resolve(['OK', signedEvent.id, true, '']);
-        }, 1000);
       });
 
-      const _ = response; // Acknowledged but not used directly
+      // Use nostr-tools SimplePool for proper WebSocket lifecycle
+      const pool = new SimplePool();
+      try {
+        // pool.publish returns promises that resolve on OK from relay
+        const pubs = pool.publish([state.targetRelay], signedEvent);
+        await Promise.any(pubs); // Wait for any relay to accept
 
-      const publishResult: PublishResult = {
-        success: true,
-        eventId: signedEvent.id,
-        latencyMs,
-      };
-
-      result = publishResult;
-      return publishResult;
+        const latencyMs = performance.now() - start;
+        const publishResult: PublishResult = {
+          success: true,
+          eventId: signedEvent.id,
+          latencyMs,
+        };
+        result = publishResult;
+        return publishResult;
+      } catch (e) {
+        const latencyMs = performance.now() - start;
+        const publishResult: PublishResult = {
+          success: false,
+          error: e instanceof Error ? e.message : 'Relay rejected the event',
+          latencyMs,
+        };
+        result = publishResult;
+        return publishResult;
+      } finally {
+        pool.close([state.targetRelay]);
+      }
     } catch (e) {
       const publishResult: PublishResult = {
         success: false,

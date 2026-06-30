@@ -160,16 +160,20 @@ function handleQuickPick(relay: string) {
         <p class="text-xs text-text-muted">Nostr relay inspector</p>
       </div>
       <span
-        class="ml-auto text-[10px] font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted"
+        aria-hidden="true"
+        class="ml-auto text-xs font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted"
       >
         Phase 8
       </span>
     </div>
   </header>
 
-  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
+  <main id="main-content" class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
     <!-- URL Input -->
-    <form onsubmit={handleSubmit} class="mb-8 animate-fade-in">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-accent focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">
+      Skip to main content
+    </a>
+    <form onsubmit={handleSubmit} class="mb-8 animate-fade-in" role="search" aria-label="Inspect a relay">
       <div class="flex gap-2">
         <div class="relative flex-1">
           <div class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
@@ -188,7 +192,9 @@ function handleQuickPick(relay: string) {
               />
             </svg>
           </div>
+          <label for="relay-url" class="sr-only">Relay URL</label>
           <input
+            id="relay-url"
             type="text"
             bind:value={url}
             placeholder="wss://relay.damus.io"
@@ -232,7 +238,7 @@ function handleQuickPick(relay: string) {
           <button
             type="button"
             onclick={() => handleQuickPick(relay)}
-            class="text-xs px-2.5 py-1 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
+            class="text-xs min-h-[44px] px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
           >
             {relay}
           </button>
@@ -288,7 +294,7 @@ function handleQuickPick(relay: string) {
 
     <!-- Empty State -->
     {#if !loading && !error && !relayInfo && activeSection === 'inspector'}
-      <div class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+      <section aria-label="Welcome" class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
         <div
           class="w-20 h-20 rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center mb-6"
         >
@@ -347,7 +353,7 @@ function handleQuickPick(relay: string) {
             Relay Directory
           </span>
         </div>
-      </div>
+      </section>
     {/if}
   </main>
 

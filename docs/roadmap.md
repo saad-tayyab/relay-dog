@@ -13,6 +13,7 @@ Phase 5  ████████████████████  Relay Dir
 Phase 6  ████████████████████  Security Hardening                ✅ Done
 Phase 7  ████████████████████  NIP Compliance & Modernization    ✅ Done
 Phase 8  ████████████████████  Developer Toolkit Expansion       ✅ Done
+Phase 9  ████████████████████  WCAG 2.2 AA Accessibility          ✅ Done
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅
@@ -201,3 +202,35 @@ Expand from a relay inspector into a complete Nostr developer toolkit. Add six s
 | 6 | 1 weekend | Medium | Auth + rate limits | None |
 | 7 | 1–2 weekends | Medium | 3 endpoints | relay_discoveries, relay_list_entries |
 | 8 | 2–3 weekends | Medium | None (client-side) | None |
+| 9 | 1 day | Easy | None | None |
+
+---
+
+## Phase 9: WCAG 2.2 AA Accessibility ✅
+
+> *Day 15*
+
+Comprehensive accessibility audit and fix to achieve WCAG 2.2 Level AA compliance. 123 issues found and fixed across 43 components, 9 composables, and 6 utility files.
+
+**What ships:**
+- **AccessibleTabs** — reusable WAI-ARIA tabs component (tablist/tab/tabpanel, arrow key nav)
+- **Toast** — accessible in-app notifications replacing `window.alert()`/`window.confirm()`
+- **createDebounce** — prevents search firehose (300ms debounce)
+- **createClipboard** — clipboard API with success/error feedback
+- **WCAG 2.2 SC 2.5.8** — all interactive elements ≥44×44px touch targets
+- **WCAG 2.2 SC 2.3.3** — `prefers-reduced-motion` respects user motion preferences
+- **WCAG 2.4.7** — `:focus-visible` ring for keyboard navigation
+- **ARIA live regions** — `role="alert"`, `role="status"`, `aria-live` on all dynamic content
+- **Label associations** — all `<label>` elements linked to inputs via `for`/`id`
+- **Icon-only buttons** — all have `aria-label` attributes
+- **Semantic HTML** — `<table>`, `<section>`, `<nav>` with proper ARIA landmarks
+- **Skip-to-content link** — keyboard users can bypass header/navigation
+- **Critical bug fixes** — event publishing/deletion rewritten with `nostr-tools SimplePool`
+- **Memory leak fixes** — WebSocket close on error, eventIds Set capped, request cancellation
+
+**Standards**: WCAG 2.2 AA, WAI-ARIA 1.2, ISO/IEC 40500:2025
+
+**New components**: `AccessibleTabs.svelte`, `Toast.svelte`
+**New composables**: `useDebounce.svelte.ts`, `useCopyToClipboard.svelte.ts`
+
+**Feature doc**: [phase-9-accessibility.md](features/phase-9-accessibility.md) (to be created)

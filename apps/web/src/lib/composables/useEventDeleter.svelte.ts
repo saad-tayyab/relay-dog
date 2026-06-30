@@ -1,3 +1,5 @@
+import { SimplePool } from 'nostr-tools/pool';
+
 export interface DeleteResult {
   eventId: string;
   success: boolean;
@@ -37,9 +39,13 @@ export function useEventDeleter() {
     eventIds = [];
     reason = '';
     results = [];
+    deleting = false;
   }
 
   async function deleteEvents(): Promise<DeleteResult[]> {
+    // Concurrency guard
+    if (deleting) return [];
+
     if (eventIds.length === 0 || !targetRelay) {
       return [];
     }
@@ -57,7 +63,7 @@ export function useEventDeleter() {
     results = [];
 
     try {
-      // Build kind 5 deletion event
+      // Build kind 5 deletion event per NIP-09
       const tags = eventIds.map((id) => ['e', id]);
       if (reason) {
         tags.push(['reason', reason]);
@@ -71,17 +77,31 @@ export function useEventDeleter() {
       };
 
       // Sign via NIP-07
-      const _signedEvent = await window.nostr.signEvent(unsignedEvent);
+      const signedEvent = await window.nostr.signEvent(unsignedEvent);
 
-      // TODO: Publish to relay (requires WebSocket connection)
-      // For now, return mock success
-      const deleteResults: DeleteResult[] = eventIds.map((id) => ({
-        eventId: id,
-        success: true,
-      }));
+      // Publish to relay via nostr-tools SimplePool
+      const pool = new SimplePool();
+      try {
+        await Promise.any(pool.publish([targetRelay], signedEvent));
 
-      results = deleteResults;
-      return deleteResults;
+        // All events were included in the deletion event
+        const deleteResults: DeleteResult[] = eventIds.map((id) => ({
+          eventId: id,
+          success: true,
+        }));
+        results = deleteResults;
+        return deleteResults;
+      } catch (e) {
+        const errorResults: DeleteResult[] = eventIds.map((id) => ({
+          eventId: id,
+          success: false,
+          error: e instanceof Error ? e.message : 'Relay rejected deletion event',
+        }));
+        results = errorResults;
+        return errorResults;
+      } finally {
+        pool.close([targetRelay]);
+      }
     } catch (e) {
       const errorResults: DeleteResult[] = eventIds.map((id) => ({
         eventId: id,

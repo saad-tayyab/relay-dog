@@ -29,9 +29,9 @@ function handleConvert() {
   }
 }
 
-function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text);
-}
+import { createClipboard } from '../../lib/composables/useCopyToClipboard.svelte';
+
+const clipboard = createClipboard();
 
 const detectedFormat = $derived(detectKeyFormat(input.trim()));
 </script>
@@ -40,7 +40,7 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">Key Converter</h3>
-      <span class="text-[10px] text-text-muted">NIP-19</span>
+      <span class="text-xs text-text-muted">NIP-19</span>
     </div>
 
     <!-- Input -->
@@ -57,7 +57,7 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
         class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all font-mono"
       />
       {#if detectedFormat !== 'unknown' && input.trim()}
-        <p class="mt-1 text-[10px] text-text-muted">
+        <p class="mt-1 text-xs text-text-muted">
           Detected: <span class="text-accent">{detectedFormat}</span>
         </p>
       {/if}
@@ -75,13 +75,14 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
       <!-- npub -->
       <div class="space-y-1">
         <div class="flex items-center justify-between">
-          <span class="text-[10px] text-text-muted">npub</span>
+          <span class="text-xs text-text-muted">npub</span>
           <button
             type="button"
-            onclick={() => { if (result) copyToClipboard(result.npub); }}
-            class="text-[10px] text-accent hover:underline"
+            aria-label="Copy npub to clipboard"
+            onclick={() => { if (result) clipboard.copy(result.npub); }}
+            class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
           >
-            Copy
+            {clipboard.copied ? '✓ Copied' : 'Copy'}
           </button>
         </div>
         <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
@@ -93,32 +94,34 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
       {#if result.nsec}
         <div class="space-y-1">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] text-text-muted">nsec</span>
+            <span class="text-xs text-text-muted">nsec</span>
             <div class="flex items-center gap-2">
               <button
                 type="button"
+                aria-expanded={showNsec}
                 onclick={() => (showNsec = !showNsec)}
-                class="text-[10px] text-text-muted hover:text-text-primary"
+                class="min-h-[44px] text-xs px-2 py-1 text-text-muted hover:text-text-primary"
               >
                 {showNsec ? 'Hide' : 'Show'}
               </button>
               {#if showNsec}
                 <button
                   type="button"
-                  onclick={() => { if (result) copyToClipboard(result.nsec ?? ''); }}
-                  class="text-[10px] text-accent hover:underline"
+                  aria-label="Copy nsec to clipboard"
+                  onclick={() => { if (result) clipboard.copy(result.nsec ?? ''); }}
+                  class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
                 >
-                  Copy
+                  {clipboard.copied ? '✓ Copied' : 'Copy'}
                 </button>
               {/if}
             </div>
           </div>
           {#if showNsec}
             <div class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs font-mono text-warning break-all">
-              ⚠ {result.nsec}
+              <span aria-hidden="true">⚠</span> {result.nsec}
             </div>
-            <p class="text-[10px] text-warning">
-              ⚠ Never share your nsec with anyone!
+            <p class="text-xs text-warning" role="alert">
+              <span aria-hidden="true">⚠</span> Never share your nsec with anyone!
             </p>
           {:else}
             <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-muted">
@@ -131,13 +134,14 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
       <!-- hex -->
       <div class="space-y-1">
         <div class="flex items-center justify-between">
-          <span class="text-[10px] text-text-muted">hex</span>
+          <span class="text-xs text-text-muted">hex</span>
           <button
             type="button"
-            onclick={() => { if (result) copyToClipboard(result.hex); }}
-            class="text-[10px] text-accent hover:underline"
+            aria-label="Copy hex key to clipboard"
+            onclick={() => { if (result) clipboard.copy(result.hex); }}
+            class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
           >
-            Copy
+            {clipboard.copied ? '✓ Copied' : 'Copy'}
           </button>
         </div>
         <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">

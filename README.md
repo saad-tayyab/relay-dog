@@ -4,9 +4,10 @@
 
 Paste a relay URL and get a complete picture: what it supports, how it behaves, what's flowing through it in real time, and how healthy it is. Then use the built-in toolkit to compose events, convert keys, verify identities, and more — all from one place.
 
-![Version](https://img.shields.io/badge/version-0.8.0-blue)
-![Phase](https://img.shields.io/badge/phase-8%20complete-brightgreen)
+![Version](https://img.shields.io/badge/version-0.9.0-blue)
+![Phase](https://img.shields.io/badge/phase-9%20complete-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![WCAG](https://img.shields.io/badge/WCAG-2.2%20AA-brightgreen)
 
 ---
 
@@ -53,6 +54,16 @@ Paste a relay URL and get a complete picture: what it supports, how it behaves, 
 | **📱 QR Code Generator** | Generate QR codes for npub keys, relay URLs, events |
 | **💾 Backup & Restore** | Export/import events to/from JSON files |
 
+### ♿ Accessibility (WCAG 2.2 AA)
+
+- **WAI-ARIA Tabs** — All tab interfaces use `role="tablist"/"tab"/"tabpanel"` with arrow key navigation
+- **Touch Targets** — All interactive elements ≥44×44px (WCAG 2.2 SC 2.5.8)
+- **Focus Indicators** — Visible `:focus-visible` ring for keyboard navigation
+- **Reduced Motion** — Respects `prefers-reduced-motion` user preference
+- **Screen Reader Support** — `role="alert"`, `aria-live`, `aria-label` on all dynamic content
+- **Skip Navigation** — Skip-to-content link for keyboard users
+- **Semantic HTML** — `<table>`, `<nav>`, `<section>` with proper ARIA landmarks
+
 ### 📂 Relay Directory
 
 - **NIP-66 Discovery** — Find relays via monitor announcements
@@ -74,8 +85,10 @@ relayscope/
 │   │   │   │   ├── inspector/    # InspectorSection
 │   │   │   │   ├── publisher/    # EventComposer, EventDeleter, TagEditor
 │   │   │   │   ├── tools/        # KeyConverter, Nip05Checker, QRCode, Backup
+│   │   │   │   ├── shared/       # AccessibleTabs, Toast (WCAG 2.2 AA)
 │   │   │   │   └── verifier/     # EventVerifier, VerificationPanel
 │   │   │   ├── composables/      # Svelte 5 runes composables
+│   │   │   │   └── + useDebounce, useCopyToClipboard
 │   │   │   ├── stores/           # relaySocket.svelte.ts
 │   │   │   └── utils/            # router, keys, nip05, backup, relay, nostrVerify
 │   │   └── package.json
@@ -192,6 +205,7 @@ bun run db:studio        # Open Drizzle Studio
 | 6 | Security Hardening | ✅ Complete |
 | 7 | NIP Compliance | ✅ Complete |
 | 8 | Developer Toolkit Expansion | ✅ Complete |
+| 9 | WCAG 2.2 AA Accessibility | ✅ Complete |
 
 ---
 
@@ -218,6 +232,7 @@ All tools are client-side and work directly in the browser:
 4. **Event Publisher** — Compose event → sign with NIP-07 → publish to relay
 5. **Event Deleter** — Enter event IDs → send NIP-09 deletion request
 6. **Backup** — Enter pubkey + relay → download event backup as JSON
+7. **Accessibility** — Tab through all elements → verify focus ring, 44px targets, screen reader announcements
 
 ---
 

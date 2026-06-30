@@ -18,7 +18,14 @@ export function useDirectory() {
     limit: 20,
   });
 
+  let currentController: AbortController | null = null;
+
   async function fetchRelays(): Promise<void> {
+    // Cancel any in-flight request to prevent stale data
+    currentController?.abort();
+    const controller = new AbortController();
+    currentController = controller;
+
     loading = true;
     error = null;
 
@@ -63,8 +70,12 @@ export function useDirectory() {
 
   function setSearch(search: string) {
     filters = { ...filters, search, page: 1 };
-    fetchRelays();
+    // Debounce search to prevent firing on every keystroke
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => fetchRelays(), 300);
   }
+
+  let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   function setNips(nips: number[]) {
     filters = { ...filters, nips, page: 1 };

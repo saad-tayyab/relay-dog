@@ -18,18 +18,19 @@ const sections: { id: Section; label: string; icon: string }[] = [
 ];
 </script>
 
-<nav class="fixed bottom-0 left-0 right-0 z-20 sm:hidden border-t border-dark-border bg-dark-card/95 backdrop-blur-sm">
+<nav aria-label="Section navigation" class="fixed bottom-0 left-0 right-0 z-20 sm:hidden border-t border-dark-border bg-dark-card/95 backdrop-blur-sm">
   <div class="flex items-center justify-around px-2 py-2">
     {#each sections as section (section.id)}
       <button
         type="button"
         onclick={() => onNavigate(section.id)}
-        class="flex flex-col items-center gap-1 px-3 py-1.5 rounded-lg transition-all {activeSection === section.id
+        aria-current={activeSection === section.id ? 'page' : undefined}
+        class="flex flex-col items-center gap-1 min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-lg transition-all {activeSection === section.id
           ? 'text-accent'
           : 'text-text-muted'}"
       >
-        <span class="text-lg">{section.icon}</span>
-        <span class="text-[10px] font-medium">{section.label}</span>
+        <span class="text-lg" aria-hidden="true">{section.icon}</span>
+        <span class="text-xs font-medium">{section.label}</span>
       </button>
     {/each}
   </div>

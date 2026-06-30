@@ -6,6 +6,7 @@ let { eoseResult }: { eoseResult: EoseResult | null } = $props();
 
 {#if eoseResult}
   <div
+    role="status"
     class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all
     {eoseResult.complete
       ? 'bg-success/10 border border-success/20 text-success'

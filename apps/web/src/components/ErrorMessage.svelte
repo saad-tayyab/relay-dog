@@ -8,7 +8,7 @@ let {
 } = $props();
 </script>
 
-<div class="flex flex-col items-center justify-center py-16 text-center animate-fade-in">
+<div role="alert" class="flex flex-col items-center justify-center py-16 text-center animate-fade-in">
   <div
     class="w-16 h-16 rounded-full bg-error-dim flex items-center justify-center mb-4"
   >
@@ -33,7 +33,7 @@ let {
     <button
       type="button"
       onclick={onRetry}
-      class="px-4 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-secondary hover:text-text-primary hover:border-accent-border transition-all text-sm"
+      class="min-h-[44px] px-4 py-2.5 rounded-lg bg-dark-surface border border-dark-border text-text-secondary hover:text-text-primary hover:border-accent-border transition-all text-sm"
     >
       Try again
     </button>

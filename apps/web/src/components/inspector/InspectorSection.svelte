@@ -64,26 +64,34 @@ let showStream = $state(false);
 
 <div class="space-y-5">
   <!-- Toggle between NIP-11 and Stream -->
-  <div class="flex gap-2 mb-4">
+  <div role="tablist" aria-label="Inspector views" class="flex gap-1 p-1 mb-4 rounded-xl bg-dark-surface border border-dark-border">
     <button
-      type="button"
+      role="tab"
+      aria-selected={!showStream}
+      id="tab-nip11"
+      aria-controls="tabpanel-nip11"
+      tabindex={!showStream ? 0 : -1}
       onclick={() => (showStream = false)}
-      class="px-4 py-2 rounded-lg text-sm font-medium transition-all {!showStream
+      class="flex-1 min-h-[44px] py-2 px-4 rounded-lg text-sm font-medium transition-all {!showStream
         ? 'bg-dark-card border border-dark-border text-text-primary'
         : 'text-text-muted hover:text-text-secondary'}"
     >
       NIP-11 Info
     </button>
     <button
-      type="button"
+      role="tab"
+      aria-selected={showStream}
+      id="tab-stream"
+      aria-controls="tabpanel-stream"
+      tabindex={showStream ? 0 : -1}
       onclick={() => (showStream = true)}
-      class="px-4 py-2 rounded-lg text-sm font-medium transition-all {showStream
+      class="flex-1 min-h-[44px] py-2 px-4 rounded-lg text-sm font-medium transition-all {showStream
         ? 'bg-dark-card border border-dark-border text-text-primary'
         : 'text-text-muted hover:text-text-secondary'}"
     >
       Live Stream
       {#if socket.events.length > 0}
-        <span class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent">
+        <span class="ml-2 text-xs font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent">
           {socket.events.length.toLocaleString()}
         </span>
       {/if}
@@ -91,6 +99,7 @@ let showStream = $state(false);
   </div>
 
   {#if !showStream}
+    <div role="tabpanel" id="tabpanel-nip11" aria-labelledby="tab-nip11" tabindex={0} class="focus:outline-none">
     <!-- NIP-11 Info View -->
     {#if loading}
       <LoadingSpinner />
@@ -146,6 +155,7 @@ let showStream = $state(false);
             Raw NIP-11 JSON
           </summary>
           <pre
+            aria-label="Raw NIP-11 JSON response"
             class="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
               relayInfo,
               null,
@@ -156,23 +166,25 @@ let showStream = $state(false);
         <!-- Error details if connection had issues -->
         {#if !loading && error && relayInfo}
           <div
+            role="alert"
             class="px-4 py-3 rounded-xl bg-warning-dim border border-warning/20 text-sm text-warning"
           >
-            ⚠ {error}
+            <span aria-hidden="true">⚠</span> {error}
           </div>
         {/if}
       </div>
     {/if}
+    </div>
   {:else}
     <!-- Live Stream View -->
-    <div class="space-y-5">
+    <div role="tabpanel" id="tabpanel-stream" aria-labelledby="tab-stream" tabindex={0} class="space-y-5 focus:outline-none">
       <!-- Auth Status -->
       {#if socket.status === 'connected' || socket.authStatus !== 'anonymous'}
         <AuthStatusBadge status={socket.authStatus} onAuthenticate={socket.authenticate} />
       {/if}
       {#if socket.authError}
-        <div class="px-4 py-3 rounded-xl bg-error-dim border border-error/20 text-sm text-error">
-          ⚠ {socket.authError}
+        <div role="alert" class="px-4 py-3 rounded-xl bg-error-dim border border-error/20 text-sm text-error">
+          <span aria-hidden="true">⚠</span> {socket.authError}
         </div>
       {/if}
       <ConnectionPanel

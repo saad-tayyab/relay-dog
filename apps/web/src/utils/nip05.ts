@@ -18,6 +18,9 @@ export async function verifyNip05(
   identifier: string,
   expectedPubkey?: string,
 ): Promise<Nip05Result> {
+  if (!identifier.includes('@') || !identifier.trim()) {
+    throw new Error('NIP-05 identifier must be in the format user@domain.com');
+  }
   const [local, domain] = identifier.split('@');
   const start = performance.now();
 

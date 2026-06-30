@@ -45,6 +45,7 @@ let connectionStatus = $state<ConnectionStatus | null>(null);
 let loading = $state(false);
 let error = $state<string | null>(null);
 let activeTab = $state<Tab>('nip11');
+let dbRelayId = $state<string | null>(null);
 
 const normalizedUrl = $derived(normalizeUrl(url));
 
@@ -76,6 +77,7 @@ async function handleFetch(targetUrl?: string) {
   error = null;
   relayInfo = null;
   connectionStatus = null;
+  dbRelayId = null;
   latency.reset();
   writeTest.reset();
 
@@ -98,6 +100,18 @@ async function handleFetch(targetUrl?: string) {
     // Connection status (always available from allSettled)
     if (connResult.status === 'fulfilled') {
       connectionStatus = connResult.value;
+    }
+
+    // Look up DB relay ID for Phase 7 data
+    dbRelayId = null;
+    try {
+      const lookupRes = await fetch(`/api/relays/lookup?url=${encodeURIComponent(normalized)}`);
+      const lookupJson = await lookupRes.json();
+      if (lookupJson.success && lookupJson.data) {
+        dbRelayId = lookupJson.data.id;
+      }
+    } catch {
+      // Not in DB — that's fine, Phase 7 panels won't show
     }
   } catch (e: unknown) {
     error = e instanceof Error ? e.message : 'Unknown error occurred';
@@ -279,7 +293,7 @@ function handleQuickPick(relay: string) {
 
       {#if !loading && relayInfo}
         <div class="space-y-5">
-          <RelayProfile info={relayInfo} />
+          <RelayProfile relayId={dbRelayId ?? undefined} relay={{ url: normalizedUrl }} info={relayInfo} />
           <NipBadgeGrid nips={relayInfo.supported_nips || []} />
           <LimitationsPanel limitation={relayInfo.limitation} />
           <ConnectionStatusPanel status={connectionStatus} />
@@ -301,8 +315,8 @@ function handleQuickPick(relay: string) {
           />
 
           <!-- Fee Display -->
-          {#if relayInfo?.limitation}
-            <FeeDisplay limitation={relayInfo.limitation} />
+          {#if relayInfo?.fees}
+            <FeeDisplay fees={relayInfo.fees} />
           {/if}
 
           <!-- Raw JSON toggle -->
@@ -413,6 +427,7 @@ function handleQuickPick(relay: string) {
           status={socket.status}
           eventCount={socket.events.length}
           eose={socket.eose}
+          eoseHints={socket.eoseHints}
           error={socket.error}
           notices={socket.notices}
           onConnect={socket.connect}

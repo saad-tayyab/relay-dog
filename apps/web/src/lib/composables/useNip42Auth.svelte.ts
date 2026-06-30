@@ -139,6 +139,36 @@ export function useNip42Auth() {
     pendingChallenge = null;
   }
 
+  /**
+   * Verify AUTH event structure per NIP-42 spec.
+   */
+  function verifyAuthEvent(
+    event: { kind: number; tags: string[][]; created_at: number },
+    challenge: string,
+    relayUrl: string,
+  ): boolean {
+    if (event.kind !== 22242) return false;
+
+    const now = Math.floor(Date.now() / 1000);
+    if (Math.abs(event.created_at - now) > 600) return false;
+
+    const challengeTag = event.tags.find(([k]) => k === 'challenge');
+    if (!challengeTag || challengeTag[1] !== challenge) return false;
+
+    const relayTag = event.tags.find(([k]) => k === 'relay');
+    if (!relayTag) return false;
+
+    try {
+      const eventDomain = new URL(relayTag[1]).hostname;
+      const expectedDomain = new URL(relayUrl).hostname;
+      if (eventDomain !== expectedDomain) return false;
+    } catch {
+      return false;
+    }
+
+    return true;
+  }
+
   return {
     get status() {
       return state.status;
@@ -155,5 +185,6 @@ export function useNip42Auth() {
     handleRawMessage,
     authenticate,
     reset,
+    verifyAuthEvent,
   };
 }

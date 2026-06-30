@@ -1,6 +1,8 @@
 <script lang="ts">
 import type { EoseState } from '../lib/stores/relaySocket.svelte';
 import type { CheckStatus } from '../utils/relay';
+import AuthPrefixDisplay from './AuthPrefixDisplay.svelte';
+import EoseIndicator from './EoseIndicator.svelte';
 import SectionCard from './SectionCard.svelte';
 import StatusDot from './StatusDot.svelte';
 
@@ -20,11 +22,14 @@ const STATUS_LABEL: Record<ConnectionStatus, string> = {
   error: 'Error',
 };
 
+import type { EoseResult } from '@relayscope/shared';
+
 let {
   relayUrl,
   status,
   eventCount,
   eose,
+  eoseHints = null,
   error,
   notices,
   onConnect,
@@ -34,6 +39,7 @@ let {
   status: ConnectionStatus;
   eventCount: number;
   eose: EoseState;
+  eoseHints?: EoseResult | null;
   error: string | null;
   notices: string[];
   onConnect: () => void;
@@ -107,11 +113,14 @@ let {
     {/if}
   </div>
 
-  <!-- EOSE banner -->
+  <!-- EOSE banner with NIP-67 hints -->
   {#if eose.received && eose.historicalCount > 0}
-    <div class="mt-3 px-3 py-2 rounded-lg bg-success-dim border border-success/20 text-xs text-success">
-      ✓ Loaded {eose.historicalCount.toLocaleString()} historical events
-    </div>
+    <EoseIndicator eoseResult={eoseHints} />
+    {#if !eoseHints}
+      <div class="mt-3 px-3 py-2 rounded-lg bg-success-dim border border-success/20 text-xs text-success">
+        ✓ Loaded {eose.historicalCount.toLocaleString()} historical events
+      </div>
+    {/if}
   {/if}
 
   <!-- Error display -->
@@ -126,9 +135,9 @@ let {
     <div class="mt-3 space-y-1.5">
       {#each notices as notice (notice)}
         <div
-          class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs text-warning"
+          class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs"
         >
-          ⚠ {notice}
+          <AuthPrefixDisplay message={notice} />
         </div>
       {/each}
     </div>

@@ -6,11 +6,15 @@
   "main": "./src/types.ts",
   "types": "./src/types.ts",
   "exports": {
-    ".": "./src/types.ts"
+    ".": "./src/types.ts",
+    "./schemas": "./src/schemas.ts"
   },
   "scripts": {
     "type-check": "tsc --noEmit",
     "lint": "biome check ."
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "typescript": "^6.0.3"

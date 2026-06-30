@@ -1,10 +1,15 @@
+import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { rateLimiter } from 'hono-rate-limiter';
+import { db } from './db';
+import { relays } from './db/schema';
 import { startMonitor } from './jobs/relayMonitor';
 import directoryRoutes from './routes/directory';
+import discoverRoutes from './routes/discover';
+import popularityRoutes from './routes/popularity';
 import relayRoutes from './routes/relays';
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -93,7 +98,30 @@ app.get('/api/health', (c) => {
   return c.json({ status: 'ok', uptime: process.uptime() });
 });
 
+// ─── Relay Lookup by URL ───
+app.get('/api/relays/lookup', async (c) => {
+  const url = c.req.query('url');
+  if (!url) {
+    return c.json({ success: false, error: 'url query parameter is required' }, 400);
+  }
+  // Normalize: strip trailing slashes and whitespace
+  const normalized = url.trim().replace(/\/+$/, '');
+  const [relay] = await db.select().from(relays).where(eq(relays.url, normalized)).limit(1);
+  if (!relay) {
+    // Fallback: try with trailing slash (some DBs store normalized URLs)
+    const withSlash = normalized + '/';
+    const [relayAlt] = await db.select().from(relays).where(eq(relays.url, withSlash)).limit(1);
+    if (relayAlt) {
+      return c.json({ success: true, data: { id: relayAlt.id, url: relayAlt.url } });
+    }
+    return c.json({ success: false, data: null });
+  }
+  return c.json({ success: true, data: { id: relay.id, url: relay.url } });
+});
+
 app.route('/api/relays', relayRoutes);
+app.route('/api/relays', discoverRoutes);
+app.route('/api/relays', popularityRoutes);
 app.route('/api/directory', directoryRoutes);
 
 // ─── 404 Handler ───

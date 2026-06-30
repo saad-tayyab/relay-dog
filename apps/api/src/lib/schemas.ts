@@ -15,5 +15,5 @@ export const updateRelaySchema = z.object({
   country: z.string().trim().max(100).optional(),
 });
 
-export type CreateRelayInput = z.infer<typeof createRelaySchema>;
-export type UpdateRelayInput = z.infer<typeof updateRelaySchema>;
+export type CreateRelayInput = z.output<typeof createRelaySchema>;
+export type UpdateRelayInput = z.output<typeof updateRelaySchema>;

@@ -1,15 +1,16 @@
 # 🗺️ Roadmap
 
-Relay Scope is built in 5 phases, each delivering standalone value while building toward a complete Nostr relay inspector.
+Relay Scope is built in 6 phases, each delivering standalone value while building toward a complete Nostr relay inspector.
 
 ## Status
 
 ```
 Phase 1  ████████████████████  NIP-11 Viewer (MVP)              ✅ Done
-Phase 2  ░░░░░░░░░░░░░░░░░░░░  Live Event Stream                🚧 Next
-Phase 3  ░░░░░░░░░░░░░░░░░░░░  Event Verifier & Inspector        📋 Planned
-Phase 4  ░░░░░░░░░░░░░░░░░░░░  Auth & Health Dashboard           📋 Planned
-Phase 5  ░░░░░░░░░░░░░░░░░░░░  Relay Directory & Comparison      📋 Planned
+Phase 2  ████████████████████  Live Event Stream                 ✅ Done
+Phase 3  ████████████████████  Event Verifier & Inspector        ✅ Done
+Phase 4  ████████████████████  Auth & Health Dashboard           ✅ Done
+Phase 5  ████████████████████  Relay Directory & Comparison      ✅ Done
+Phase 6  ░░░░░░░░░░░░░░░░░░░░  NIP Compliance & Modernization    📋 Planned
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅
@@ -114,6 +115,29 @@ Go from a single-relay inspector to a directory. Users can browse known relays, 
 
 ---
 
+## Phase 6: NIP Compliance & Protocol Modernization 📋
+
+> *Weekend 10–11*
+
+Bring relay-dog in line with the latest NIP specs (June 2026). Fix outdated types, implement missing protocol features, and add Zod validation.
+
+**What ships:**
+- Updated NIP-11 types with all current fields (banner, pubkey, fees, etc.)
+- NIP-66 relay discovery — consume kind:30166 events from monitors
+- NIP-67 EOSE completeness hints — show "all events received" vs. "more available"
+- NIP-65 relay list display — show read/write popularity per relay
+- NIP-50 search filter — content search for relays that support it
+- NIP-40 expiration — expired event indicators
+- NIP-42 auth hardening — timing verification, prefix display
+- Zod validation schemas for all NIP data
+- Deprecated incorrect types (FeeInfo, posting_limit, relay_limitation)
+
+**NIPs**: NIP-11 (updated), NIP-40, NIP-42 (hardened), NIP-50, NIP-65, NIP-66 (integrated), NIP-67
+
+**New dependencies**: `zod`
+
+---
+
 ## Effort Summary
 
 | Phase | Duration | Difficulty | API Changes | DB Changes |
@@ -123,3 +147,4 @@ Go from a single-relay inspector to a directory. Users can browse known relays, 
 | 3 | 1 weekend | Medium | None | None (client-side) |
 | 4 | 2 weekends | **Hard** | Auth endpoints | health_checks expansion |
 | 5 | 2–3 weekends | Medium | Directory endpoints | monitoring_jobs expansion |
+| 6 | 1–2 weekends | Medium | 3 endpoints | relay_discoveries, relay_list_entries |

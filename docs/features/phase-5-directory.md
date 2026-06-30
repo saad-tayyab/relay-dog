@@ -141,4 +141,4 @@ Directory/
 
 ---
 
-*Previous: [Phase 4 — Auth & Health Dashboard](phase-4-auth.md)*
+*Previous: [Phase 4 — Auth & Health Dashboard](phase-4-auth.md) | Next: [Phase 6 — NIP Compliance & Modernization](phase-6-nip-compliance.md)*

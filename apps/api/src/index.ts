@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
@@ -17,6 +18,12 @@ const isProduction = process.env.NODE_ENV === 'production';
 if (isProduction && !process.env.API_KEY) {
   process.stderr.write('API_KEY is required in production\n');
   process.exit(1);
+}
+
+if (!isProduction && !process.env.API_KEY) {
+  process.stderr.write(
+    '⚠️  WARNING: API_KEY is not set — write endpoints are UNPROTECTED in development\n',
+  );
 }
 
 const app = new Hono();
@@ -71,10 +78,14 @@ app.use('/api/*', async (c, next) => {
   return readRateLimit(c, next);
 });
 
+// ─── Body Size Limit ───
+app.use('/api/*', bodyLimit({ maxSize: 100 * 1024 })); // 100KB max body
+
 // ─── Security Headers ───
 app.use('*', async (c, next) => {
   await next();
   c.header('X-Content-Type-Options', 'nosniff');
+  c.header('X-Frame-Options', 'DENY');
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
   c.header('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
   c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
@@ -109,7 +120,7 @@ app.get('/api/relays/lookup', async (c) => {
   const [relay] = await db.select().from(relays).where(eq(relays.url, normalized)).limit(1);
   if (!relay) {
     // Fallback: try with trailing slash (some DBs store normalized URLs)
-    const withSlash = normalized + '/';
+    const withSlash = `${normalized}/`;
     const [relayAlt] = await db.select().from(relays).where(eq(relays.url, withSlash)).limit(1);
     if (relayAlt) {
       return c.json({ success: true, data: { id: relayAlt.id, url: relayAlt.url } });
@@ -131,9 +142,10 @@ app.notFound((c) => {
 
 // ─── Error Handler ───
 app.onError((err, c) => {
+  // Always log full error server-side
   process.stderr.write(`${err.stack ?? err.message ?? err}\n`);
-  const message = isProduction ? 'Internal server error' : err.message || 'Internal server error';
-  return c.json({ success: false, error: message }, 500);
+  // Never expose internal error details to clients
+  return c.json({ success: false, error: 'Internal server error' }, 500);
 });
 
 // ─── Start Server with Graceful Shutdown ───
@@ -152,5 +164,6 @@ const shutdown = async () => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-const monitorInterval = parseInt(process.env.MONITOR_INTERVAL_MS || '60000', 10);
+// Monitor interval: min 10s to prevent abuse
+const monitorInterval = Math.max(10_000, parseInt(process.env.MONITOR_INTERVAL_MS || '60000', 10));
 startMonitor(monitorInterval);

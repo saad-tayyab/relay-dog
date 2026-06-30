@@ -32,6 +32,7 @@ export function relaySocket(getRelayUrl: () => string) {
   const auth = useNip42Auth();
 
   // ─── Non-reactive Refs ───
+  const MAX_EVENTS = 1000;
   let ws: WebSocket | null = null;
   let backoff = INITIAL_DELAY_MS;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -135,8 +136,11 @@ export function relaySocket(getRelayUrl: () => string) {
         if (eventIds.has(nostrEvent.id)) return;
         eventIds.add(nostrEvent.id);
 
-        // Append to reactive array
-        events = [...events, nostrEvent];
+        // Append to reactive array (cap at MAX_EVENTS to prevent memory exhaustion)
+        events =
+          events.length >= MAX_EVENTS
+            ? [...events.slice(-(MAX_EVENTS - 1)), nostrEvent]
+            : [...events, nostrEvent];
 
         if (!eoseReceived) {
           eose = { ...eose, historicalCount: eose.historicalCount + 1 };

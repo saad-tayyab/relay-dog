@@ -2,7 +2,8 @@
   "extends": "@relayscope/tsconfig/base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "types": ["node", "vite/client"]
   },
   "include": ["src"]
 }

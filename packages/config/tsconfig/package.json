@@ -1,0 +1,14 @@
+{
+  "name": "@relayscope/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "base.json",
+    "bun.json",
+    "svelte.json"
+  ],
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

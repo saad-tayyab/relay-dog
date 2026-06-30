@@ -1,7 +1,9 @@
+import { zValidator } from '@hono/zod-validator';
 import { eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { db } from '../db';
 import { relayDiscovered, relays } from '../db/schema';
+import { createDiscoverySchema } from '../lib/schemas';
 import { requireApiKey } from '../middleware/auth';
 
 const discoverRoutes = new Hono();
@@ -45,65 +47,53 @@ discoverRoutes.get('/:id/discoveries', async (c) => {
 });
 
 // ─── POST /:id/discoveries — Upsert discovery from monitor ───
-discoverRoutes.post('/:id/discoveries', requireApiKey, async (c) => {
-  const relayId = c.req.param('id');
-  const body = await c.req.json();
+discoverRoutes.post(
+  '/:id/discoveries',
+  requireApiKey,
+  zValidator('json', createDiscoverySchema),
+  async (c) => {
+    const relayId = c.req.param('id');
+    const body = c.req.valid('json');
 
-  const [relay] = await db.select().from(relays).where(eq(relays.id, relayId)).limit(1);
-  if (!relay) {
-    return c.json({ success: false, error: 'Relay not found' }, 404);
-  }
+    const [relay] = await db.select().from(relays).where(eq(relays.id, relayId)).limit(1);
+    if (!relay) {
+      return c.json({ success: false, error: 'Relay not found' }, 404);
+    }
 
-  const {
-    monitorPubkey,
-    rttOpen,
-    rttRead,
-    rttWrite,
-    networkType,
-    relayType,
-    supportedNips,
-    requirements,
-    topics,
-    geohash,
-  } = body;
+    const [result] = await db
+      .insert(relayDiscovered)
+      .values({
+        relayUrl: relay.url,
+        monitorPubkey: body.monitorPubkey,
+        rttOpen: body.rttOpen ?? null,
+        rttRead: body.rttRead ?? null,
+        rttWrite: body.rttWrite ?? null,
+        networkType: body.networkType ?? null,
+        relayType: body.relayType ?? null,
+        supportedNips: body.supportedNips ?? [],
+        requirements: body.requirements ?? [],
+        topics: body.topics ?? [],
+        geohash: body.geohash ?? null,
+      })
+      .onConflictDoUpdate({
+        target: [relayDiscovered.relayUrl, relayDiscovered.monitorPubkey],
+        set: {
+          rttOpen: body.rttOpen ?? null,
+          rttRead: body.rttRead ?? null,
+          rttWrite: body.rttWrite ?? null,
+          networkType: body.networkType ?? null,
+          relayType: body.relayType ?? null,
+          supportedNips: body.supportedNips ?? [],
+          requirements: body.requirements ?? [],
+          topics: body.topics ?? [],
+          geohash: body.geohash ?? null,
+          discoveredAt: new Date(),
+        },
+      })
+      .returning();
 
-  if (!monitorPubkey) {
-    return c.json({ success: false, error: 'monitorPubkey is required' }, 400);
-  }
-
-  const [result] = await db
-    .insert(relayDiscovered)
-    .values({
-      relayUrl: relay.url,
-      monitorPubkey,
-      rttOpen: rttOpen ?? null,
-      rttRead: rttRead ?? null,
-      rttWrite: rttWrite ?? null,
-      networkType: networkType ?? null,
-      relayType: relayType ?? null,
-      supportedNips: supportedNips ?? [],
-      requirements: requirements ?? [],
-      topics: topics ?? [],
-      geohash: geohash ?? null,
-    })
-    .onConflictDoUpdate({
-      target: [relayDiscovered.relayUrl, relayDiscovered.monitorPubkey],
-      set: {
-        rttOpen: rttOpen ?? null,
-        rttRead: rttRead ?? null,
-        rttWrite: rttWrite ?? null,
-        networkType: networkType ?? null,
-        relayType: relayType ?? null,
-        supportedNips: supportedNips ?? [],
-        requirements: requirements ?? [],
-        topics: topics ?? [],
-        geohash: geohash ?? null,
-        discoveredAt: new Date(),
-      },
-    })
-    .returning();
-
-  return c.json({ success: true, data: result }, 201);
-});
+    return c.json({ success: true, data: result }, 201);
+  },
+);
 
 export default discoverRoutes;

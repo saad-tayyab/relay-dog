@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import { createMiddleware } from 'hono/factory';
 
 /**
@@ -12,6 +13,7 @@ export const requireApiKey = createMiddleware(async (c, next) => {
     if (process.env.NODE_ENV === 'production') {
       return c.json({ success: false, error: 'Unauthorized' }, 401);
     }
+    // Dev-only: allow through, but warning was logged at startup (see index.ts)
     await next();
     return;
   }
@@ -19,7 +21,11 @@ export const requireApiKey = createMiddleware(async (c, next) => {
   const authHeader = c.req.header('Authorization');
   const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
-  if (!token || token !== expected) {
+  if (
+    !token ||
+    token.length !== expected.length ||
+    !timingSafeEqual(Buffer.from(token), Buffer.from(expected))
+  ) {
     return c.json({ success: false, error: 'Unauthorized' }, 401);
   }
 

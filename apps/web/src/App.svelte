@@ -11,11 +11,13 @@ import MobileNav from './components/nav/MobileNav.svelte';
 import NavBar from './components/nav/NavBar.svelte';
 import PublisherSection from './components/publisher/PublisherSection.svelte';
 import RelayDirectory from './components/RelayDirectory.svelte';
+import Toast from './components/shared/Toast.svelte';
 import ToolsSection from './components/tools/ToolsSection.svelte';
 import EventVerifier from './components/verifier/EventVerifier.svelte';
 
 // Composables
 import { useLatencyMeasurement } from './lib/composables/useLatencyMeasurement.svelte';
+import { useToast } from './lib/composables/useToast.svelte';
 import { useWriteTest } from './lib/composables/useWriteTest.svelte';
 
 const POPULAR_RELAYS = [
@@ -37,6 +39,7 @@ let loading = $state(false);
 let error = $state<string | null>(null);
 let activeSection = $state<Section>(getHashSection());
 let dbRelayId = $state<string | null>(null);
+let inDirectory = $state(false);
 let prefilledEvent = $state<unknown>(null);
 
 const normalizedUrl = $derived(normalizeUrl(url));
@@ -49,6 +52,8 @@ const socket = relaySocket(() => normalizedUrl);
 const latency = useLatencyMeasurement();
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const writeTest = useWriteTest();
+// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
+const toast = useToast();
 
 // ─── Navigation ───
 
@@ -72,6 +77,36 @@ function handleEditAndRepublish(event: unknown) {
   setHashSection('publisher');
 }
 
+function handleInDirectoryChange(inDir: boolean, relayId?: string, relayUrl?: string) {
+  inDirectory = inDir;
+  if (inDir && relayId && relayUrl) {
+    toast.show({
+      message: `"${relayUrl}" added to directory`,
+      type: 'success',
+      undoLabel: 'Undo',
+      onUndo: () => {
+        // Remove the relay we just added
+        const headers: Record<string, string> = {};
+        const savedKey = localStorage.getItem('relayscope_api_key');
+        if (savedKey) {
+          headers.Authorization = `Bearer ${savedKey}`;
+        }
+        fetch(`/api/relays/${relayId}`, {
+          method: 'DELETE',
+          headers,
+          signal: AbortSignal.timeout(10_000),
+        })
+          .then(() => {
+            inDirectory = false;
+          })
+          .catch(() => {
+            // Undo failed — silently ignore
+          });
+      },
+    });
+  }
+}
+
 // ─── Actions ───
 
 async function handleFetch(targetUrl?: string) {
@@ -84,6 +119,8 @@ async function handleFetch(targetUrl?: string) {
   relayInfo = null;
   connectionStatus = null;
   dbRelayId = null;
+  inDirectory = false;
+  toast.hide();
   latency.reset();
   writeTest.reset();
 
@@ -110,11 +147,13 @@ async function handleFetch(targetUrl?: string) {
 
     // Look up DB relay ID for Phase 7 data
     dbRelayId = null;
+    inDirectory = false;
     try {
       const lookupRes = await fetch(`/api/relays/lookup?url=${encodeURIComponent(normalized)}`);
       const lookupJson = await lookupRes.json();
       if (lookupJson.success && lookupJson.data) {
         dbRelayId = lookupJson.data.id;
+        inDirectory = true;
       }
     } catch {
       // Not in DB — that's fine, Phase 7 panels won't show
@@ -261,7 +300,9 @@ function handleQuickPick(relay: string) {
         {latency}
         {writeTest}
         {dbRelayId}
+        {inDirectory}
         onRetry={() => handleFetch()}
+        onInDirectoryChange={handleInDirectoryChange}
       />
     {/if}
 
@@ -369,4 +410,18 @@ function handleQuickPick(relay: string) {
       <span class="font-mono">v0.8.0</span>
     </div>
   </footer>
+
+  <!-- Toast notification for "Add to Directory" -->
+  {#if toast.visible}
+    {#key toast.key}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        duration={toast.duration}
+        undoLabel={toast.undoLabel}
+        onUndo={toast.onUndo}
+        onDismiss={() => toast.hide()}
+      />
+    {/key}
+  {/if}
 </div>

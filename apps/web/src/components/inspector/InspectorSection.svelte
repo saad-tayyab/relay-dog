@@ -1,6 +1,10 @@
 <script lang="ts">
+// 1. Internal packages (stores, utils)
 import type { relaySocket } from '../../lib/stores/relaySocket.svelte';
 import type { ConnectionStatus, RelayInfo } from '../../utils/relay';
+
+// 2. Relative component imports
+import AddToDirectory from '../AddToDirectory.svelte';
 import AuthStatusBadge from '../AuthStatusBadge.svelte';
 import ConnectionPanel from '../ConnectionPanel.svelte';
 import ConnectionStatusPanel from '../ConnectionStatusPanel.svelte';
@@ -13,7 +17,6 @@ import LimitationsPanel from '../LimitationsPanel.svelte';
 import LoadingSpinner from '../LoadingSpinner.svelte';
 import NipBadgeGrid from '../NipBadgeGrid.svelte';
 import RelayProfile from '../RelayProfile.svelte';
-// Components
 import AccessibleTabs from '../shared/AccessibleTabs.svelte';
 import WriteTestPanel from '../WriteTestPanel.svelte';
 
@@ -29,7 +32,9 @@ let {
   latency,
   writeTest,
   dbRelayId,
+  inDirectory,
   onRetry,
+  onInDirectoryChange,
 }: {
   url: string;
   relayInfo: RelayInfo | null;
@@ -56,7 +61,9 @@ let {
     reset: () => void;
   };
   dbRelayId: string | null;
+  inDirectory: boolean;
   onRetry: () => void;
+  onInDirectoryChange: (inDir: boolean, relayId?: string, relayUrl?: string) => void;
 } = $props();
 
 let activeTab = $state<'nip11' | 'stream'>('nip11');
@@ -91,6 +98,16 @@ const tabs = $derived([
       {#if !loading && relayInfo}
         <div class="space-y-5">
           <RelayProfile relayId={dbRelayId ?? undefined} relay={{ url }} info={relayInfo} />
+
+          <!-- Add to Directory — shows prompt after inspect, or status when already in directory -->
+          <AddToDirectory
+            relayUrl={url}
+            relayName={relayInfo.name ?? undefined}
+            {inDirectory}
+            onAdded={(id) => onInDirectoryChange(true, id, url)}
+            {onInDirectoryChange}
+          />
+
           <NipBadgeGrid nips={relayInfo.supported_nips || []} />
           <LimitationsPanel limitation={relayInfo.limitation} />
           <ConnectionStatusPanel status={connectionStatus} />

@@ -4,6 +4,23 @@ All notable changes to Relay Scope are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Conventional Commits](https://conventionalcommits.org).
 
+## [0.2.0] - 2026-06-30
+
+### Added
+
+#### Web (`@relayscope/web`)
+- Live Event Stream (Phase 2)
+  - Custom `useRelaySocket` hook: WebSocket connection with auto-reconnect (exponential backoff 1s → 30s)
+  - ConnectionPanel: status display, connect/disconnect, event count, EOSE stats, NOTICE messages
+  - FilterBuilder: REQ subscription builder (kinds, authors, limit, since/until)
+  - EventFeed: auto-scrolling event list with smart scroll behavior
+  - EventCard: kind badges (color-coded), pubkey display, relative timestamps, expand/copy JSON
+  - Tab toggle between NIP-11 Info and Live Stream views
+  - Event deduplication by event.id
+  - EOSE detection with historical vs. live event counting
+  - NOTICE message capture and display
+  - 10s connection timeout
+
 ## [0.1.0] - 2026-06-30
 
 ### Added

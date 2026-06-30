@@ -2,7 +2,7 @@
 
 ## Status
 
-**Planned** 🚧
+**Complete** ✅
 
 ## Overview
 
@@ -17,41 +17,60 @@ Connect to a relay via WebSocket and stream events in real time. The heart of th
 
 ## Features
 
-### WebSocket Connection
+### WebSocket Connection ✅
 - Connect/disconnect toggle
 - Real-time status indicator (connecting, connected, disconnected)
-- Auto-reconnect with exponential backoff
-- Connection latency display
+- Auto-reconnect with exponential backoff (1s → 30s, 2x multiplier)
+- 10s connection timeout
 
-### REQ Subscription Builder
-- **Kinds**: Multi-select for event kinds (0, 1, 4, 42, etc.)
-- **Authors**: Filter by pubkey (npub or hex)
-- **Tags**: Filter by `#e`, `#p`, or custom tags
-- **Time Range**: `since` and `until` timestamps
-- **Limit**: Max events to fetch
+### REQ Subscription Builder ✅
+- **Kinds**: Comma-separated event kinds (default: "1")
+- **Authors**: Hex pubkey filter (comma-separated)
+- **Limit**: Max events to fetch (default: 50)
+- **Time Range**: `since` and `until` datetime pickers
+- Subscribe / Unsubscribe toggle with subscription ID display
 
-### Live Event Feed
-- Auto-scrolling event list
-- Kind labels with color coding (kind 1 = note, kind 0 = metadata, etc.)
-- Author pubkey display (with npub conversion)
-- Timestamp display (relative + absolute)
-- Content preview (truncated, expandable)
+### Live Event Feed ✅
+- Auto-scrolling event list (pauses when user scrolls up)
+- Kind labels with color coding (0=blue, 1=green, 4=purple, 42=cyan)
+- Author pubkey display (truncated to 8 chars)
+- Timestamp display (relative: "2m ago", "1h ago")
+- Content preview (first 200 chars, truncated)
+- Event count display
 
-### Raw JSON View
+### Raw JSON View ✅
 - Expandable per-event JSON viewer
-- Copy JSON button
-- Highlighted fields (id, pubkey, sig)
+- Copy JSON button per event
+- Collapsible with arrow indicator
 
-### EOSE Detection
+### EOSE Detection ✅
 - Visual indicator when historical backfill is complete
 - Count of historical vs. live events
+- "Loaded N historical events" banner
 
-### NOTICE & Errors
+### NOTICE & Errors ✅
 - Display relay NOTICE messages
 - Show WebSocket error messages
 - Connection failure diagnostics
 
 ## Technical Details
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `hooks/useRelaySocket.ts` | Core WebSocket hook with reconnect, dedup, EOSE |
+| `components/ConnectionPanel.tsx` | Status display, connect/disconnect, stats |
+| `components/FilterBuilder.tsx` | REQ subscription builder with filter inputs |
+| `components/EventFeed.tsx` | Auto-scrolling event list with EventCard |
+| `components/EventCard.tsx` | Individual event display (memo'd) |
+
+### Hook API
+
+```typescript
+const { status, events, send, connect, disconnect, eose, notices, error } =
+  useRelaySocket(relayUrl);
+```
 
 ### WebSocket Protocol
 
@@ -70,41 +89,6 @@ const WS_MESSAGES = {
   AUTH:   ["AUTH", challenge],
 }
 ```
-
-### State Management
-
-```typescript
-interface StreamState {
-  status: 'disconnected' | 'connecting' | 'connected' | 'error'
-  events: NostrEvent[]
-  filters: SubscriptionFilter[]
-  eoseReceived: boolean
-  historicalCount: number
-  liveCount: number
-}
-```
-
-### Component Structure
-
-```
-LiveEventStream/
-├── ConnectionPanel.tsx      # Connect/disconnect, status
-├── FilterBuilder.tsx        # REQ subscription builder
-├── EventFeed.tsx            # Scrolling event list
-├── EventCard.tsx            # Single event display
-├── EventJsonView.tsx        # Expandable raw JSON
-└── StatusIndicator.tsx      # EOSE, errors, notices
-```
-
-### API Integration
-
-The API server can optionally proxy WebSocket connections to avoid CORS issues:
-
-```
-Browser → API (/ws/relay?url=wss://relay.damus.io) → Relay
-```
-
-Or the browser can connect directly if the relay has CORS configured.
 
 ## Testing
 

@@ -7,9 +7,15 @@ import {
   NipBadgeGrid,
   RelayProfile,
 } from './components';
+import { ConnectionPanel } from './components/ConnectionPanel';
+import { EventFeed } from './components/EventFeed';
+import { FilterBuilder } from './components/FilterBuilder';
+import { useRelaySocket } from './hooks/useRelaySocket';
 import type { ConnectionStatus, RelayInfo } from './utils/relay';
 import { checkConnections, fetchNip11, normalizeUrl } from './utils/relay';
 import './index.css';
+
+type Tab = 'nip11' | 'stream';
 
 const POPULAR_RELAYS = [
   'relay.damus.io',
@@ -27,6 +33,20 @@ function App() {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<Tab>('nip11');
+
+  const normalizedUrl = normalizeUrl(url);
+
+  const {
+    status,
+    events,
+    send,
+    connect,
+    disconnect,
+    eose,
+    notices,
+    error: wsError,
+  } = useRelaySocket(normalizedUrl);
 
   const handleFetch = useCallback(
     async (targetUrl?: string) => {
@@ -66,6 +86,10 @@ function App() {
     handleFetch();
   };
 
+  const isNip11Tab = activeTab === 'nip11';
+  const isStreamTab = activeTab === 'stream';
+  const hasRelay = normalizedUrl.length > 0;
+
   return (
     <div className="min-h-screen bg-dark-bg">
       {/* Header */}
@@ -88,7 +112,7 @@ function App() {
             <p className="text-xs text-text-muted">Nostr relay inspector</p>
           </div>
           <span className="ml-auto text-[10px] font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted">
-            MVP · Phase 1
+            Phase 2
           </span>
         </div>
       </header>
@@ -173,81 +197,141 @@ function App() {
           </div>
         </form>
 
-        {/* Results */}
-        {loading && <LoadingSpinner />}
-
-        {!loading && error && !relayInfo && (
-          <ErrorMessage message={error} onRetry={() => handleFetch()} />
-        )}
-
-        {!loading && relayInfo && (
-          <div className="space-y-5">
-            <RelayProfile info={relayInfo} />
-            <NipBadgeGrid nips={relayInfo.supported_nips || []} />
-            <LimitationsPanel limitation={relayInfo.limitation} />
-            <ConnectionStatusPanel status={connectionStatus} />
-
-            {/* Raw JSON toggle */}
-            <details className="group">
-              <summary className="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2">
-                <svg
-                  aria-hidden="true"
-                  className="w-4 h-4 transition-transform group-open:rotate-90"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-                Raw NIP-11 JSON
-              </summary>
-              <pre className="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">
-                {JSON.stringify(relayInfo, null, 2)}
-              </pre>
-            </details>
-
-            {/* Error details if connection had issues */}
-            {!loading && error && relayInfo && (
-              <div className="px-4 py-3 rounded-xl bg-warning-dim border border-warning/20 text-sm text-warning">
-                ⚠ {error}
-              </div>
-            )}
+        {/* Tab Toggle */}
+        {hasRelay && (
+          <div className="flex gap-1 p-1 mb-6 rounded-xl bg-dark-surface border border-dark-border">
+            <button
+              type="button"
+              onClick={() => setActiveTab('nip11')}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                isNip11Tab
+                  ? 'bg-dark-card border border-dark-border text-text-primary'
+                  : 'text-text-muted hover:text-text-secondary'
+              }`}
+            >
+              NIP-11 Info
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('stream')}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                isStreamTab
+                  ? 'bg-dark-card border border-dark-border text-text-primary'
+                  : 'text-text-muted hover:text-text-secondary'
+              }`}
+            >
+              Live Stream
+              {events.length > 0 && (
+                <span className="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent">
+                  {events.length.toLocaleString()}
+                </span>
+              )}
+            </button>
           </div>
         )}
 
-        {/* Empty state */}
-        {!loading && !error && !relayInfo && (
-          <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
-            <div className="w-20 h-20 rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center mb-6">
-              <svg
-                aria-hidden="true"
-                className="w-10 h-10 text-text-muted"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                <circle cx="12" cy="12" r="10" />
-              </svg>
-            </div>
-            <h2 className="text-xl font-semibold text-text-primary mb-2">Inspect a Nostr Relay</h2>
-            <p className="text-text-muted text-sm max-w-sm mb-6">
-              Enter a relay URL above to fetch its NIP-11 info document, check connection status,
-              and explore supported features.
-            </p>
-            <div className="flex flex-wrap justify-center gap-2 text-xs text-text-muted">
-              <span className="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-                NIP-11 Info
-              </span>
-              <span className="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-                Connection Checks
-              </span>
-              <span className="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-                NIP Badge Grid
-              </span>
-            </div>
+        {/* NIP-11 Tab */}
+        {isNip11Tab && (
+          <>
+            {loading && <LoadingSpinner />}
+
+            {!loading && error && !relayInfo && (
+              <ErrorMessage message={error} onRetry={() => handleFetch()} />
+            )}
+
+            {!loading && relayInfo && (
+              <div className="space-y-5">
+                <RelayProfile info={relayInfo} />
+                <NipBadgeGrid nips={relayInfo.supported_nips || []} />
+                <LimitationsPanel limitation={relayInfo.limitation} />
+                <ConnectionStatusPanel status={connectionStatus} />
+
+                {/* Raw JSON toggle */}
+                <details className="group">
+                  <summary className="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2">
+                    <svg
+                      aria-hidden="true"
+                      className="w-4 h-4 transition-transform group-open:rotate-90"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                    Raw NIP-11 JSON
+                  </summary>
+                  <pre className="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">
+                    {JSON.stringify(relayInfo, null, 2)}
+                  </pre>
+                </details>
+
+                {/* Error details if connection had issues */}
+                {!loading && error && relayInfo && (
+                  <div className="px-4 py-3 rounded-xl bg-warning-dim border border-warning/20 text-sm text-warning">
+                    ⚠ {error}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!loading && !error && !relayInfo && (
+              <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+                <div className="w-20 h-20 rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center mb-6">
+                  <svg
+                    aria-hidden="true"
+                    className="w-10 h-10 text-text-muted"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                    <circle cx="12" cy="12" r="10" />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-semibold text-text-primary mb-2">
+                  Inspect a Nostr Relay
+                </h2>
+                <p className="text-text-muted text-sm max-w-sm mb-6">
+                  Enter a relay URL above to fetch its NIP-11 info document, check connection
+                  status, and explore supported features.
+                </p>
+                <div className="flex flex-wrap justify-center gap-2 text-xs text-text-muted">
+                  <span className="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+                    NIP-11 Info
+                  </span>
+                  <span className="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+                    Connection Checks
+                  </span>
+                  <span className="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+                    NIP Badge Grid
+                  </span>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Live Stream Tab */}
+        {isStreamTab && (
+          <div className="space-y-5 animate-fade-in">
+            <ConnectionPanel
+              relayUrl={normalizedUrl}
+              status={status}
+              eventCount={events.length}
+              eose={eose}
+              error={wsError}
+              notices={notices}
+              onConnect={connect}
+              onDisconnect={disconnect}
+            />
+            <FilterBuilder connected={status === 'connected'} onSend={send} />
+            <EventFeed events={events} />
           </div>
         )}
       </main>

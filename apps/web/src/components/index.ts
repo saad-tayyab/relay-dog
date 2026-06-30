@@ -1,5 +1,8 @@
+export { ConnectionPanel } from './ConnectionPanel';
 export { ConnectionStatusPanel } from './ConnectionStatusPanel';
 export { ErrorMessage } from './ErrorMessage';
+export { EventFeed } from './EventFeed';
+export { FilterBuilder } from './FilterBuilder';
 export { LimitationsPanel } from './LimitationsPanel';
 export { LoadingSpinner } from './LoadingSpinner';
 export { NipBadgeGrid } from './NipBadgeGrid';

@@ -7,7 +7,7 @@ Welcome to the Relay Scope documentation. This is the single source of truth for
 ```
 docs/
 ├── README.md                          # You are here
-├── roadmap.md                         # Full 7-phase project plan
+├── roadmap.md                         # Full 10-phase project plan
 │
 ├── architecture/
 │   ├── overview.md                    # System architecture + Mermaid diagrams
@@ -29,17 +29,21 @@ docs/
 │   ├── style-guide.md                 # Code style conventions
 │   ├── deployment.md                  # Production deployment
 │   ├── environment.md                 # Environment variables
-│   └── testing.md                     # Testing strategy
+│   ├── testing.md                     # Testing strategy
+│   └── infrastructure-security.md     # Infra security best practices
 │
 ├── features/
+│   ├── _template.md                   # Phase doc template
 │   ├── nip-reference.md               # NIP implementations reference
 │   ├── phase-1-nip11.md               # MVP spec (implemented ✅)
-│   ├── phase-2-events.md              # Live event stream (planned)
-│   ├── phase-3-verifier.md            # Event verifier (planned)
-│   ├── phase-4-auth.md               # Auth & health (planned)
+│   ├── phase-2-events.md              # Live event stream (complete ✅)
+│   ├── phase-3-verifier.md            # Event verifier (complete ✅)
+│   ├── phase-4-auth.md               # Auth & health (complete ✅)
 │   ├── phase-5-directory.md          # Relay directory (complete ✅)
 │   ├── phase-6-security-hardening.md # Security hardening (complete ✅)
-│   └── phase-7-nip-compliance.md     # NIP compliance (planned)
+│   ├── phase-7-nip-compliance.md     # NIP compliance (complete ✅)
+│   ├── phase-8-developer-toolkit.md  # Developer toolkit (complete ✅)
+│   └── phase-10-infrastructure-hardening.md # DevSecOps (complete ✅)
 │
 ├── prompts/
 │   └── best-practices.md             # AI prompt engineering practices
@@ -60,6 +64,7 @@ docs/
 | **Deploying** | [Deployment Guide](development/deployment.md) |
 | **NIPs** | [NIP Reference](features/nip-reference.md) |
 | **Prompting AI** | [Prompt Best Practices](prompts/best-practices.md) |
+| **Infrastructure security** | [Infra Security](development/infrastructure-security.md) |
 
 ## Documentation Standards
 

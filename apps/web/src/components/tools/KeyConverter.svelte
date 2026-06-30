@@ -38,6 +38,12 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
 
 <SectionCard>
   <div class="space-y-4">
+    <!-- Screen reader live region for copy feedback -->
+    <div aria-live="polite" class="sr-only">
+      {clipboard.copied ? 'Copied to clipboard' : ''}
+      {clipboard.error ? clipboard.error : ''}
+    </div>
+
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">Key Converter</h3>
       <span class="text-xs text-text-muted">NIP-19</span>

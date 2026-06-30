@@ -59,6 +59,12 @@ async function copyToClipboard(text: string, which: 'id' | 'pubkey'): Promise<vo
 <SectionCard className="space-y-4">
   <h3 class="text-sm font-semibold text-text-primary">Event Details</h3>
 
+  <!-- Screen reader live region for copy feedback -->
+  <div aria-live="polite" class="sr-only">
+    {copiedId ? 'Event ID copied to clipboard' : ''}
+    {copiedPubkey ? 'Pubkey copied to clipboard' : ''}
+  </div>
+
   <!-- Kind -->
   <div>
     <p class="text-xs text-text-muted mb-1">Kind</p>

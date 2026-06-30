@@ -106,6 +106,13 @@ How to verify the change works.
 
 ---
 
+## Adding a New Phase
+
+1. Copy `docs/features/_template.md` → `docs/features/phase-{N}-{name}.md`
+2. Fill in all sections (delete unused optional sections)
+3. Add to `docs/roadmap.md` — status bar + detailed section + effort table
+4. Update `docs/README.md` — structure tree + Quick Links
+
 ## Adding a New API Endpoint
 
 1. **Add the route** in `apps/api/src/routes/`:

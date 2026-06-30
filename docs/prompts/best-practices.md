@@ -409,6 +409,163 @@ export interface HealthCheck {
 
 ---
 
+## WCAG 2.2 Accessibility Requirements
+
+> **This section is mandatory for all frontend prompts.** Every component created or modified must comply with these requirements. Reference `docs/features/phase-9-accessibility.md` for full details.
+
+### The 12 Accessibility Rules
+
+When building or modifying **any** frontend component, you **must** follow all 12 rules:
+
+| # | Rule | WCAG SC | How to Enforce |
+|---|------|---------|----------------|
+| 1 | All SVGs have `aria-hidden="true"` | 1.1.1 | Every `<svg>` must have this attribute |
+| 2 | All inputs have `<label>` (visible or `sr-only`) | 1.3.1, 3.3.2 | Every `<input>`, `<select>`, `<textarea>` needs a label |
+| 3 | All interactive elements are native HTML | 2.1.1 | Use `<button>`, `<input>`, `<select>`, `<a>` — never `<div onclick>` |
+| 4 | All buttons have `min-h-[44px]` touch targets | 2.5.5 | Add this class to every button |
+| 5 | All icon-only buttons have `aria-label` | 4.1.2 | Any button without visible text needs `aria-label` |
+| 6 | All toggle buttons have `aria-expanded` or `aria-pressed` | 4.1.2 | Expandable sections, pressed states |
+| 7 | All dynamic errors use `role="alert"` | 3.3.1 | Error messages that appear without user action |
+| 8 | All dynamic status uses `role="status"` or `aria-live` | 4.1.3 | Copy feedback, auto-updating counts, toasts |
+| 9 | All validation hints use `aria-describedby` | 3.3.2 | Connect hint text to its input |
+| 10 | All animations respect `prefers-reduced-motion` | 2.3.3 | Global CSS handles this — don't add new animations without it |
+| 11 | Focus is visible on all interactive elements | 2.4.7 | Global `:focus-visible` handles this — don't override it |
+| 12 | No information conveyed by color alone | 1.4.1 | Use icons + text alongside color indicators |
+
+### Accessibility Prompt Template
+
+When creating a new component, always include this in the prompt:
+
+```
+Accessibility requirements (WCAG 2.2 AA):
+- All SVGs must have aria-hidden="true"
+- All inputs must have associated <label> (visible or sr-only)
+- All interactive elements must be native HTML elements
+- All buttons must have min-h-[44px] touch targets
+- All icon-only buttons must have aria-label
+- All toggle buttons must have aria-expanded or aria-pressed
+- All dynamic errors must use role="alert"
+- All dynamic status must use role="status" or aria-live="polite"
+- All validation hints must be connected via aria-describedby
+- All animations must respect prefers-reduced-motion (global CSS handles this)
+- Focus must be visible on all interactive elements (global :focus-visible handles this)
+- No information should be conveyed by color alone
+```
+
+### Common ARIA Patterns
+
+#### Skip Link (every page)
+```svelte
+<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-accent focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">
+  Skip to main content
+</a>
+```
+
+#### Landmark Regions
+```svelte
+<header class="sticky top-0 z-10">...</header>
+<main id="main-content">...</main>
+<nav aria-label="Section navigation">...</nav>
+<footer>...</footer>
+<form role="search" aria-label="Search">...</form>
+```
+
+#### Dynamic Error Messages
+```svelte
+{#if error}
+  <div role="alert" class="px-3 py-2 rounded-lg bg-error-dim ...">
+    ⚠ {error}
+  </div>
+{/if}
+```
+
+#### Copy Button Feedback
+```svelte
+<div aria-live="polite" class="sr-only">
+  {copied ? 'Copied to clipboard' : ''}
+</div>
+<button onclick={handleCopy}>
+  {copied ? '✓ Copied' : 'Copy'}
+</button>
+```
+
+#### Form Input with Hint
+```svelte
+<input
+  id="my-input"
+  aria-describedby="my-hint"
+  aria-invalid={hasError}
+  ...
+/>
+<p id="my-hint" role="status" class="text-xs text-warning">
+  Must contain @
+</p>
+```
+
+#### Show/Hide Sensitive Data
+```svelte
+<button aria-expanded={visible} onclick={() => visible = !visible}>
+  {visible ? 'Hide' : 'Show'}
+</button>
+{#if visible}
+  <p>{sensitiveData}</p>
+{/if}
+```
+
+#### Progress Bar
+```svelte
+<div
+  role="progressbar"
+  aria-valuenow={current}
+  aria-valuemin={0}
+  aria-valuemax={total}
+  aria-label="Upload progress"
+  class="h-2 rounded-full bg-dark-surface"
+>
+  <div class="h-full bg-accent" style="width: {(current/total)*100}%"></div>
+</div>
+```
+
+#### Toggle Button
+```svelte
+<button
+  aria-pressed={isActive}
+  onclick={() => isActive = !isActive}
+  class="min-h-[44px] ..."
+>
+  {isActive ? 'On' : 'Off'}
+</button>
+```
+
+#### Expandable Section
+```svelte
+<button
+  aria-expanded={isExpanded}
+  onclick={() => isExpanded = !isExpanded}
+>
+  Details
+</button>
+{#if isExpanded}
+  <div>Expanded content</div>
+{/if}
+```
+
+### WCAG 2.2 New Criteria to Remember
+
+These are **new in WCAG 2.2** (not in 2.1) — don't forget them:
+
+| Criterion | What to Do |
+|-----------|------------|
+| **2.4.11 Focus Not Obscured** | Add `scroll-padding-top/bottom` to `html` when using sticky/fixed UI |
+| **2.4.13 Focus Appearance** | Use `:focus-visible` with 2px+ outline and high contrast |
+| **2.5.7 Dragging Movements** | Provide single-pointer alternative for any drag interaction |
+| **2.5.8 Target Size** | All buttons ≥24×24px CSS pixels (we use 44×44px) |
+| **3.2.6 Consistent Help** | If help exists, keep it in the same location across pages |
+| **3.3.7 Redundant Entry** | Don't ask users to re-enter info they already provided |
+| **3.3.8 Accessible Auth** | No CAPTCHAs or cognitive function tests; use `type="password"` for sensitive inputs |
+
+---
+
 ## Prompt Templates
 
 ### New Feature (Frontend)

@@ -14,6 +14,7 @@ Phase 6  ████████████████████  Security 
 Phase 7  ████████████████████  NIP Compliance & Modernization    ✅ Done
 Phase 8  ████████████████████  Developer Toolkit Expansion       ✅ Done
 Phase 9  ████████████████████  WCAG 2.2 AA Accessibility          ✅ Done
+Phase 10 ████████████████████  Infrastructure Hardening             ✅ Done
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅
@@ -190,6 +191,29 @@ Expand from a relay inspector into a complete Nostr developer toolkit. Add six s
 
 ---
 
+## Phase 10: Infrastructure Hardening & DevSecOps ✅
+
+> *Day 16*
+
+Comprehensive infrastructure security audit and remediation following NIST SP 800-204D, CIS Docker Benchmarks, and CISA SCuBA standards. Addresses all findings from the July 2026 security audit across GitHub Actions, Docker, SSRF protection, CI/CD pipeline, and deployment configuration. **Deploy blocker** — required before any internet-facing production launch.
+
+**What ships:**
+- **GitHub Actions supply chain hardening** — all actions pinned to full SHA, explicit `permissions` blocks, OSV scanner pinned with checksum verification
+- **Docker CIS benchmark compliance** — `security_opt: no-new-privileges`, `cap_drop: ALL` with selective `cap_add`, `tmpfs` mounts
+- **`.dockerignore`** — prevents secrets and build artifacts from leaking into Docker build context
+- **SSRF DNS rebinding fix** — `assertSafeUrlResolved()` validates resolved IP against private ranges
+- **Health check DB verification** — `/api/health` returns 503 if PostgreSQL is unreachable
+- **Data retention cron** — daily cleanup: health_checks (90d), relay_events (30d), snapshots (180d)
+- **Structured logging** — JSON-formatted logs for log aggregator compatibility
+- **CI test step** — `bun test` added to GitHub Actions pipeline
+- **Infrastructure security best practices doc** — `docs/development/infrastructure-security.md`
+
+**Standards:** NIST SP 800-204D, CIS Docker Benchmarks 4.x/5.x, CISA SCuBA CI/CD
+
+**Files changed:** `.github/workflows/ci.yml`, `.github/workflows/security.yml`, `docker-compose.yml`, `.dockerignore` (new), `apps/api/src/lib/ssrf.ts`, `apps/api/src/index.ts`, `apps/api/src/jobs/relayMonitor.ts`, `apps/api/drizzle.config.ts`
+
+---
+
 ## Effort Summary
 
 | Phase | Duration | Difficulty | API Changes | DB Changes |
@@ -203,6 +227,7 @@ Expand from a relay inspector into a complete Nostr developer toolkit. Add six s
 | 7 | 1–2 weekends | Medium | 3 endpoints | relay_discoveries, relay_list_entries |
 | 8 | 2–3 weekends | Medium | None (client-side) | None |
 | 9 | 1 day | Easy | None | None |
+| 10 | 1 day | Medium | Health check, retention | None |
 
 ---
 

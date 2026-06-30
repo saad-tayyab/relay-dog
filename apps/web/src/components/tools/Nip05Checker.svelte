@@ -45,6 +45,12 @@ const clipboard = createClipboard();
 
 <SectionCard>
   <div class="space-y-4">
+    <!-- Screen reader live region for copy feedback -->
+    <div aria-live="polite" class="sr-only">
+      {clipboard.copied ? 'Copied to clipboard' : ''}
+      {clipboard.error ? clipboard.error : ''}
+    </div>
+
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">NIP-05 Checker</h3>
       <span class="text-xs text-text-muted">NIP-05</span>
@@ -60,6 +66,7 @@ const clipboard = createClipboard();
         type="text"
         bind:value={identifier}
         placeholder="alice@example.com"
+        aria-describedby="nip05-hint"
         class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
       />
     </div>
@@ -83,6 +90,7 @@ const clipboard = createClipboard();
       type="button"
       onclick={handleCheck}
       disabled={checking || !identifier.includes('@')}
+      aria-describedby={identifier.length > 0 && !identifier.includes('@') ? 'nip05-hint' : undefined}
       class="w-full px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
     >
       {#if checking}
@@ -93,7 +101,7 @@ const clipboard = createClipboard();
     </button>
 
     {#if !identifier.includes('@') && identifier.length > 0}
-      <p class="text-xs text-warning">
+      <p id="nip05-hint" class="text-xs text-warning" role="status">
         NIP-05 identifier must contain @ (e.g., user@example.com)
       </p>
     {/if}

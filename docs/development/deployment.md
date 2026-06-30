@@ -227,6 +227,8 @@ yourdomain.com {
 
 ## Checklist
 
+> **Security:** See [Infrastructure Security Best Practices](infrastructure-security.md) and [Phase 10](../features/phase-10-infrastructure-hardening.md) for container hardening, supply chain, and CI/CD security requirements.
+
 - [ ] PostgreSQL 18 running and accessible
 - [ ] `.env` file with `DATABASE_URL` set
 - [ ] Migrations run (`bun run db:migrate`)

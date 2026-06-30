@@ -63,7 +63,9 @@ function handleCountryChange() {
         />
       </svg>
     </div>
+    <label for="dir-search" class="sr-only">Search relays</label>
     <input
+      id="dir-search"
       type="text"
       bind:value={searchInput}
       oninput={handleSearchInput}
@@ -74,7 +76,9 @@ function handleCountryChange() {
 
   <!-- NIP Filter -->
   <div class="relative">
+    <label for="dir-nips" class="sr-only">Filter by NIPs</label>
     <input
+      id="dir-nips"
       type="text"
       bind:value={nipInput}
       onblur={handleNipBlur}
@@ -85,7 +89,9 @@ function handleCountryChange() {
 
   <!-- Country Filter -->
   <div class="relative">
+    <label for="dir-country" class="sr-only">Filter by country</label>
     <input
+      id="dir-country"
       type="text"
       bind:value={countryInput}
       onblur={handleCountryChange}
@@ -95,7 +101,9 @@ function handleCountryChange() {
   </div>
 
   <!-- Sort -->
+  <label for="dir-sort" class="sr-only">Sort by</label>
   <select
+    id="dir-sort"
     bind:value={filters.sortBy}
     onchange={() => onSort(filters.sortBy, filters.sortOrder)}
     class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary focus:outline-none focus:border-accent-border transition-all"
@@ -109,8 +117,8 @@ function handleCountryChange() {
   <button
     type="button"
     onclick={() => onSort(filters.sortBy, filters.sortOrder === 'asc' ? 'desc' : 'asc')}
+    aria-label="Toggle sort order (currently {filters.sortOrder === 'asc' ? 'ascending' : 'descending'})"
     class="p-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary transition-all"
-    title="Toggle sort order"
   >
     {filters.sortOrder === 'asc' ? '↑' : '↓'}
   </button>

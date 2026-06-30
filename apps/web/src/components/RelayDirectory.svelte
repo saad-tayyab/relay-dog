@@ -101,7 +101,7 @@ function closeComparison() {
   {/if}
 
   {#if comparisonError}
-    <div class="px-4 py-3 rounded-xl bg-error-dim border border-error/20 text-sm text-error">
+    <div role="alert" class="px-4 py-3 rounded-xl bg-error-dim border border-error/20 text-sm text-error">
       ⚠ {comparisonError}
     </div>
   {/if}

@@ -133,31 +133,20 @@ directoryRoutes.get('/', async (c) => {
     });
   }
 
-  // Step 3: Fetch the latest health check for each relay in this page
+  // Step 3: Fetch health checks for relays in this page, pick latest in JS
   const relayIds = paginatedRelays.map((r) => r.id);
-
-  // Subquery: get max checkedAt per relayId in the current page
-  const latestHC = await db
-    .select({
-      hc: healthChecks,
-    })
+  const allHC = await db
+    .select()
     .from(healthChecks)
-    .where(
-      sql`${healthChecks.relayId} IN ${relayIds} AND ${healthChecks.id} IN (
-        SELECT hc2.id FROM ${healthChecks} hc2
-        INNER JOIN (
-          SELECT relay_id, MAX(checked_at) AS max_checked
-          FROM ${healthChecks}
-          WHERE relay_id = ANY(${relayIds})
-          GROUP BY relay_id
-        ) latest ON hc2.relay_id = latest.relay_id AND hc2.checked_at = latest.max_checked
-      )`,
-    );
+    .where(sql`${healthChecks.relayId} = ANY(${relayIds})`)
+    .orderBy(desc(healthChecks.checkedAt));
 
   // Build a lookup map: relayId → latest health check
   const hcMap = new Map<string, typeof healthChecks.$inferSelect>();
-  for (const row of latestHC) {
-    hcMap.set(row.hc.relayId, row.hc);
+  for (const hc of allHC) {
+    if (!hcMap.has(hc.relayId)) {
+      hcMap.set(hc.relayId, hc);
+    }
   }
 
   // Step 4: Assemble final results

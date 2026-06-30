@@ -1,6 +1,6 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { db } from '../db';
-import { healthChecks, monitoringJobs, relayInfoSnapshots, relays } from '../db/schema';
+import { healthChecks, relayInfoSnapshots, relays } from '../db/schema';
 import { categorizeError } from '../lib/errors';
 import { assertSafeUrl } from '../lib/ssrf';
 
@@ -149,13 +149,7 @@ async function monitorRelay(relayId: string, url: string) {
       .where(eq(relays.id, relayId));
   }
 
-  await db
-    .update(monitoringJobs)
-    .set({
-      lastRunAt: new Date(),
-      nextRunAt: new Date(Date.now() + 60000),
-    })
-    .where(eq(monitoringJobs.relayId, relayId));
+  await db.update(relays).set({ updatedAt: new Date() }).where(eq(relays.id, relayId));
 }
 
 let isRunning = false;
@@ -168,24 +162,12 @@ async function runMonitoringCycle() {
   isRunning = true;
 
   try {
-    const now = new Date();
-    const dueJobs = await db
-      .select({
-        job: monitoringJobs,
-        relay: relays,
-      })
-      .from(monitoringJobs)
-      .innerJoin(relays, eq(monitoringJobs.relayId, relays.id))
-      .where(
-        and(
-          eq(monitoringJobs.enabled, true),
-          sql`(${monitoringJobs.nextRunAt} IS NULL OR ${monitoringJobs.nextRunAt} <= ${now})`,
-        ),
-      );
+    // Check all relays directly — no dependency on monitoringJobs table
+    const allRelays = await db.select().from(relays);
 
-    for (const { job, relay } of dueJobs) {
+    for (const relay of allRelays) {
       try {
-        await monitorRelay(job.relayId, relay.url);
+        await monitorRelay(relay.id, relay.url);
       } catch {
         // Relay check failed — logged via health check record
       }

@@ -110,7 +110,7 @@ export async function importFromFile(file: File): Promise<NostrEvent[]> {
         }
         // Validate each event has required Nostr fields
         const requiredFields = ['id', 'pubkey', 'sig', 'kind', 'created_at', 'tags', 'content'];
-        const events = raw.filter((e: Record<string, unknown>, i: number) => {
+        const events = raw.filter((e: Record<string, unknown>) => {
           if (typeof e !== 'object' || e === null) {
             // Skip invalid event silently
             return false;

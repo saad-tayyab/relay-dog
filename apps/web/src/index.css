@@ -94,7 +94,6 @@ body {
 }
 
 /* WCAG 2.2 SC 2.3.3: Respect user motion preferences */
-/* biome-ignore lint/complexity/noImportantStyles: Required for prefers-reduced-motion override */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

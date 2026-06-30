@@ -2,7 +2,7 @@
 import type { Snippet } from 'svelte';
 
 type Props = {
-  tabs: Array<{ id: string; label: string; icon?: string }>;
+  tabs: Array<{ id: string; label: string; icon?: string; badge?: string | null }>;
   activeTab: string;
   onTabChange: (tabId: string) => void;
   ariaLabel: string;
@@ -67,6 +67,11 @@ function handleKeydown(e: KeyboardEvent) {
       >
         {#if tab.icon}<span aria-hidden="true">{tab.icon}</span>{/if}
         {tab.label}
+        {#if tab.badge}
+          <span class="ml-2 text-xs font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent">
+            {tab.badge}
+          </span>
+        {/if}
       </button>
     {/each}
   </div>

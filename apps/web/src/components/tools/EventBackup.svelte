@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { NostrEvent } from '@relayscope/shared';
+import { SimplePool } from 'nostr-tools/pool';
 import {
   type BackupOptions,
   exportToFile,
@@ -8,8 +9,14 @@ import {
   type RestoreResult,
 } from '../../utils/backup';
 import SectionCard from '../SectionCard.svelte';
+import AccessibleTabs from '../shared/AccessibleTabs.svelte';
 
 let activeTab = $state<'backup' | 'restore'>('backup');
+
+const tabs = [
+  { id: 'backup' as const, label: 'Backup', icon: '💾' },
+  { id: 'restore' as const, label: 'Restore', icon: '📤' },
+];
 
 // Backup state
 let authorPubkey = $state('');
@@ -65,25 +72,46 @@ async function handleFileImport(e: Event) {
 async function handleRestore() {
   if (importedEvents.length === 0 || !relayUrl) return;
 
-  if (!window.nostr) {
-    backupError = 'No NIP-07 signer detected. Please install a Nostr wallet extension.';
-    return;
-  }
+  // Concurrency guard
+  if (restoring) return;
 
   restoring = true;
+  backupError = null;
   restoreProgress = { total: importedEvents.length, restored: 0, skipped: 0 };
 
-  // TODO: Actually publish events via WebSocket
-  // For now, simulate restore
-  await new Promise((r) => setTimeout(r, 2000));
+  const pool = new SimplePool();
+  let restored = 0;
+  let skipped = 0;
+  const errors: string[] = [];
 
-  restoreResult = {
-    total: importedEvents.length,
-    restored: importedEvents.length,
-    skipped: 0,
-    errors: [],
-  };
-  restoring = false;
+  try {
+    const publishPromises = importedEvents.map(async (event) => {
+      try {
+        const pubs = pool.publish([relayUrl], event);
+        // 10-second timeout per event
+        const timeout = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Publish timed out')), 10_000),
+        );
+        await Promise.race([pubs, timeout]);
+        restored++;
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e);
+        errors.push(`Event ${event.id?.slice(0, 8) || 'unknown'}: ${msg}`);
+      }
+      restoreProgress = { total: importedEvents.length, restored, skipped };
+    });
+
+    await Promise.allSettled(publishPromises);
+  } finally {
+    pool.close([relayUrl]);
+    restoreResult = {
+      total: importedEvents.length,
+      restored,
+      skipped,
+      errors,
+    };
+    restoring = false;
+  }
 }
 
 const importedKindsBreakdown = $derived.by(() => {
@@ -114,141 +142,32 @@ const importedKindsBreakdown = $derived.by(() => {
       </div>
     {/if}
 
-    <!-- Tab Toggle (uses AccessibleTabs pattern) -->
-    <div role="tablist" aria-label="Backup and restore" class="flex gap-1 p-1 rounded-lg bg-dark-surface border border-dark-border">
-      <button
-        role="tab"
-        aria-selected={activeTab === 'backup'}
-        id="tab-backup"
-        aria-controls="tabpanel-backup"
-        onclick={() => (activeTab = 'backup')}
-        class="flex-1 min-h-[44px] py-2 px-4 rounded-lg text-sm font-medium transition-all {activeTab === 'backup'
-          ? 'bg-dark-card border border-dark-border text-text-primary'
-          : 'text-text-muted hover:text-text-secondary'}"
-      >
-        <span aria-hidden="true">💾</span> Backup
-      </button>
-      <button
-        role="tab"
-        aria-selected={activeTab === 'restore'}
-        id="tab-restore"
-        aria-controls="tabpanel-restore"
-        onclick={() => (activeTab = 'restore')}
-        class="flex-1 min-h-[44px] py-2 px-4 rounded-lg text-sm font-medium transition-all {activeTab === 'restore'
-          ? 'bg-dark-card border border-dark-border text-text-primary'
-          : 'text-text-muted hover:text-text-secondary'}"
-      >
-        <span aria-hidden="true">📤</span> Restore
-      </button>
-    </div>
-
-    {#if activeTab === 'backup'}
-      <div role="tabpanel" id="tabpanel-backup" aria-labelledby="tab-backup">
-      <!-- Backup Form -->
-      <div class="space-y-3">
-        <div>
-          <label for="backup-pubkey" class="block text-xs text-text-muted mb-1">
-            Author Pubkey (hex)
-          </label>
-          <input
-            id="backup-pubkey"
-            type="text"
-            bind:value={authorPubkey}
-            placeholder="64-char hex pubkey"
-            class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
-          />
-        </div>
-
-        <div>
-          <label for="backup-relay" class="block text-xs text-text-muted mb-1">Relay URL</label>
-          <input
-            id="backup-relay"
-            type="text"
-            bind:value={relayUrl}
-            placeholder="wss://relay.example.com"
-            class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
-          />
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
+    <AccessibleTabs
+      ariaLabel="Backup and restore"
+      {tabs}
+      activeTab={activeTab}
+      onTabChange={(id) => (activeTab = id as typeof activeTab)}
+    >
+      {#if activeTab === 'backup'}
+        <!-- Backup Form -->
+        <div class="space-y-3">
           <div>
-            <label for="backup-kinds" class="block text-xs text-text-muted mb-1">
-              Kinds (comma-separated)
+            <label for="backup-pubkey" class="block text-xs text-text-muted mb-1">
+              Author Pubkey (hex)
             </label>
             <input
-              id="backup-kinds"
+              id="backup-pubkey"
               type="text"
-              bind:value={kinds}
-              placeholder="0,1,3"
+              bind:value={authorPubkey}
+              placeholder="64-char hex pubkey"
               class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
             />
           </div>
+
           <div>
-            <label for="backup-limit" class="block text-xs text-text-muted mb-1">Limit</label>
+            <label for="backup-relay" class="block text-xs text-text-muted mb-1">Relay URL</label>
             <input
-              id="backup-limit"
-              type="number"
-              bind:value={limit}
-              placeholder="1000"
-              class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
-            />
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onclick={handleBackup}
-          disabled={fetching || !authorPubkey || !relayUrl}
-          class="w-full px-4 py-3 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-        >
-          {#if fetching}
-            Fetching events...
-          {:else}
-            Backup Events
-          {/if}
-        </button>
-      </div>
-      </div>
-    {:else}
-      <div role="tabpanel" id="tabpanel-restore" aria-labelledby="tab-restore">
-      <!-- Restore Form -->
-      <div class="space-y-3">
-        <!-- File Import -->
-        <div>
-          <label for="restore-file" class="block text-xs text-text-muted mb-1">
-            Import backup file
-          </label>
-          <input
-            id="restore-file"
-            type="file"
-            accept=".json"
-            onchange={handleFileImport}
-            class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:bg-accent file:text-white file:cursor-pointer"
-          />
-        </div>
-
-        {#if importedEvents.length > 0}
-          <!-- Preview -->
-          <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border">
-            <p class="text-xs text-text-muted mb-2">
-              {importedEvents.length} events imported
-            </p>
-            <div class="flex flex-wrap gap-2 text-xs">
-              {#each Object.entries(importedKindsBreakdown) as [kind, count] (kind)}
-                <span class="px-2 py-0.5 rounded bg-dark-border text-text-secondary">
-                  kind {kind}: {count}
-                </span>
-              {/each}
-            </div>
-          </div>
-
-          <!-- Target Relay -->
-          <div>
-            <label for="restore-relay" class="block text-xs text-text-muted mb-1">
-              Target Relay
-            </label>
-            <input
-              id="restore-relay"
+              id="backup-relay"
               type="text"
               bind:value={relayUrl}
               placeholder="wss://relay.example.com"
@@ -256,54 +175,138 @@ const importedKindsBreakdown = $derived.by(() => {
             />
           </div>
 
-          <!-- Restore Button -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="backup-kinds" class="block text-xs text-text-muted mb-1">
+                Kinds (comma-separated)
+              </label>
+              <input
+                id="backup-kinds"
+                type="text"
+                bind:value={kinds}
+                placeholder="0,1,3"
+                class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+              />
+            </div>
+            <div>
+              <label for="backup-limit" class="block text-xs text-text-muted mb-1">Limit</label>
+              <input
+                id="backup-limit"
+                type="number"
+                bind:value={limit}
+                placeholder="1000"
+                class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+              />
+            </div>
+          </div>
+
           <button
             type="button"
-            onclick={handleRestore}
-            disabled={restoring || !relayUrl}
+            onclick={handleBackup}
+            disabled={fetching || !authorPubkey || !relayUrl}
             class="w-full px-4 py-3 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
-            {#if restoring}
-              Restoring... ({restoreProgress.restored}/{restoreProgress.total})
+            {#if fetching}
+              Fetching events...
             {:else}
-              Restore Events
+              Backup Events
             {/if}
           </button>
+        </div>
+      {:else}
+        <!-- Restore Form -->
+        <div class="space-y-3">
+          <!-- File Import -->
+          <div>
+            <label for="restore-file" class="block text-xs text-text-muted mb-1">
+              Import backup file
+            </label>
+            <input
+              id="restore-file"
+              type="file"
+              accept=".json"
+              onchange={handleFileImport}
+              class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:bg-accent file:text-white file:cursor-pointer"
+            />
+          </div>
 
-          <!-- Progress Bar -->
-          {#if restoring}
-            <div
-              role="progressbar"
-              aria-valuenow={restoreProgress.restored}
-              aria-valuemin={0}
-              aria-valuemax={restoreProgress.total}
-              aria-label="Restore progress"
-              class="h-2 rounded-full bg-dark-surface overflow-hidden"
-            >
-              <div
-                class="h-full bg-accent transition-all duration-300"
-                style="width: {(restoreProgress.restored / restoreProgress.total) * 100}%"
-              ></div>
+          {#if importedEvents.length > 0}
+            <!-- Preview -->
+            <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border">
+              <p class="text-xs text-text-muted mb-2">
+                {importedEvents.length} events imported
+              </p>
+              <div class="flex flex-wrap gap-2 text-xs">
+                {#each Object.entries(importedKindsBreakdown) as [kind, count] (kind)}
+                  <span class="px-2 py-0.5 rounded bg-dark-border text-text-secondary">
+                    kind {kind}: {count}
+                  </span>
+                {/each}
+              </div>
             </div>
-          {/if}
 
-          <!-- Result -->
-          {#if restoreResult}
-            <div
-              role="status"
-              class="px-3 py-2 rounded-lg text-xs {restoreResult.errors.length === 0
-                ? 'bg-success/10 border border-success/20 text-success'
-                : 'bg-warning-dim border border-warning/20 text-warning'}"
+            <!-- Target Relay -->
+            <div>
+              <label for="restore-relay" class="block text-xs text-text-muted mb-1">
+                Target Relay
+              </label>
+              <input
+                id="restore-relay"
+                type="text"
+                bind:value={relayUrl}
+                placeholder="wss://relay.example.com"
+                class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+              />
+            </div>
+
+            <!-- Restore Button -->
+            <button
+              type="button"
+              onclick={handleRestore}
+              disabled={restoring || !relayUrl}
+              class="w-full px-4 py-3 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
-              ✅ Restored {restoreResult.restored} / {restoreResult.total} events
-              {#if restoreResult.skipped > 0}
-                ({restoreResult.skipped} skipped)
+              {#if restoring}
+                Restoring... ({restoreProgress.restored}/{restoreProgress.total})
+              {:else}
+                Restore Events
               {/if}
-            </div>
+            </button>
+
+            <!-- Progress Bar -->
+            {#if restoring}
+              <div
+                role="progressbar"
+                aria-valuenow={restoreProgress.restored}
+                aria-valuemin={0}
+                aria-valuemax={restoreProgress.total}
+                aria-label="Restore progress"
+                class="h-2 rounded-full bg-dark-surface overflow-hidden"
+              >
+                <div
+                  class="h-full bg-accent transition-all duration-300"
+                  style="width: {(restoreProgress.restored / restoreProgress.total) * 100}%"
+                ></div>
+              </div>
+            {/if}
+
+            <!-- Result -->
+            {#if restoreResult}
+              <div
+                role="status"
+                class="px-3 py-2 rounded-lg text-xs {restoreResult.errors.length === 0
+                  ? 'bg-success/10 border border-success/20 text-success'
+                  : 'bg-warning-dim border border-warning/20 text-warning'}"
+              >
+                ✅ Restored {restoreResult.restored} / {restoreResult.total} events
+                {#if restoreResult.skipped > 0}
+                  ({restoreResult.skipped} skipped)
+                {/if}
+              </div>
+            {/if}
           {/if}
-        {/if}
-      </div>
-      </div>
-    {/if}
+        </div>
+      {/if}
+    </AccessibleTabs>
   </div>
 </SectionCard>

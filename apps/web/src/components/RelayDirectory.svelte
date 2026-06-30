@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { ComparisonDiff, DirectoryRelay } from '@relayscope/shared';
 import { useDirectory } from '../lib/composables/useDirectory.svelte';
+import AddRelay from './AddRelay.svelte';
 import ComparisonView from './ComparisonView.svelte';
 import FilterBar from './FilterBar.svelte';
 import LoadingSpinner from './LoadingSpinner.svelte';
@@ -85,6 +86,9 @@ function closeComparison() {
     onSort={(by, order) => directory.setSort(by, order)}
     onCountryChange={(c) => directory.setCountry(c)}
   />
+
+  <!-- Add Relay -->
+  <AddRelay onAdded={() => directory.fetchRelays()} />
 
   <!-- Comparison View -->
   {#if comparisonRelayA && comparisonRelayB && comparisonDiff}

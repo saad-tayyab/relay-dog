@@ -246,6 +246,35 @@ All tools are client-side and work directly in the browser:
 
 ---
 
+## 🙏 Credits
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <a href="https://goose-docs.ai/">
+        <img src="https://aaif.io/wp-content/uploads/2026/04/goose_icon.svg" alt="Goose" width="64" height="64">
+      </a>
+      <br>
+      <a href="https://goose-docs.ai/"><b>Goose</b></a> · <a href="https://github.com/aaif-goose/goose">GitHub</a>
+      <br>
+      <sub>Primary AI agent</sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://mimo.xiaomi.com/mimo-v2-5">
+        <img src="https://mimo.xiaomi.com/mimo-v2-5/assets/logo.svg" alt="MiMo" width="64" height="64">
+      </a>
+      <br>
+      <a href="https://mimo.xiaomi.com/mimo-v2-5"><b>MiMo v2.5</b></a> · <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.5">Model</a>
+      <br>
+      <sub>Coding intelligence</sub>
+    </td>
+  </tr>
+</table>
+
+> *Cursor was also present, contributing approximately 0.1%.*
+
+---
+
 ## 📜 License
 
 MIT

@@ -23,10 +23,10 @@ echo "✅ Biome checks passed"
 echo "🔍 Running type checks..."
 
 # Run type-check across all packages
-npx turbo type-check 2>&1 || {
+bunx turbo type-check 2>&1 || {
   echo ""
   echo "❌ Type check failed. Fix errors before committing."
-  echo "   Run: npx turbo type-check"
+  echo "   Run: bunx turbo type-check"
   exit 1
 }
 

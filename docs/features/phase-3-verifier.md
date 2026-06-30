@@ -80,12 +80,12 @@ function serializeEvent(event: NostrEvent): Uint8Array {
 
 ```
 EventVerifier/
-├── EventInput.tsx          # Paste JSON textarea
-├── VerificationPanel.tsx   # Signature + ID verification results
-├── EventDetails.tsx        # Decoded event fields
-├── TagDecoder.tsx          # Tag explanations
-├── Nip05Check.tsx          # NIP-05 verification
-└── KindBadge.tsx           # Event kind display
+├── EventInput.svelte          # Paste JSON textarea
+├── VerificationPanel.svelte   # Signature + ID verification results
+├── EventDetails.svelte        # Decoded event fields
+├── TagDecoder.svelte          # Tag explanations
+├── Nip05Check.svelte          # NIP-05 verification
+└── KindBadge.svelte           # Event kind display
 ```
 
 ### Dependencies

@@ -6,7 +6,7 @@
 
 ## Context
 
-Relay Scope requires a web frontend (React), a backend API (Hono), and shared types. We need a structure that:
+Relay Scope requires a web frontend (Svelte 5), a backend API (Hono), and shared types. We need a structure that:
 
 - Shares TypeScript types between frontend and backend without duplication
 - Enables fast local development with hot reload across packages
@@ -22,7 +22,7 @@ We adopt a **Turborepo monorepo** with **Bun** as the runtime and package manage
 ```
 relayscope/
 ├── apps/
-│   ├── web/          # Vite + React 19
+│   ├── web/          # Vite + Svelte 5
 │   └── api/          # Hono + Bun + Drizzle
 ├── packages/
 │   └── shared/       # TypeScript types only

@@ -29,7 +29,7 @@ createdb relayscope
 bun run db:push
 
 # 6. Start dev servers
-npx turbo dev
+bunx turbo dev
 ```
 
 This starts:
@@ -82,13 +82,13 @@ bun run db:studio
 
 ```bash
 # Start everything
-npx turbo dev
+bunx turbo dev
 
 # Start only web
-npx turbo dev --filter=@relayscope/web
+bunx turbo dev --filter=@relayscope/web
 
 # Start only API
-npx turbo dev --filter=@relayscope/api
+bunx turbo dev --filter=@relayscope/api
 ```
 
 ### 4. Git Hooks
@@ -105,11 +105,11 @@ No manual setup needed — hooks run on `git commit`.
 ```
 relayscope/
 ├── apps/
-│   ├── web/                    # Vite + React frontend
+│   ├── web/                    # Vite + Svelte 5 frontend
 │   │   ├── src/
-│   │   │   ├── App.tsx         # Main app component
+│   │   │   ├── App.svelte     # Main app component
 │   │   │   ├── index.css       # Tailwind styles
-│   │   │   └── main.tsx        # React root
+│   │   │   └── main.ts         # Svelte mount
 │   │   └── vite.config.ts      # Vite config with API proxy
 │   └── api/                    # Hono + Bun backend
 │       ├── src/
@@ -130,9 +130,9 @@ relayscope/
 
 | Command | Description |
 |---------|-------------|
-| `npx turbo dev` | Start all dev servers |
-| `npx turbo build` | Build all packages |
-| `npx turbo type-check` | Run TypeScript checks |
+| `bunx turbo dev` | Start all dev servers |
+| `bunx turbo build` | Build all packages |
+| `bunx turbo type-check` | Run TypeScript checks |
 | `bun run db:generate` | Generate Drizzle migrations |
 | `bun run db:migrate` | Run migrations |
 | `bun run db:push` | Push schema (dev) |
@@ -170,7 +170,7 @@ bun install
 
 ```bash
 # Clear turbo cache
-npx turbo daemon clean
+bunx turbo daemon clean
 # Or
 rm -rf .turbo
 ```

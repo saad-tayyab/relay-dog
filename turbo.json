@@ -1,23 +1,40 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "futureFlags": {
+    "globalConfiguration": true,
+    "errorsOnlyShowHash": true
+  },
+  "global": {
+    "inputs": ["tsconfig.json", ".env"],
+    "env": ["NODE_ENV"]
+  },
   "tasks": {
     "build": {
+      "description": "Compile all packages for production deployment",
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
-      "inputs": ["src/**", "package.json", "tsconfig.json"]
+      "inputs": ["src/**", "package.json", "tsconfig.json"],
+      "env": ["NODE_ENV"]
     },
     "dev": {
+      "description": "Start development servers with hot reload",
       "cache": false,
       "persistent": true
     },
     "lint": {
+      "description": "Run Biome lint + format checks",
       "dependsOn": [],
       "inputs": ["src/**", "biome.json"]
     },
     "type-check": {
+      "description": "Run TypeScript / svelte-check type verification",
       "dependsOn": ["^type-check"],
       "inputs": ["src/**", "tsconfig.json"]
+    },
+    "preview": {
+      "description": "Serve production build locally for testing",
+      "cache": false,
+      "persistent": true
     }
-  },
-  "globalDependencies": ["turbo.json", "biome.json", "tsconfig.json"]
+  }
 }

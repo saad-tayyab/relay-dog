@@ -6,6 +6,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Con
 
 ## [0.2.0] - 2026-06-30
 
+### Changed
+
+#### Web (`@relayscope/web`)
+- **React → Svelte 5 migration**: Full rewrite from React 19 to Svelte 5 Runes
+  - Replaced React hooks (`useState`, `useEffect`, `useCallback`) with Svelte 5 runes (`$state`, `$derived`, `$effect`, `$props`)
+  - Replaced `useRelaySocket` hook with reactive `relaySocket` store (getter-based pattern)
+  - Replaced all `.tsx` components with `.svelte` components
+  - Added `EventCard.svelte` as extracted component (was inline `memo` in React)
+  - Removed React dependencies (react, react-dom, @types/react, @types/react-dom, @vitejs/plugin-react)
+  - Added Svelte dependencies (svelte, @sveltejs/vite-plugin-svelte, svelte-check)
+  - Bundle size: 77.35 KB JS (26.63 KB gzipped) + 28.34 KB CSS (5.91 KB gzipped)
+
 ### Added
 
 #### Web (`@relayscope/web`)
@@ -40,7 +52,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Con
 - Drizzle schema: relays, relay_info_snapshots, health_checks, relay_events, monitoring_jobs
 
 #### Web (`@relayscope/web`)
-- Vite + React 19 + Tailwind v4
+- Vite + Svelte 5 + Tailwind v4
 - NIP-11 relay profile viewer
 - URL input with auto-completion
 - Quick-pick buttons for 7 popular relays

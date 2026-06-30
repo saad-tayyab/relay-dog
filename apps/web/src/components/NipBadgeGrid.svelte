@@ -1,4 +1,7 @@
-import { SectionCard } from './SectionCard';
+<script lang="ts">
+import SectionCard from './SectionCard.svelte';
+
+let { nips }: { nips: number[] } = $props();
 
 const NIP_INFO: Record<number, { name: string; desc: string; color: string }> = {
   0: { name: 'NIP-01', desc: 'Basic protocol flow', color: '#60a5fa' },
@@ -43,55 +46,48 @@ const NIP_INFO: Record<number, { name: string; desc: string; color: string }> = 
   78: { name: 'NIP-78', desc: 'Application-specific Data', color: '#60a5fa' },
 };
 
-const NIP_LINK = (n: number) =>
+const nipLink = (n: number) =>
   `https://github.com/nostr-protocol/nips/blob/master/${String(n).padStart(2, '0')}.md`;
 
-export function NipBadgeGrid({ nips }: { nips: number[] }) {
-  if (!nips || nips.length === 0) return null;
-  return (
-    <SectionCard className="animate-fade-in">
-      <h3 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-4">
-        Supported NIPs ({nips.length})
-      </h3>
-      <div className="flex flex-wrap gap-2">
-        {nips
-          .sort((a, b) => a - b)
-          .map((n) => {
-            const info = NIP_INFO[n];
-            return (
-              <a
-                key={n}
-                href={NIP_LINK(n)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105"
-                style={{
-                  backgroundColor: `${info?.color || '#60a5fa'}15`,
-                  color: info?.color || '#60a5fa',
-                  border: `1px solid ${info?.color || '#60a5fa'}30`,
-                }}
-                title={info?.desc || `NIP-${n}`}
-              >
-                <span className="font-bold">NIP-{n}</span>
-                {info?.desc && <span className="hidden sm:inline opacity-70">· {info.desc}</span>}
-                <svg
-                  aria-hidden="true"
-                  className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
-            );
-          })}
-      </div>
-    </SectionCard>
-  );
-}
+const sortedNips = $derived([...nips].sort((a, b) => a - b));
+</script>
+
+{#if nips && nips.length > 0}
+  <SectionCard className="animate-fade-in">
+    <h3 class="text-sm font-semibold text-text-muted uppercase tracking-wider mb-4">
+      Supported NIPs ({nips.length})
+    </h3>
+    <div class="flex flex-wrap gap-2">
+      {#each sortedNips as n (n)}
+        {@const info = NIP_INFO[n]}
+        <a
+          href={nipLink(n)}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105"
+          style="background-color: {info?.color || '#60a5fa'}15; color: {info?.color || '#60a5fa'}; border: 1px solid {info?.color || '#60a5fa'}30"
+          title={info?.desc || `NIP-${n}`}
+        >
+          <span class="font-bold">NIP-{n}</span>
+          {#if info?.desc}
+            <span class="hidden sm:inline opacity-70">· {info.desc}</span>
+          {/if}
+          <svg
+            aria-hidden="true"
+            class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            />
+          </svg>
+        </a>
+      {/each}
+    </div>
+  </SectionCard>
+{/if}

@@ -53,8 +53,8 @@ Always ask AI to run checks after making changes.
 ```
 "After making this change, run:
  1. bunx biome check .
- 2. npx turbo type-check
- 3. npx turbo build"
+ 2. bunx turbo type-check
+ 3. bunx turbo build"
 ```
 
 ---
@@ -139,7 +139,7 @@ I'm working on Relay Scope, a Nostr relay inspector.
 
 Tech stack:
 - Bun 1.3 + Turborepo monorepo
-- Apps: Vite+React (web), Hono+Bun (api)
+- Apps: Vite+Svelte 5 (web), Hono+Bun (api)
 - Drizzle ORM + PostgreSQL
 - Biome for linting, TypeScript 6.0
 
@@ -165,8 +165,8 @@ NIPs involved: [NIP-XX, NIP-YY]
 
 After implementation, verify:
 - bunx biome check .
-- npx turbo type-check
-- npx turbo build
+- bunx turbo type-check
+- bunx turbo build
 - Manual test: [HOW_TO_TEST]
 ```
 
@@ -236,12 +236,12 @@ After implementation, verify:
 
 ```
 1. Describe the problem precisely
-   → "In apps/web/src/App.tsx line 245, clicking the retry button
+   → "In apps/web/src/App.svelte, clicking the retry button
       throws 'Cannot read property of undefined'"
 
 2. Share the error
    → "Error: TypeError: Cannot read properties of undefined (reading 'url')
-      at App.tsx:245:23"
+      at App.svelte:245:23"
 
 3. Ask for the fix
    → "Fix this null check. The relay state might be null when the
@@ -265,10 +265,14 @@ After implementation, verify:
 - Tailwind CSS support via `tailwindDirectives: true`
 - Some rules are `warn` not `error` — fix them but don't block
 
-### React 19.2
-- Prefer `use()` over `useEffect` for data fetching
-- Server Components not applicable in Vite SPA (future-proof only)
-- Automatic JSX transform (no manual import)
+### Svelte 5
+- Use Runes: `$state`, `$derived`, `$effect`, `$props()` for all reactivity
+- Component files use `.svelte` extension
+- Store files use `.svelte.ts` extension (required for runes)
+- Snippets replace React's `children` prop
+- Event handlers are lowercase: `onclick`, `onsubmit`
+- `bind:value` for two-way input binding
+- Scoped CSS by default, but prefer Tailwind
 
 ### Hono 4.12
 - Use `Bun.serve()` directly (not `@hono/node-server`)

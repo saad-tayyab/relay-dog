@@ -16,14 +16,12 @@ Version tracking for all dependencies. Updated each time packages are modified.
 
 | Package | Version | Latest | Status | Updated |
 |---------|---------|--------|--------|---------|
-| react | 19.2.7 | 19.2.7 | ✅ Current | 2026-06-30 |
-| react-dom | 19.2.7 | 19.2.7 | ✅ Current | 2026-06-30 |
+| svelte | 5.35.0 | 5.35.0 | ✅ Current | 2026-06-30 |
+| @sveltejs/vite-plugin-svelte | 5.0.0 | 5.0.0 | ✅ Current | 2026-06-30 |
+| svelte-check | 4.1.0 | 4.1.0 | ✅ Current | 2026-06-30 |
 | vite | 8.1.0 | 8.1.0 | ✅ Current | 2026-06-30 |
-| @vitejs/plugin-react | 6.0.3 | 6.0.3 | ✅ Current | 2026-06-30 |
 | tailwindcss | 4.3.2 | 4.3.2 | ✅ Current | 2026-06-30 |
 | @tailwindcss/vite | 4.3.2 | 4.3.2 | ✅ Current | 2026-06-30 |
-| @types/react | 19.2.17 | 19.2.17 | ✅ Current | 2026-06-30 |
-| @types/react-dom | 19.2.3 | 19.2.3 | ✅ Current | 2026-06-30 |
 
 ### Backend (apps/api)
 
@@ -60,6 +58,7 @@ Version tracking for all dependencies. Updated each time packages are modified.
 | 2026-06-30 | Updated all to latest | typescript 5.9→6.0, vite 6.4→8.1, react 19.1→19.2, hono 4.7→4.12, tailwind 4.1→4.3, drizzle 0.44→0.45, node-cron 3.0→4.5, @hono/node-server 1.19→removed |
 | 2026-06-30 | Added Biome | @biomejs/biome 2.5.1 (replaced oxlint) |
 | 2026-06-30 | Removed Node adapter | @hono/node-server removed, use native Bun.serve() |
+| 2026-06-30 | React → Svelte 5 migration | Removed: react, react-dom, @types/react, @types/react-dom, @vitejs/plugin-react. Added: svelte 5.35, @sveltejs/vite-plugin-svelte 5.0, svelte-check 4.1 |
 
 ---
 
@@ -77,8 +76,8 @@ bun add package@latest
 
 # After updating, verify
 bunx biome check .
-npx turbo build --force
-npx turbo type-check --force
+bunx turbo build --force
+bunx turbo type-check --force
 ```
 
 ## Audit Checklist
@@ -87,8 +86,8 @@ When updating packages, verify:
 
 - [ ] `bun install` succeeds
 - [ ] `bunx biome check .` passes
-- [ ] `npx turbo build --force` succeeds
-- [ ] `npx turbo type-check --force` passes
+- [ ] `bunx turbo build --force` succeeds
+- [ ] `bunx turbo type-check --force` passes
 - [ ] Dev servers start (`turbo dev`)
 - [ ] No runtime errors in browser
 - [ ] Update this audit doc with new versions

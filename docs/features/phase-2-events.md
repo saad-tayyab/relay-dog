@@ -59,11 +59,11 @@ Connect to a relay via WebSocket and stream events in real time. The heart of th
 
 | File | Purpose |
 |------|---------|
-| `hooks/useRelaySocket.ts` | Core WebSocket hook with reconnect, dedup, EOSE |
-| `components/ConnectionPanel.tsx` | Status display, connect/disconnect, stats |
-| `components/FilterBuilder.tsx` | REQ subscription builder with filter inputs |
-| `components/EventFeed.tsx` | Auto-scrolling event list with EventCard |
-| `components/EventCard.tsx` | Individual event display (memo'd) |
+| `lib/stores/relaySocket.svelte.ts` | Core WebSocket store with reconnect, dedup, EOSE (Svelte 5 runes) |
+| `components/ConnectionPanel.svelte` | Status display, connect/disconnect, stats |
+| `components/FilterBuilder.svelte` | REQ subscription builder with filter inputs |
+| `components/EventFeed.svelte` | Auto-scrolling event list with EventCard |
+| `components/EventCard.svelte` | Individual event display |
 
 ### Hook API
 

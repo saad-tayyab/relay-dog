@@ -37,7 +37,8 @@ type CheckStatus = 'pending' | 'success' | 'error' | 'checking'
 | Constants | SCREAMING_SNAKE | `MAX_RETRIES`, `DEFAULT_TIMEOUT` |
 | Files | kebab-case | `relay-monitor.ts`, `health-check.ts` |
 | Database columns | snake_case | `relay_id`, `http_reachable` |
-| React components | PascalCase | `RelayProfile`, `NipBadge` |
+| Svelte components | PascalCase | `RelayProfile.svelte`, `NipBadge.svelte` |
+| Svelte stores | camelCase | `relaySocket.svelte.ts` |
 
 ### Imports
 
@@ -56,64 +57,105 @@ import { checkHealth } from './utils'
 
 ---
 
-## React (Frontend)
+## Svelte (Frontend)
 
 ### Component Style
 
-```tsx
-// ✅ Functional components only (no class components)
-function RelayProfile({ relay }: { relay: Relay }) {
-  return (
-    <div className="...">
-      <h2>{relay.name}</h2>
-    </div>
-  )
-}
+```svelte
+<!-- ✅ Svelte 5 Runes syntax -->
+<script lang="ts">
+  // Props via $props()
+  let { relay, onSelect }: { relay: Relay; onSelect: (id: string) => void } = $props();
+  
+  // Reactive state via $state()
+  let isExpanded = $state(false);
+  
+  // Derived values via $derived()
+  const displayName = $derived(relay.name || 'Unknown');
+</script>
 
-// ✅ Use interface for props with multiple properties
-interface RelayCardProps {
-  relay: Relay
-  onSelect: (id: string) => void
-  showHealth?: boolean
-}
+<div class="...">
+  <h2>{displayName}</h2>
+</div>
+```
 
-function RelayCard({ relay, onSelect, showHealth = false }: RelayCardProps) { ... }
+### Naming Conventions
+
+| Element | Convention | Example |
+|---------|-----------|---------|
+| Variables | camelCase | `relayUrl`, `healthCheck` |
+| Functions | camelCase | `fetchRelay()`, `checkHealth()` |
+| Types/Interfaces | PascalCase | `RelayInfo`, `HealthCheck` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRIES`, `DEFAULT_TIMEOUT` |
+| Files | kebab-case | `relay-monitor.ts`, `health-check.ts` |
+| Database columns | snake_case | `relay_id`, `http_reachable` |
+| Svelte components | PascalCase | `RelayProfile.svelte`, `NipBadge.svelte` |
+| Svelte stores | camelCase | `relaySocket.svelte.ts` |
+
+### Runes Reference
+
+```svelte
+<script lang="ts">
+  // ✅ $state for reactive local state
+  let count = $state(0);
+  
+  // ✅ $derived for computed values
+  const doubled = $derived(count * 2);
+  
+  // ✅ $effect for side effects
+  $effect(() => {
+    console.log('Count changed:', count);
+  });
+  
+  // ✅ $props() for component props
+  let { title, count }: Props = $props();
+  
+  // ✅ Snippets replace ReactNode/children
+  import type { Snippet } from 'svelte';
+  let { children }: { children: Snippet } = $props();
+</script>
+
+<!-- ✅ Event handlers use lowercase -->
+<button onclick={() => count++}>Click</button>
+
+<!-- ✅ bind: for two-way binding -->
+<input bind:value={name} />
+
+<!-- ✅ Each blocks with keyed lists -->
+{#each items as item (item.id)}
+  <div>{item.name}</div>
+{/each}
+
+<!-- ✅ Conditional rendering -->
+{#if condition}
+  <p>Visible</p>
+{:else}
+  <p>Hidden</p>
+{/if}
 ```
 
 ### Tailwind Rules
 
-```tsx
-// ✅ Use Tailwind utility classes
-<div className="flex items-center gap-4 p-6 rounded-xl bg-dark-card">
+Same as before — use Tailwind utility classes, use custom theme tokens from index.css, avoid inline styles, avoid CSS files for components.
 
-// ✅ Use custom theme tokens from index.css
-<div className="bg-dark-card border border-dark-border">
+### Stores
 
-// ✅ Use conditional classes
-className={`px-4 py-2 ${isActive ? 'bg-accent text-white' : 'bg-dark-surface'}`}
-
-// ❌ Don't use inline styles
-<div style={{ padding: '16px', backgroundColor: '#1a1a2a' }}>
-
-// ❌ Don't create CSS files for components (use Tailwind)
-```
-
-### Hooks
-
-```tsx
-// ✅ Custom hooks prefixed with "use"
-function useRelayInfo(url: string) {
-  const [relay, setRelay] = useState<Relay | null>(null)
-  const [loading, setLoading] = useState(false)
-  // ...
-  return { relay, loading, error }
+```typescript
+// ✅ Reactive stores use .svelte.ts extension with getter returns
+// apps/web/src/lib/stores/relaySocket.svelte.ts
+export function relaySocket(getRelayUrl: () => string) {
+  let status = $state('disconnected');
+  
+  return {
+    get status() { return status; },
+    connect,
+    disconnect,
+  };
 }
 
-// ✅ Extract complex logic into custom hooks
-function App() {
-  const { relay, loading, error } = useRelayInfo(url)
-  // ...
-}
+// ✅ Usage in components
+const socket = relaySocket(() => normalizedUrl);
+// Access reactively: socket.status
 ```
 
 ---

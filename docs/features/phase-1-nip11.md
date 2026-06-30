@@ -54,9 +54,9 @@ The MVP provides a single-page web app for inspecting a Nostr relay's NIP-11 inf
 ## Technical Details
 
 ### Frontend
-- **Component**: Single `App.tsx` (636 lines)
+- **Component**: Single `App.svelte` (350 lines)
 - **Styling**: Tailwind v4 with custom dark theme tokens
-- **State**: React `useState` hooks (no state manager needed)
+- **State**: Svelte 5 `$state` runes (no state manager needed)
 - **No external UI libraries**: All components are custom
 
 ### Connection Checks

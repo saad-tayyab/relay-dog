@@ -57,7 +57,7 @@ MONITOR_INTERVAL_MS=60000
 bun install
 
 # 2. Build all packages
-npx turbo build
+bunx turbo build
 
 # 3. Generate and run migrations
 bun run db:generate
@@ -67,6 +67,11 @@ bun run db:migrate
 cd apps/api
 bun run start
 ```
+
+### Frontend Build Output
+
+The Svelte 5 frontend compiles to standard static assets (HTML, CSS, JS) in `apps/web/dist/`.
+No server-side rendering — all rendering happens client-side via Vite's build output.
 
 ### What Gets Built
 
@@ -175,7 +180,7 @@ RUN bun install --frozen-lockfile
 
 # Build
 COPY . .
-RUN npx turbo build
+RUN bunx turbo build
 
 # Production
 FROM oven/bun:1.3-slim AS production
@@ -225,7 +230,7 @@ yourdomain.com {
 - [ ] PostgreSQL 18 running and accessible
 - [ ] `.env` file with `DATABASE_URL` set
 - [ ] Migrations run (`bun run db:migrate`)
-- [ ] Production build succeeds (`npx turbo build`)
+- [ ] Production build succeeds (`bunx turbo build`)
 - [ ] API starts on correct port
 - [ ] Nginx/Caddy configured
 - [ ] SSL certificate active

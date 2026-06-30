@@ -26,13 +26,13 @@ Follow the [Style Guide](style-guide.md). Keep commits atomic and well-typed.
 
 ```bash
 # Type check all packages
-npx turbo type-check
+bunx turbo type-check
 
 # Build everything
-npx turbo build
+bunx turbo build
 
 # Test manually in browser
-npx turbo dev
+bunx turbo dev
 ```
 
 ### 4. Commit with Conventional Commits
@@ -142,11 +142,11 @@ bun run db:generate
 
 ## Adding a New Frontend Component
 
-1. **Create the component** in `apps/web/src/components/`
+1. **Create the component** as a `.svelte` file in `apps/web/src/components/`
 
-2. **Use Tailwind** for styling (no CSS modules)
+2. **Use Tailwind** for styling (Svelte scoped CSS available but prefer Tailwind)
 
-3. **Import shared types** from `@relayscope/shared` for props
+3. **Import shared types** from `@relayscope/shared` and use `$props()` for component props
 
 4. **Document** if it's a significant new feature in `docs/features/`
 
@@ -155,7 +155,7 @@ bun run db:generate
 ## Performance Guidelines
 
 - **API**: Use database indexes for common queries
-- **Web**: Lazy-load components with `React.lazy()` for new pages
+- **Web**: Use Svelte's built-in code-splitting with dynamic `import()` for lazy-loaded routes
 - **WebSocket**: Implement reconnection with exponential backoff
 - **Database**: Use `SELECT` with specific columns, not `SELECT *`
 

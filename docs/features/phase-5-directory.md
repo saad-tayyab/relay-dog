@@ -103,12 +103,12 @@ const points = checks.map((c, i) =>
 
 ```
 Directory/
-├── RelayDirectory.tsx      # Main directory page
-├── RelayCard.tsx            # Individual relay card
-├── FilterBar.tsx            # NIP, country, free/paid filters
-├── ComparisonView.tsx       # Side-by-side comparison
-├── UptimeSparkline.tsx      # 7-day/30-day sparkline
-└── ShareButton.tsx          # Copy permalink to clipboard
+├── RelayDirectory.svelte      # Main directory page
+├── RelayCard.svelte            # Individual relay card
+├── FilterBar.svelte            # NIP, country, free/paid filters
+├── ComparisonView.svelte       # Side-by-side comparison
+├── UptimeSparkline.svelte      # 7-day/30-day sparkline
+└── ShareButton.svelte          # Copy permalink to clipboard
 ```
 
 ## API Endpoints (New)

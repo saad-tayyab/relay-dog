@@ -9,7 +9,7 @@ Relay Scope is a **Nostr relay inspector** — a browser-based tool for develope
 ```mermaid
 graph TB
     subgraph "Browser"
-        WEB["🌐 Web App<br/>Vite + React 19 + Tailwind"]
+        WEB["🌐 Web App<br/>Vite + Svelte 5 + Tailwind"]
     end
 
     subgraph "Server"
@@ -39,7 +39,7 @@ The monorepo contains three packages with clear dependency boundaries:
 ```mermaid
 graph LR
     SHARED["@relayscope/shared<br/>Types & Interfaces"]
-    WEB["@relayscope/web<br/>React Frontend"]
+    WEB["@relayscope/web<br/>Svelte Frontend"]
     API["@relayscope/api<br/>Hono Backend"]
 
     WEB -->|"imports types"| SHARED
@@ -49,7 +49,7 @@ graph LR
 
 | Package | Stack | Responsibility |
 |---------|-------|----------------|
-| `@relayscope/web` | Vite + React 19 + Tailwind v4 | Browser UI, NIP-11 viewer, connection checks |
+| `@relayscope/web` | Vite + Svelte 5 + Tailwind v4 | Browser UI, NIP-11 viewer, connection checks |
 | `@relayscope/api` | Hono + Bun + Drizzle ORM | REST API, relay CRUD, health checks, monitoring |
 | `@relayscope/shared` | TypeScript (no deps) | Shared types, DTOs, entity interfaces |
 
@@ -113,7 +113,7 @@ sequenceDiagram
 | HTTP Framework | **Hono** | Lightweight, edge-ready, middleware ecosystem |
 | ORM | **Drizzle** | SQL-like API, zero runtime overhead, Bun-optimized |
 | Database | **PostgreSQL** | JSON support, array columns, mature ecosystem |
-| Frontend | **React 19 + Vite** | Fast HMR, Tailwind v4 integration |
+| Frontend | **Svelte 5 + Vite** | Compiler-based reactivity, zero runtime overhead, Runes API for explicit state |
 | CSS | **Tailwind v4** | Utility-first, custom theme tokens, zero config |
 
 ## Security Considerations

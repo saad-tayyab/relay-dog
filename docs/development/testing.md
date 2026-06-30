@@ -15,7 +15,7 @@ Phase 1 relies on **manual testing** and **type-level verification** (Biome + Ty
    ╱          ╲    Drizzle test DB + Hono test client
   ╱────────────╲
  ╱              ╲  Unit Tests (When needed)
-╱                ╲ Bun test runner + @testing-library/react
+╱                ╲ Bun test runner + @testing-library/svelte
 ╱──────────────────╲
 ```
 
@@ -23,10 +23,10 @@ Phase 1 relies on **manual testing** and **type-level verification** (Biome + Ty
 
 | Check | Tool | When | Command |
 |-------|------|------|---------|
-| **Type safety** | TypeScript 6.0 | Every commit (pre-commit hook) | `npx turbo type-check` |
+| **Type safety** | TypeScript 6.0 | Every commit (pre-commit hook) | `bunx turbo type-check` |
 | **Lint + Format** | Biome 2.5 | Every commit (pre-commit hook) | `bunx biome check .` |
-| **Build** | Turborepo + Vite + Bun | Every commit + CI | `npx turbo build` |
-| **Manual QA** | Browser | During development | `npx turbo dev` |
+| **Build** | Turborepo + Vite + Bun | Every commit + CI | `bunx turbo build` |
+| **Manual QA** | Browser | During development | `bunx turbo dev` |
 
 ## What We'll Add
 
@@ -132,8 +132,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install
       - run: bunx biome check .
-      - run: npx turbo type-check
-      - run: npx turbo build
+      - run: bunx turbo type-check
+      - run: bunx turbo build
       - run: bun test
 ```
 

@@ -150,6 +150,7 @@ function closeComparison() {
         <RelayCard
           {relay}
           onSelect={handleSelect}
+          onInspect={onSelectRelay}
           selected={selectedIds.has(relay.id)}
         />
       {/each}

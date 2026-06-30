@@ -36,8 +36,8 @@ export const RelayNip11Schema = z
   .object({
     name: z.string().max(30).optional(),
     description: z.string().optional(),
-    banner: z.string().url().optional(),
-    icon: z.string().url().optional(),
+    banner: z.url().optional(),
+    icon: z.url().optional(),
     pubkey: z
       .string()
       .regex(/^[0-9a-f]{64}$/)
@@ -50,9 +50,9 @@ export const RelayNip11Schema = z
     supported_nips: z.array(z.number().int().min(1)).optional(),
     software: z.string().optional(),
     version: z.string().optional(),
-    terms_of_service: z.string().url().optional(),
+    terms_of_service: z.url().optional(),
     limitation: RelayLimitationSchema.optional(),
-    payments_url: z.string().url().optional(),
+    payments_url: z.url().optional(),
     fees: RelayFeesSchema.optional(),
   })
   .passthrough();

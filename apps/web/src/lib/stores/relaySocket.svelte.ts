@@ -1,4 +1,4 @@
-import type { NostrEvent } from '@relayscope/shared';
+import type { EoseResult, NostrEvent } from '@relayscope/shared';
 import { useNip42Auth } from '../composables/useNip42Auth.svelte';
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
@@ -23,6 +23,7 @@ export function relaySocket(getRelayUrl: () => string) {
     historicalCount: 0,
     liveCount: 0,
   });
+  let eoseHints = $state<EoseResult | null>(null);
   let notices = $state<string[]>([]);
   let error = $state<string | null>(null);
 
@@ -31,6 +32,7 @@ export function relaySocket(getRelayUrl: () => string) {
   const auth = useNip42Auth();
 
   // ─── Non-reactive Refs ───
+  const MAX_EVENTS = 1000;
   let ws: WebSocket | null = null;
   let backoff = INITIAL_DELAY_MS;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -53,6 +55,7 @@ export function relaySocket(getRelayUrl: () => string) {
     status = 'disconnected';
     events = [];
     eose = { received: false, historicalCount: 0, liveCount: 0 };
+    eoseHints = null;
     notices = [];
     error = null;
     eventIds.clear();
@@ -133,8 +136,11 @@ export function relaySocket(getRelayUrl: () => string) {
         if (eventIds.has(nostrEvent.id)) return;
         eventIds.add(nostrEvent.id);
 
-        // Append to reactive array
-        events = [...events, nostrEvent];
+        // Append to reactive array (cap at MAX_EVENTS to prevent memory exhaustion)
+        events =
+          events.length >= MAX_EVENTS
+            ? [...events.slice(-(MAX_EVENTS - 1)), nostrEvent]
+            : [...events, nostrEvent];
 
         if (!eoseReceived) {
           eose = { ...eose, historicalCount: eose.historicalCount + 1 };
@@ -142,8 +148,25 @@ export function relaySocket(getRelayUrl: () => string) {
           eose = { ...eose, liveCount: eose.liveCount + 1 };
         }
       } else if (messageType === 'EOSE') {
+        const subscriptionId = parsed[1] as string;
+        const hints = parsed.slice(2) as string[];
+
         eoseReceived = true;
-        eose = { ...eose, received: true };
+        eose = {
+          received: true,
+          historicalCount: events.length,
+          liveCount: 0,
+        };
+
+        const parsedHints: ('finish' | 'more')[] = hints.map((h) =>
+          h === 'finish' || h === 'more' ? h : 'more',
+        );
+        eoseHints = {
+          subscriptionId,
+          hints: parsedHints,
+          complete: parsedHints.includes('finish'),
+          hasMore: parsedHints.includes('more'),
+        };
       } else if (messageType === 'NOTICE') {
         const noticeMessage = parsed[1] as string;
         if (typeof noticeMessage === 'string') {
@@ -236,6 +259,9 @@ export function relaySocket(getRelayUrl: () => string) {
     },
     get eose() {
       return eose;
+    },
+    get eoseHints() {
+      return eoseHints;
     },
     get notices() {
       return notices;

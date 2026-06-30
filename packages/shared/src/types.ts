@@ -3,11 +3,18 @@
 export interface RelayNip11 {
   name?: string;
   description?: string;
+  banner?: string;
   icon?: string;
+  pubkey?: string;
+  self?: string;
+  contact?: string;
+  supported_nips?: number[];
   software?: string;
   version?: string;
-  supported_nips?: number[];
+  terms_of_service?: string;
   limitation?: RelayLimitation;
+  payments_url?: string;
+  fees?: RelayFees;
   posting_limit?: Record<string, unknown>;
   relay_limitation?: Record<string, unknown>;
   tags?: string[][];
@@ -28,7 +35,21 @@ export interface RelayLimitation {
   restricted_writes?: boolean;
   created_at_lower_limit?: number;
   created_at_upper_limit?: number;
+  default_limit?: number;
   [key: string]: unknown;
+}
+
+export interface RelayFeeEntry {
+  kinds?: number[];
+  amount: number;
+  unit: string;
+  period?: number;
+}
+
+export interface RelayFees {
+  admission?: RelayFeeEntry[];
+  subscription?: RelayFeeEntry[];
+  publication?: RelayFeeEntry[];
 }
 
 // ─── Database Entity Types ───
@@ -257,6 +278,74 @@ export interface DiscoveryResult {
   newRelays: number;
   relayUrls: string[];
   discoveredAt: Date;
+}
+
+export interface RelayDiscovery {
+  id: string;
+  relayUrl: string;
+  monitorPubkey: string;
+  rttOpen: number | null;
+  rttRead: number | null;
+  rttWrite: number | null;
+  networkType: string | null;
+  relayType: string | null;
+  supportedNips: number[];
+  requirements: string[];
+  topics: string[];
+  geohash: string | null;
+  discoveredAt: Date;
+}
+
+export interface RelayDiscoveryEvent {
+  kind: 30166;
+  tags: string[][];
+  content: string;
+  pubkey: string;
+  created_at: number;
+}
+
+// ─── NIP-65 Relay List Types ───
+
+export interface RelayListEntry {
+  id: string;
+  authorPubkey: string;
+  relayUrl: string;
+  marker: string | null;
+  listedAt: Date;
+}
+
+export interface RelayListEvent {
+  kind: 10002;
+  tags: string[][];
+  content: string;
+  pubkey: string;
+  created_at: number;
+}
+
+export interface RelayPopularity {
+  readCount: number;
+  writeCount: number;
+  readers: string[];
+  writers: string[];
+}
+
+// ─── NIP-67 EOSE Hint Types ───
+
+export type EoseHint = 'finish' | 'more';
+
+export interface EoseResult {
+  subscriptionId: string;
+  hints: EoseHint[];
+  complete: boolean;
+  hasMore: boolean;
+}
+
+// ─── NIP-40 Expiration Types ───
+
+export interface ExpirationInfo {
+  isExpired: boolean;
+  expiresAt: Date | null;
+  remainingMs: number | null;
 }
 
 // ─── NIP Info Display ───

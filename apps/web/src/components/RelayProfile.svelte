@@ -1,16 +1,45 @@
 <script lang="ts">
+import type { RelayPopularity } from '@relayscope/shared';
+import { useRelayDiscovery } from '../lib/composables/useRelayDiscovery.svelte';
 import type { RelayInfo } from '../utils/relay';
 import { safeHttpsIconUrl } from '../utils/relay';
+import FeeDisplay from './FeeDisplay.svelte';
+import MonitorDataPanel from './MonitorDataPanel.svelte';
+import RelayListBadge from './RelayListBadge.svelte';
 import SectionCard from './SectionCard.svelte';
 
-let { info }: { info: RelayInfo } = $props();
+let {
+  relayId,
+  relay,
+  info,
+}: {
+  relayId?: string;
+  relay?: { url: string };
+  info: RelayInfo;
+} = $props();
 
 const iconUrl = $derived(safeHttpsIconUrl(info.icon));
+// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
+const discovery = useRelayDiscovery();
+let popularity = $state<RelayPopularity | null>(null);
 
 function handleImageError(e: Event) {
   const img = e.target as HTMLImageElement;
   img.style.display = 'none';
 }
+
+// Fetch discovery and popularity data on mount
+$effect(() => {
+  if (relayId) {
+    discovery.fetchDiscoveries(relayId);
+    fetch(`/api/relays/${relayId}/popularity`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success) popularity = json.data;
+      })
+      .catch(() => {});
+  }
+});
 </script>
 
 <SectionCard className="animate-fade-in">
@@ -74,3 +103,22 @@ function handleImageError(e: Event) {
     </div>
   </div>
 </SectionCard>
+
+<!-- Fees -->
+{#if info.fees}
+  <FeeDisplay fees={info.fees} />
+{/if}
+
+<!-- Popularity -->
+{#if popularity && (popularity.readCount > 0 || popularity.writeCount > 0)}
+  <SectionCard>
+    <RelayListBadge readCount={popularity.readCount} writeCount={popularity.writeCount} />
+  </SectionCard>
+{/if}
+
+<!-- Monitor Data -->
+{#if discovery.stats}
+  <SectionCard>
+    <MonitorDataPanel discoveries={discovery.discoveries} stats={discovery.stats} />
+  </SectionCard>
+{/if}

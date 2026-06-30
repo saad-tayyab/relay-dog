@@ -1,11 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "@relayscope/tsconfig/svelte.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "noEmit": true,
-    "verbatimModuleSyntax": false,
-    "types": ["svelte", "vite/client"]
+    "noEmit": true
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.svelte.ts"]
 }

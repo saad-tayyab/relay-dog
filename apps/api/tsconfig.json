@@ -1,9 +1,8 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "@relayscope/tsconfig/bun.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
-    "types": ["bun"]
+    "rootDir": "./src"
   },
   "include": ["src"]
 }

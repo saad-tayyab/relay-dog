@@ -1,5 +1,7 @@
 <script lang="ts">
 import type { NostrEvent } from '@relayscope/shared';
+import { parseExpiration } from '../utils/relay';
+import ExpiredBadge from './ExpiredBadge.svelte';
 
 let { event }: { event: NostrEvent } = $props();
 
@@ -63,6 +65,7 @@ const kindColor = $derived(getKindColor(event.kind));
 const kindLabel = $derived(getKindLabel(event.kind));
 const timestamp = $derived(formatRelativeTime(event.created_at));
 const contentPreview = $derived(truncateContent(event.content));
+const expirationInfo = $derived(parseExpiration(event.tags));
 </script>
 
 <div class="border-b border-dark-border last:border-b-0 py-3 px-1">
@@ -71,6 +74,7 @@ const contentPreview = $derived(truncateContent(event.content));
     <span class="text-[10px] font-medium px-1.5 py-0.5 rounded border {kindColor}">
       {kindLabel}
     </span>
+    <ExpiredBadge expirationInfo={expirationInfo} />
     <span class="text-[10px] font-mono text-text-muted" title={event.pubkey}>
       {truncatePubkey(event.pubkey)}
     </span>

@@ -3,16 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "./src/types.ts",
-  "types": "./src/types.ts",
   "exports": {
-    ".": "./src/types.ts"
+    ".": {
+      "types": "./src/types.ts",
+      "default": "./src/types.ts"
+    },
+    "./schemas": {
+      "types": "./src/schemas.ts",
+      "default": "./src/schemas.ts"
+    },
+    "./types": {
+      "types": "./src/types.ts",
+      "default": "./src/types.ts"
+    }
   },
   "scripts": {
     "type-check": "tsc --noEmit",
     "lint": "biome check ."
   },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
   "devDependencies": {
+    "@relayscope/tsconfig": "workspace:*",
     "typescript": "^6.0.3"
   }
 }

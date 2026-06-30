@@ -85,67 +85,90 @@ directoryRoutes.get('/', async (c) => {
 
   const whereClause = and(...conditions);
 
-  // Get total count
-  const [{ count }] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(relays)
-    .where(whereClause);
-
-  // Build order by
+  // Build order by (for the relay query only)
   let orderByClause:
     | ReturnType<typeof desc>
     | typeof relays.name
     | typeof relays.url
-    | typeof healthChecks.latencyMs
-    | typeof healthChecks.checkedAt;
+    | typeof relays.updatedAt;
   switch (filters.sortBy) {
     case 'url':
       orderByClause = filters.sortOrder === 'desc' ? desc(relays.url) : relays.url;
       break;
     case 'latency':
-      orderByClause =
-        filters.sortOrder === 'desc' ? desc(healthChecks.latencyMs) : healthChecks.latencyMs;
+      // For latency sort, fall back to name since we fetch HC separately
+      orderByClause = filters.sortOrder === 'desc' ? desc(relays.name) : relays.name;
       break;
     case 'lastChecked':
-      orderByClause =
-        filters.sortOrder === 'desc' ? desc(healthChecks.checkedAt) : healthChecks.checkedAt;
+      orderByClause = filters.sortOrder === 'desc' ? desc(relays.updatedAt) : relays.updatedAt;
       break;
     default:
       orderByClause = filters.sortOrder === 'desc' ? desc(relays.name) : relays.name;
   }
 
-  // Get relays with latest health check
-  const results = await db
-    .select({
-      relay: relays,
-      lastHealthCheck: healthChecks,
-    })
+  // Step 1: Get total count of unique relays (no JOIN, no inflation)
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)::int` })
     .from(relays)
-    .leftJoin(healthChecks, eq(relays.id, healthChecks.relayId))
+    .where(whereClause);
+
+  // Step 2: Get paginated relay IDs only (no JOIN, LIMIT applies to unique relays)
+  const paginatedRelays = await db
+    .select()
+    .from(relays)
     .where(whereClause)
     .orderBy(orderByClause)
     .limit(limit)
     .offset((page - 1) * limit);
 
-  // Deduplicate health checks (take latest per relay)
-  const relayMap = new Map<string, DirectoryRelay>();
-  for (const row of results) {
-    const existing = relayMap.get(row.relay.id);
-    if (!existing) {
-      relayMap.set(row.relay.id, toDirectoryRelay(row.relay, row.lastHealthCheck));
-    } else if (
-      row.lastHealthCheck &&
-      (!existing.lastHealthCheck ||
-        row.lastHealthCheck.checkedAt > existing.lastHealthCheck.checkedAt)
-    ) {
-      existing.lastHealthCheck = row.lastHealthCheck;
-    }
+  if (paginatedRelays.length === 0) {
+    return c.json({
+      success: true,
+      data: {
+        relays: [],
+        total: count,
+        page,
+        totalPages: Math.ceil(count / limit),
+      },
+    });
   }
+
+  // Step 3: Fetch the latest health check for each relay in this page
+  const relayIds = paginatedRelays.map((r) => r.id);
+
+  // Subquery: get max checkedAt per relayId in the current page
+  const latestHC = await db
+    .select({
+      hc: healthChecks,
+    })
+    .from(healthChecks)
+    .where(
+      sql`${healthChecks.relayId} IN ${relayIds} AND ${healthChecks.id} IN (
+        SELECT hc2.id FROM ${healthChecks} hc2
+        INNER JOIN (
+          SELECT relay_id, MAX(checked_at) AS max_checked
+          FROM ${healthChecks}
+          WHERE relay_id = ANY(${relayIds})
+          GROUP BY relay_id
+        ) latest ON hc2.relay_id = latest.relay_id AND hc2.checked_at = latest.max_checked
+      )`,
+    );
+
+  // Build a lookup map: relayId → latest health check
+  const hcMap = new Map<string, typeof healthChecks.$inferSelect>();
+  for (const row of latestHC) {
+    hcMap.set(row.hc.relayId, row.hc);
+  }
+
+  // Step 4: Assemble final results
+  const resultRelays: DirectoryRelay[] = paginatedRelays.map((relay) =>
+    toDirectoryRelay(relay, hcMap.get(relay.id) ?? null),
+  );
 
   return c.json({
     success: true,
     data: {
-      relays: Array.from(relayMap.values()),
+      relays: resultRelays,
       total: count,
       page,
       totalPages: Math.ceil(count / limit),

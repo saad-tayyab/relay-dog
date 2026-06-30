@@ -1,3 +1,5 @@
+import type { RelayFees } from '@relayscope/shared';
+
 // ─── URL Utilities ───
 
 export function normalizeUrl(raw: string): string {
@@ -55,6 +57,7 @@ export interface RelayInfo {
   version?: string;
   supported_nips?: number[];
   limitation?: Record<string, unknown>;
+  fees?: RelayFees;
   posting_limit?: Record<string, unknown>;
   relay_limitation?: Record<string, unknown>;
   tags?: string[][];
@@ -162,4 +165,29 @@ export async function checkConnections(relayUrl: string): Promise<ConnectionStat
   }
 
   return status;
+}
+
+// ─── NIP-40 Expiration ───
+
+import type { ExpirationInfo } from '@relayscope/shared';
+
+/**
+ * Parse NIP-40 expiration tag from event tags.
+ */
+export function parseExpiration(tags: string[][]): ExpirationInfo {
+  const expirationTag = tags.find(([key, value]) => key === 'expiration' && value != null);
+
+  if (!expirationTag?.[1]) {
+    return { isExpired: false, expiresAt: null, remainingMs: null };
+  }
+
+  const expiresAt = new Date(Number(expirationTag[1]) * 1000);
+  const now = new Date();
+  const remainingMs = expiresAt.getTime() - now.getTime();
+
+  return {
+    isExpired: remainingMs <= 0,
+    expiresAt,
+    remainingMs: remainingMs > 0 ? remainingMs : 0,
+  };
 }

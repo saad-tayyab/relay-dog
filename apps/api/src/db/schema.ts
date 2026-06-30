@@ -7,6 +7,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uuid,
 } from 'drizzle-orm/pg-core';
 
@@ -27,6 +28,13 @@ export const relays = pgTable(
     isPublic: boolean('is_public').default(true),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+    banner: text('banner'),
+    pubkey: text('pubkey'),
+    self: text('self'),
+    contact: text('contact'),
+    termsOfService: text('terms_of_service'),
+    paymentsUrl: text('payments_url'),
+    fees: jsonb('fees'),
   },
   (table) => [
     index('relays_url_idx').on(table.url),
@@ -67,6 +75,7 @@ export const healthChecks = pgTable(
     httpStatusCode: integer('http_status_code'),
     errorMessage: text('error_message'),
     checkedAt: timestamp('checked_at', { withTimezone: true }).defaultNow().notNull(),
+    nip67EoseHints: jsonb('nip67_eose_hints'),
   },
   (table) => [
     index('health_checks_relay_id_idx').on(table.relayId),
@@ -116,10 +125,52 @@ export const monitoringJobs = pgTable(
   (table) => [index('monitoring_jobs_enabled_idx').on(table.enabled)],
 );
 
+// ─── Relay Discoveries (NIP-66) ───
+export const relayDiscovered = pgTable(
+  'relay_discoveries',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    relayUrl: text('relay_url').notNull(),
+    monitorPubkey: text('monitor_pubkey').notNull(),
+    rttOpen: integer('rtt_open'),
+    rttRead: integer('rtt_read'),
+    rttWrite: integer('rtt_write'),
+    networkType: text('network_type'),
+    relayType: text('relay_type'),
+    supportedNips: integer('supported_nips').array().default([]),
+    requirements: text('requirements').array().default([]),
+    topics: text('topics').array().default([]),
+    geohash: text('geohash'),
+    discoveredAt: timestamp('discovered_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [unique('relay_discoveries_url_monitor_key').on(t.relayUrl, t.monitorPubkey)],
+);
+
+// ─── Relay List Entries (NIP-65) ───
+export const relayListEntries = pgTable(
+  'relay_list_entries',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    authorPubkey: text('author_pubkey').notNull(),
+    relayUrl: text('relay_url').notNull(),
+    marker: text('marker'),
+    listedAt: timestamp('listed_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [unique('relay_list_entries_author_relay_key').on(t.authorPubkey, t.relayUrl)],
+);
+
 // ─── Relations ───
 
 export const relations = defineRelations(
-  { relays, relayInfoSnapshots, healthChecks, relayEvents, monitoringJobs },
+  {
+    relays,
+    relayInfoSnapshots,
+    healthChecks,
+    relayEvents,
+    monitoringJobs,
+    relayDiscovered,
+    relayListEntries,
+  },
   (r) => ({
     relays: {
       infoSnapshots: r.many.relayInfoSnapshots(),
@@ -161,3 +212,5 @@ export type RelayInfoSnapshot = typeof relayInfoSnapshots.$inferSelect;
 export type HealthCheck = typeof healthChecks.$inferSelect;
 export type RelayEvent = typeof relayEvents.$inferSelect;
 export type MonitoringJob = typeof monitoringJobs.$inferSelect;
+export type RelayDiscovery = typeof relayDiscovered.$inferSelect;
+export type RelayListEntry = typeof relayListEntries.$inferSelect;

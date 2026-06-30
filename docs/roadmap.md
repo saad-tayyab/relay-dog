@@ -1,6 +1,6 @@
 # 🗺️ Roadmap
 
-Relay Scope is built in 7 phases, each delivering standalone value while building toward a complete Nostr relay inspector.
+Relay Dog is built in phases, each delivering standalone value while building toward a complete Nostr developer toolkit.
 
 ## Status
 
@@ -11,7 +11,8 @@ Phase 3  ████████████████████  Event Ver
 Phase 4  ████████████████████  Auth & Health Dashboard           ✅ Done
 Phase 5  ████████████████████  Relay Directory & Comparison      ✅ Done
 Phase 6  ████████████████████  Security Hardening                ✅ Done
-Phase 7  ░░░░░░░░░░░░░░░░░░░░  NIP Compliance & Modernization    📋 Planned
+Phase 7  ████████████████████  NIP Compliance & Modernization    ✅ Done
+Phase 8  ░░░░░░░░░░░░░░░░░░░░  Developer Toolkit Expansion      📋 Planned
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅
@@ -142,7 +143,7 @@ Full-stack security hardening required before any internet-facing production dep
 
 ---
 
-## Phase 7: NIP Compliance & Protocol Modernization 📋
+## Phase 7: NIP Compliance & Protocol Modernization ✅
 
 > *Weekend 10–11*
 
@@ -165,6 +166,29 @@ Bring relay-dog in line with the latest NIP specs (June 2026). Fix outdated type
 
 ---
 
+## Phase 8: Developer Toolkit Expansion 📋
+
+> *Weekends 12–14*
+
+Expand from a relay inspector into a complete Nostr developer toolkit. Add six standalone tools plus a restructured navigation.
+
+**What ships:**
+- **Key Converter** — npub ↔ nsec ↔ hex with safety warnings
+- **NIP-05 Checker** — standalone identity verification with DNS resolution
+- **QR Code Generator** — QR codes for npub keys, relay URLs, events
+- **Event Publisher** — compose, sign (NIP-07), and publish events to any relay
+- **Event Deleter** — mass-delete events via NIP-09 kind 5
+- **Event Backup & Restore** — export/import events as JSON with signature verification
+- **App Navigation Restructure** — section-based nav (Inspector, Verifier, Publisher, Tools, Directory)
+
+**NIPs**: NIP-01, NIP-05, NIP-07, NIP-09, NIP-19
+
+**New dependencies**: `qrcode` (client-side QR generation)
+
+**Feature doc**: [phase-8-developer-toolkit.md](features/phase-8-developer-toolkit.md)
+
+---
+
 ## Effort Summary
 
 | Phase | Duration | Difficulty | API Changes | DB Changes |
@@ -176,3 +200,4 @@ Bring relay-dog in line with the latest NIP specs (June 2026). Fix outdated type
 | 5 | 2–3 weekends | Medium | Directory endpoints | monitoring_jobs expansion |
 | 6 | 1 weekend | Medium | Auth + rate limits | None |
 | 7 | 1–2 weekends | Medium | 3 endpoints | relay_discoveries, relay_list_entries |
+| 8 | 2–3 weekends | Medium | None (client-side) | None |

@@ -7,12 +7,14 @@ let {
   onNipsChange,
   onSort,
   onCountryChange,
+  supportsNip50 = false,
 }: {
   filters: DirectoryFilters;
   onSearch: (search: string) => void;
   onNipsChange: (nips: number[]) => void;
   onSort: (sortBy: DirectoryFilters['sortBy'], sortOrder: DirectoryFilters['sortOrder']) => void;
   onCountryChange: (country: string | null) => void;
+  supportsNip50?: boolean;
 } = $props();
 
 let searchInput = $state(filters.search || '');
@@ -65,7 +67,7 @@ function handleCountryChange() {
       type="text"
       bind:value={searchInput}
       oninput={handleSearchInput}
-      placeholder="Search relays…"
+      placeholder={supportsNip50 ? "Search relays (NIP-50)…" : "Search relays…"}
       class="w-full pl-9 pr-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
     />
   </div>

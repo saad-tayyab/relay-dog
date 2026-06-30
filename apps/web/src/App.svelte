@@ -16,6 +16,7 @@ import LatencyPanel from './components/LatencyPanel.svelte';
 import LimitationsPanel from './components/LimitationsPanel.svelte';
 import LoadingSpinner from './components/LoadingSpinner.svelte';
 import NipBadgeGrid from './components/NipBadgeGrid.svelte';
+import RelayDirectory from './components/RelayDirectory.svelte';
 import RelayProfile from './components/RelayProfile.svelte';
 import EventVerifier from './components/verifier/EventVerifier.svelte';
 import WriteTestPanel from './components/WriteTestPanel.svelte';
@@ -24,7 +25,7 @@ import WriteTestPanel from './components/WriteTestPanel.svelte';
 import { useLatencyMeasurement } from './lib/composables/useLatencyMeasurement.svelte';
 import { useWriteTest } from './lib/composables/useWriteTest.svelte';
 
-type Tab = 'nip11' | 'stream' | 'verifier';
+type Tab = 'nip11' | 'stream' | 'verifier' | 'directory';
 
 const POPULAR_RELAYS = [
   'relay.damus.io',
@@ -61,6 +62,7 @@ const writeTest = useWriteTest();
 const isNip11Tab = $derived(activeTab === 'nip11');
 const isStreamTab = $derived(activeTab === 'stream');
 const isVerifierTab = $derived(activeTab === 'verifier');
+const isDirectoryTab = $derived(activeTab === 'directory');
 const hasRelay = $derived(normalizedUrl.length > 0);
 
 // ─── Actions ───
@@ -140,7 +142,7 @@ function handleQuickPick(relay: string) {
       <span
         class="ml-auto text-[10px] font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted"
       >
-        Phase 4
+        Phase 5
       </span>
     </div>
   </header>
@@ -253,6 +255,15 @@ function handleQuickPick(relay: string) {
           : 'text-text-muted hover:text-text-secondary'}"
       >
         🔐 Event Verifier
+      </button>
+      <button
+        type="button"
+        onclick={() => (activeTab = 'directory')}
+        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isDirectoryTab
+          ? 'bg-dark-card border border-dark-border text-text-primary'
+          : 'text-text-muted hover:text-text-secondary'}"
+      >
+        📂 Directory
       </button>
     </div>
 
@@ -377,6 +388,9 @@ function handleQuickPick(relay: string) {
             <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
               Write Test
             </span>
+            <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
+              Relay Directory
+            </span>
           </div>
         </div>
       {/if}
@@ -412,6 +426,17 @@ function handleQuickPick(relay: string) {
     <!-- Event Verifier Tab -->
     {#if isVerifierTab}
       <EventVerifier />
+    {/if}
+
+    <!-- Directory Tab -->
+    {#if isDirectoryTab}
+      <RelayDirectory
+        onSelectRelay={(relayUrl) => {
+          url = relayUrl;
+          activeTab = 'nip11';
+          handleFetch(relayUrl);
+        }}
+      />
     {/if}
   </main>
 

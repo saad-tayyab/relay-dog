@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { startMonitor } from './jobs/relayMonitor';
+import directoryRoutes from './routes/directory';
 import relayRoutes from './routes/relays';
 
 const app = new Hono();
@@ -53,6 +54,9 @@ app.get('/api/health', (c) => {
 // Relay routes
 app.route('/api/relays', relayRoutes);
 
+// Directory routes
+app.route('/api/directory', directoryRoutes);
+
 // ─── 404 Handler ───
 app.notFound((c) => {
   return c.json({ success: false, error: 'Not found' }, 404);
@@ -83,4 +87,5 @@ process.on('SIGTERM', shutdown);
 // Start the monitoring job after server is up
 startMonitor(60_000); // Check relays every 60 seconds
 
-export default app;
+// Note: no `export default app` — Bun 1.3 auto-serves default exports with
+// a `fetch` method, which conflicts with the explicit Bun.serve() above.

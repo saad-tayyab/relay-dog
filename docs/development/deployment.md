@@ -169,7 +169,7 @@ WantedBy=multi-user.target
 
 ```dockerfile
 # Dockerfile
-FROM oven/bun:1.3 AS base
+FROM oven/bun:1.3.14 AS base
 WORKDIR /app
 
 # Install dependencies
@@ -183,7 +183,7 @@ COPY . .
 RUN bunx turbo build
 
 # Production
-FROM oven/bun:1.3-slim AS production
+FROM oven/bun:1.3.14-slim AS production
 WORKDIR /app
 COPY --from=base /app/apps/api/dist ./dist
 COPY --from=base /app/node_modules ./node_modules

@@ -3,7 +3,10 @@ import type { NostrEvent } from '@relayscope/shared';
 import { eventIdMatches, toNpub, verifySignature } from '../../utils/nostrVerify';
 import SectionCard from '../SectionCard.svelte';
 
-let { event }: { event: NostrEvent } = $props();
+let {
+  event,
+  onEditAndRepublish,
+}: { event: NostrEvent; onEditAndRepublish?: (event: NostrEvent) => void } = $props();
 
 const sigResult = $derived(verifySignature(event));
 const idResult = $derived(eventIdMatches(event));
@@ -122,4 +125,15 @@ function truncateHex(hex: string, chars = 8): string {
       {npub}
     </p>
   </div>
+
+  <!-- Edit & Re-publish -->
+  {#if onEditAndRepublish}
+    <button
+      type="button"
+      onclick={() => onEditAndRepublish(event)}
+      class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent hover:border-accent-border transition-all"
+    >
+      ✍️ Edit & Re-publish
+    </button>
+  {/if}
 </SectionCard>

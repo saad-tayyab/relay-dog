@@ -149,3 +149,7 @@ jobs:
 - [ ] Connection status dots → green for reachable relays
 - [ ] Toggle raw JSON viewer → formatted JSON
 - [ ] Mobile responsive → layout adapts
+
+---
+
+*Last updated: v0.1.0 — 2026-06-30*

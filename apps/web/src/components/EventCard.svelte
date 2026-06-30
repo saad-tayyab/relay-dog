@@ -88,6 +88,11 @@ const expirationInfo = $derived(parseExpiration(event.tags));
     </p>
   {/if}
 
+  <!-- Screen reader live region for copy feedback -->
+  <div aria-live="polite" class="sr-only">
+    {copied ? 'Event JSON copied to clipboard' : ''}
+  </div>
+
   <!-- Actions -->
   <div class="flex items-center gap-2 mt-2">
     <button

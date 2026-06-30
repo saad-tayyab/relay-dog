@@ -61,3 +61,7 @@ relayscope/
 - [Turborepo docs](https://turbo.build)
 - [Bun workspaces](https://bun.sh/docs/install/workspaces)
 - [When to use monorepos](https://turbo.build/repo/docs/getting-started/create-monorepo)
+
+---
+
+*Last updated: v0.1.0 — 2026-06-30*

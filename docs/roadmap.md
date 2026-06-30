@@ -14,6 +14,8 @@ Phase 6  ████████████████████  Security 
 Phase 7  ████████████████████  NIP Compliance & Modernization    ✅ Done
 Phase 8  ████████████████████  Developer Toolkit Expansion       ✅ Done
 Phase 9  ████████████████████  WCAG 2.2 AA Accessibility          ✅ Done
+Phase 10 ████████████████████  Infrastructure Hardening             ✅ Done
+Phase 11 ░░░░░░░░░░░░░░░░░░░░  Production Deployment (Fly.io)      📋 Planned
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅
@@ -157,11 +159,13 @@ Bring relay-dog in line with the latest NIP specs (June 2026). Fix outdated type
 - NIP-65 relay list display — show read/write popularity per relay
 - NIP-50 search filter — forward `search` to relays that support it (directory ILIKE already exists)
 - NIP-40 expiration — expired event indicators
-- NIP-42 auth hardening — OK/CLOSED prefix display, timing warnings (challenge validation done in Phase 6)
-- Zod NIP schemas in `packages/shared` (optional consolidation of API DTO schemas from Phase 6)
+- NIP-42 auth hardening — OK/CLOSED prefix display, auth status badge
+- Zod NIP schemas in `packages/shared` (consolidation of API DTO schemas from Phase 6)
 - Deprecated incorrect types (FeeInfo, posting_limit, relay_limitation)
 
 **NIPs**: NIP-11 (updated), NIP-40, NIP-42 (display/timing), NIP-50, NIP-65, NIP-66 (integrated), NIP-67
+
+**New API endpoints**: `GET/POST /api/relays/:id/discoveries`, `GET/POST /api/relays/:id/popularity`
 
 **New dependencies**: `zod` in `packages/shared` (already in `apps/api` from Phase 6)
 
@@ -190,6 +194,54 @@ Expand from a relay inspector into a complete Nostr developer toolkit. Add six s
 
 ---
 
+## Phase 10: Infrastructure Hardening & DevSecOps ✅
+
+> *Day 16*
+
+Comprehensive infrastructure security audit and remediation following NIST SP 800-204D, CIS Docker Benchmarks, and CISA SCuBA standards. Addresses all findings from the July 2026 security audit across GitHub Actions, Docker, SSRF protection, CI/CD pipeline, and deployment configuration. **Deploy blocker** — required before any internet-facing production launch.
+
+**What ships:**
+- **GitHub Actions supply chain hardening** — all actions pinned to full SHA, explicit `permissions` blocks, OSV scanner pinned with checksum verification
+- **Docker CIS benchmark compliance** — `security_opt: no-new-privileges`, `cap_drop: ALL` with selective `cap_add`, `tmpfs` mounts
+- **`.dockerignore`** — prevents secrets and build artifacts from leaking into Docker build context
+- **SSRF DNS rebinding fix** — `assertSafeUrlResolved()` validates resolved IP against private ranges
+- **Health check DB verification** — `/api/health` returns 503 if PostgreSQL is unreachable
+- **Data retention cron** — daily cleanup: health_checks (90d), relay_events (30d), snapshots (180d)
+- **Structured logging** — JSON-formatted logs for log aggregator compatibility
+- **CI test step** — `bun test` added to GitHub Actions pipeline
+- **Infrastructure security best practices doc** — `docs/development/infrastructure-security.md`
+
+**Standards:** NIST SP 800-204D, CIS Docker Benchmarks 4.x/5.x, CISA SCuBA CI/CD
+
+**Files changed:** `.github/workflows/ci.yml`, `.github/workflows/security.yml`, `docker-compose.yml`, `.dockerignore` (new), `apps/api/src/lib/ssrf.ts`, `apps/api/src/index.ts`, `apps/api/src/jobs/relayMonitor.ts`, `apps/api/drizzle.config.ts`
+
+---
+
+## Phase 11: Production Deployment (Fly.io) 📋
+
+> *Day 17*
+
+Deploy Relay Dog to production on Fly.io. Two separate Fly apps — API (Hono + Bun) and Web (Svelte static assets) — backed by Fly Postgres. Takes the app from "runs locally" to "live on the internet with a real domain."
+
+**What ships:**
+- **API Dockerfile** — multi-stage build (install → build → slim production image with non-root user)
+- **Web Dockerfile** — multi-stage build (install → build → Nginx static serving with SPA fallback)
+- **Fly.io configs** — `fly.toml` for API and web apps with auto-stop/start, concurrency limits
+- **Fly Postgres** — provisioned with auto-backup, connected to API via internal network
+- **Secrets management** — all credentials via `fly secrets`, never in code or images
+- **Custom domain + TLS** — Let's Encrypt auto-provisioned via Fly
+- **Deploy script** — `scripts/deploy.sh` with migration + health check verification
+- **Staging environment** — separate Fly apps, auto-deploy from main
+- **Production checklist** — pre-deploy, post-deploy, and ongoing verification steps
+
+**Architecture:** Web (Nginx :80) → API (Bun :3001) → Fly Postgres (internal :5432)
+
+**Effort:** ~3 hours
+
+**Feature doc**: [phase-11-production-deployment.md](features/phase-11-production-deployment.md)
+
+---
+
 ## Effort Summary
 
 | Phase | Duration | Difficulty | API Changes | DB Changes |
@@ -200,9 +252,11 @@ Expand from a relay inspector into a complete Nostr developer toolkit. Add six s
 | 4 | 2 weekends | **Hard** | Auth endpoints | health_checks expansion |
 | 5 | 2–3 weekends | Medium | Directory endpoints | monitoring_jobs expansion |
 | 6 | 1 weekend | Medium | Auth + rate limits | None |
-| 7 | 1–2 weekends | Medium | 3 endpoints | relay_discoveries, relay_list_entries |
+| 7 | 1–2 weekends | Medium | 5 endpoints (CRUD + upsert) | relay_discoveries, relay_list_entries, relays+7 cols, health_checks+1 col |
 | 8 | 2–3 weekends | Medium | None (client-side) | None |
 | 9 | 1 day | Easy | None | None |
+| 10 | 1 day | Medium | Health check, retention | None |
+| 11 | 0.5 day | Easy | None | None |
 
 ---
 
@@ -233,4 +287,8 @@ Comprehensive accessibility audit and fix to achieve WCAG 2.2 Level AA complianc
 **New components**: `AccessibleTabs.svelte`, `Toast.svelte`
 **New composables**: `useDebounce.svelte.ts`, `useCopyToClipboard.svelte.ts`
 
-**Feature doc**: [phase-9-accessibility.md](features/phase-9-accessibility.md) (to be created)
+**Feature doc**: [phase-9-accessibility.md](features/phase-9-accessibility.md)
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

@@ -115,3 +115,7 @@ The MVP can work **without** the API server — all NIP-11 fetching and connecti
 ---
 
 *Next: [Phase 2 — Live Event Stream](phase-2-events.md)*
+
+---
+
+*Last updated: v0.1.0 — 2026-06-30*

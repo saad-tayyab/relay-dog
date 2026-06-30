@@ -15,8 +15,14 @@ export interface RelayNip11 {
   limitation?: RelayLimitation;
   payments_url?: string;
   fees?: RelayFees;
-  posting_limit?: Record<string, unknown>;
-  relay_limitation?: Record<string, unknown>;
+  /** @deprecated Not a real NIP-11 field. Will be removed. */ posting_limit?: Record<
+    string,
+    unknown
+  >;
+  /** @deprecated Not a real NIP-11 field. Will be removed. */ relay_limitation?: Record<
+    string,
+    unknown
+  >;
   tags?: string[][];
   [key: string]: unknown;
 }
@@ -68,6 +74,13 @@ export interface Relay {
   isPublic: boolean;
   createdAt: Date;
   updatedAt: Date;
+  banner: string | null;
+  pubkey: string | null;
+  self: string | null;
+  contact: string | null;
+  termsOfService: string | null;
+  paymentsUrl: string | null;
+  fees: RelayFees | null;
 }
 
 export interface RelayInfoSnapshot {
@@ -178,6 +191,10 @@ export interface LatencyMetrics {
   eoseEventCount: number;
 }
 
+/**
+ * @deprecated Use `RelayFees` with `RelayFeeEntry` instead. Not a real NIP-11 field.
+ * Kept for backwards compatibility — will be removed in a future version.
+ */
 export interface FeeInfo {
   admission: number | null;
   subscription: number | null;

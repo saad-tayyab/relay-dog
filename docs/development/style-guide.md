@@ -164,6 +164,25 @@ const socket = relaySocket(() => normalizedUrl);
 
 ## Accessibility (WCAG 2.2 AA)
 
+> **Every component must pass all 12 checks below.** See `docs/features/phase-9-accessibility.md` for full details.
+
+### The 12-Check Accessibility Checklist
+
+| # | Check | WCAG SC | Enforcement |
+|---|-------|---------|-------------|
+| 1 | All SVGs have `aria-hidden="true"` | 1.1.1 | Every `<svg>` |
+| 2 | All inputs have `<label>` (visible or `sr-only`) | 1.3.1, 3.3.2 | Every `<input>`, `<select>`, `<textarea>` |
+| 3 | All interactive elements are native HTML | 2.1.1 | `<button>`, `<input>`, `<select>`, `<a>` — never `<div onclick>` |
+| 4 | All buttons have `min-h-[44px]` | 2.5.5 | Every clickable element |
+| 5 | All icon-only buttons have `aria-label` | 4.1.2 | Buttons without visible text |
+| 6 | All toggles have `aria-expanded`/`aria-pressed` | 4.1.2 | Expandable sections, pressed states |
+| 7 | All dynamic errors use `role="alert"` | 3.3.1 | Error messages |
+| 8 | All dynamic status uses `role="status"` or `aria-live` | 4.1.3 | Copy feedback, auto-updates, toasts |
+| 9 | All validation hints use `aria-describedby` | 3.3.2 | Connected hint text |
+| 10 | Animations respect `prefers-reduced-motion` | 2.3.3 | Global CSS handles this |
+| 11 | Focus visible on all interactive elements | 2.4.7 | Global `:focus-visible` handles this |
+| 12 | No info conveyed by color alone | 1.4.1 | Icons + text alongside color |
+
 ### ARIA Roles & Labels
 
 ```svelte
@@ -247,6 +266,27 @@ Never implement tabs manually — always use `AccessibleTabs`. It provides:
     transition-duration: 0.01ms !important;
   }
 }
+```
+
+### WCAG 2.2 New Criteria
+
+```css
+/* SC 2.4.11: Focus Not Obscured — add scroll-padding for sticky/fixed UI */
+html {
+  scroll-padding-top: 5rem;    /* header height */
+  scroll-padding-bottom: 5rem; /* mobile nav height */
+}
+```
+
+```svelte
+<!-- SC 2.5.8: Target Size — minimum 24×24px (we use 44×44px) -->
+<button class="min-h-[44px] min-w-[44px] ...">Action</button>
+
+<!-- SC 3.3.8: Accessible Authentication — no CAPTCHAs, use type="password" -->
+<input type="password" ... />
+<button aria-expanded={show} onclick={() => show = !show}>
+  {show ? 'Hide' : 'Show'}
+</button>
 ```
 
 ### Composable Patterns
@@ -387,3 +427,7 @@ Same format as commit messages:
 ```
 feat(web): add live event stream viewer
 ```
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

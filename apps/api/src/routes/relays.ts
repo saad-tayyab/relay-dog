@@ -5,7 +5,7 @@ import { db } from '../db';
 import { healthChecks, relayInfoSnapshots, relays } from '../db/schema';
 import { categorizeError } from '../lib/errors';
 import { createRelaySchema, updateRelaySchema } from '../lib/schemas';
-import { assertSafeUrl } from '../lib/ssrf';
+import { assertSafeUrl, assertSafeUrlResolved } from '../lib/ssrf';
 import { requireApiKey } from '../middleware/auth';
 
 const relayRoutes = new Hono();
@@ -32,12 +32,12 @@ function normalizeRelayUrl(raw: string): string {
   return url;
 }
 
-function toHttpUrl(url: string): string {
+async function toHttpUrl(url: string): Promise<string> {
   const httpUrl = url
     .replace(/^wss:\/\//, 'https://')
     .replace(/^ws:\/\//, 'http://')
     .replace(/\/$/, '');
-  assertSafeUrl(httpUrl);
+  await assertSafeUrlResolved(httpUrl);
   return httpUrl;
 }
 
@@ -198,7 +198,7 @@ relayRoutes.post('/', requireApiKey, zValidator('json', createRelaySchema), asyn
 
   let nip11Data: Record<string, unknown> = {};
   try {
-    const httpUrl = toHttpUrl(url);
+    const httpUrl = await toHttpUrl(url);
     const res = await fetch(httpUrl, {
       headers: { Accept: 'application/nostr+json' },
       signal: AbortSignal.timeout(10000),
@@ -286,7 +286,7 @@ relayRoutes.post('/:id/check', requireApiKey, async (c) => {
   let httpUrl: string;
   let wsUrl: string;
   try {
-    httpUrl = toHttpUrl(relay.url);
+    httpUrl = await toHttpUrl(relay.url);
     wsUrl = toWsUrl(relay.url);
   } catch {
     return c.json({ success: false, error: 'Invalid or disallowed relay URL' }, 400);

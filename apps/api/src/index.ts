@@ -1,5 +1,5 @@
 import { getServerEnv } from '@relayscope/env/server';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { cors } from 'hono/cors';
@@ -13,18 +13,29 @@ import discoverRoutes from './routes/discover';
 import popularityRoutes from './routes/popularity';
 import relayRoutes from './routes/relays';
 
+// ─── Structured Logging ───
+
+function log(entry: { level: 'info' | 'warn' | 'error'; msg: string; [key: string]: unknown }) {
+  const entryWithTimestamp = {
+    ...entry,
+    timestamp: new Date().toISOString(),
+  };
+  process.stderr.write(`${JSON.stringify(entryWithTimestamp)}\n`);
+}
+
 // ─── Validate environment at startup (single source of truth) ───
 const env = getServerEnv();
 
 if (env.NODE_ENV === 'production' && !env.API_KEY) {
-  process.stderr.write('API_KEY is required in production\n');
+  log({ level: 'error', msg: 'API_KEY is required in production' });
   process.exit(1);
 }
 
 if (env.NODE_ENV !== 'production' && !env.API_KEY) {
-  process.stderr.write(
-    '⚠️  WARNING: API_KEY is not set — write endpoints are UNPROTECTED in development\n',
-  );
+  log({
+    level: 'warn',
+    msg: 'API_KEY is not set — write endpoints are UNPROTECTED in development',
+  });
 }
 
 const isProduction = env.NODE_ENV === 'production';
@@ -104,8 +115,28 @@ app.get('/', (c) => {
   });
 });
 
-app.get('/api/health', (c) => {
-  return c.json({ status: 'ok', uptime: process.uptime() });
+app.get('/api/health', async (c) => {
+  const checks: Record<string, string> = { api: 'ok' };
+
+  try {
+    await db.execute(sql`SELECT 1`);
+    checks.database = 'connected';
+  } catch {
+    checks.database = 'disconnected';
+  }
+
+  const allHealthy = Object.values(checks).every((v) => v !== 'disconnected');
+  const statusCode = allHealthy ? 200 : 503;
+
+  return c.json(
+    {
+      status: allHealthy ? 'ok' : 'degraded',
+      uptime: process.uptime(),
+      checks,
+      timestamp: new Date().toISOString(),
+    },
+    statusCode,
+  );
 });
 
 // ─── Relay Lookup by URL ───
@@ -142,7 +173,7 @@ app.notFound((c) => {
 // ─── Error Handler ───
 app.onError((err, c) => {
   // Always log full error server-side
-  process.stderr.write(`${err.stack ?? err.message ?? err}\n`);
+  log({ level: 'error', msg: 'Request error', error: err.stack ?? err.message ?? String(err) });
   // Never expose internal error details to clients
   return c.json({ success: false, error: 'Internal server error' }, 500);
 });
@@ -157,7 +188,7 @@ const server = Bun.serve({
 process.on('SIGTERM', () => server.stop());
 process.on('SIGINT', () => server.stop());
 
-process.stderr.write(`🚀 Server running on port ${env.PORT}\n`);
+log({ level: 'info', msg: 'Server started', port: env.PORT });
 
 // Monitor interval: min 10s to prevent abuse
 const monitorInterval = Math.max(10_000, env.MONITOR_INTERVAL_MS);

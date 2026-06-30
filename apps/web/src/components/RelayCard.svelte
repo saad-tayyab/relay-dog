@@ -161,10 +161,11 @@ function isSoftwareUrl(raw: string): boolean {
           </svg>
         </button>
 
-        <label class="relative flex items-center justify-center p-1 cursor-pointer" title="Compare">
+        <label class="relative flex items-center justify-center p-1 cursor-pointer">
           <input
             type="checkbox"
             checked={selected}
+            aria-label="Select {relay.name || 'relay'} for comparison"
             class="peer w-5 h-5 rounded border-dark-border text-accent focus:ring-accent-border cursor-pointer"
             onclick={(e) => {
               e.stopPropagation();

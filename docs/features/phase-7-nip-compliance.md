@@ -36,17 +36,19 @@ Phase 7 may **relocate** API DTO schemas to `packages/shared/src/schemas.ts` for
 ## Features
 
 ### 1. NIP-11 Type Modernization
-Update `RelayNip11` to match the current spec with all fields:
+Updated `RelayNip11` in `packages/shared/src/types.ts` with all current fields:
 
 ```typescript
-// Missing fields to add
-banner?: string;           // Relay banner image URL
-pubkey?: string;           // Admin contact pubkey (32-byte hex)
-self?: string;             // Relay's own identity pubkey
-contact?: string;          // Contact URI (mailto, https)
-terms_of_service?: string; // Link to ToS document
-payments_url?: string;     // Payment portal URL
-fees?: RelayFees;          // Structured fee schedule
+export interface RelayNip11 {
+  // ... existing fields ...
+  banner?: string;           // Relay banner image URL
+  pubkey?: string;           // Admin contact pubkey (32-byte hex)
+  self?: string;             // Relay's own identity pubkey
+  contact?: string;          // Contact URI (mailto, https)
+  terms_of_service?: string; // Link to ToS document
+  payments_url?: string;     // Payment portal URL
+  fees?: RelayFees;          // Structured fee schedule
+}
 ```
 
 **New `RelayFees` type** (replaces incorrect `FeeInfo`):
@@ -66,11 +68,11 @@ export interface RelayFees {
 }
 ```
 
-**Deprecate:** `FeeInfo`, `posting_limit`, `relay_limitation` (not real NIP-11 fields)
+**Deprecated:** `FeeInfo`, `posting_limit`, `relay_limitation` (not real NIP-11 fields)
+
+**DB columns added**: `banner`, `pubkey`, `self`, `contact`, `terms_of_service`, `payments_url`, `fees` on `relays` table.
 
 ### 2. NIP-66 Relay Discovery Integration
-
-> **Phase 5 note:** The Phase 5 spec described NIP-66 discovery (`GET /api/discover`, auto-add relays). That endpoint was **not implemented** — only directory browse/compare shipped. Phase 7 delivers the full monitor integration below.
 
 Consume `kind:30166` events from relay monitors and display alongside own health checks.
 
@@ -94,30 +96,10 @@ CREATE TABLE relay_discoveries (
 );
 ```
 
-**New API endpoint:**
+**New API endpoints:**
 ```
-GET /api/directory/:id/discoveries
-→ Returns all monitor observations for a relay (by relay UUID)
-```
-
-**New WebSocket subscription in monitor job:**
-```typescript
-// Subscribe to kind:30166 from well-known monitor relays
-const MONITOR_RELAYS = [
-  'wss://relay.nostr.band',
-  'wss://relay.damus.io',
-  // Add more known monitors
-];
-
-for (const monitor of MONITOR_RELAYS) {
-  const ws = new WebSocket(monitor);
-  ws.send(JSON.stringify([
-    'REQ',
-    `monitor-${Date.now()}`,
-    { kinds: [30166], limit: 200 }
-  ]));
-  // Parse events, upsert into relay_discoveries
-}
+GET  /api/relays/:id/discoveries  → monitor observations + aggregated stats
+POST /api/relays/:id/discoveries  → upsert discovery from monitor (auth required)
 ```
 
 **Frontend: MonitorDataPanel component**
@@ -126,10 +108,14 @@ for (const monitor of MONITOR_RELAYS) {
 - Show network type and geohash
 - Visual comparison: your probe vs. monitor data
 
+**Composable: `useRelayDiscovery.svelte.ts`**
+- Subscribe to monitor relay events
+- Parse kind:30166 events into discovery observations
+
 ### 3. NIP-67 EOSE Completeness Hint
 Parse the optional 3rd element of `EOSE` messages.
 
-**New types:**
+**New types in `packages/shared/src/types.ts`:**
 ```typescript
 export type EoseHint = 'finish' | 'more';
 
@@ -141,9 +127,11 @@ export interface EoseResult {
 }
 ```
 
-**Frontend impact:**
-- Live Stream tab: Show "All stored events received ✅" vs. "More events available — paginate with older filters"
-- EventFeed: Add visual indicator when stream is complete vs. partial
+**DB column**: `nip67_eose_hints` (JSONB) on `health_checks` table.
+
+**Frontend:**
+- `EoseIndicator.svelte` — Shows "All stored events received ✅" vs. "More events available — paginate with older filters"
+- Live Stream tab: Visual indicator when stream is complete vs. partial
 
 ### 4. NIP-65 Relay List Display
 Show kind `10002` relay list data when inspecting a relay.
@@ -160,27 +148,21 @@ CREATE TABLE relay_list_entries (
 );
 ```
 
-**New API endpoint:**
+**New API endpoints:**
 ```
-GET /api/directory/:id/popularity
-→ { readCount: 42, writeCount: 18, readers: [...], writers: [...] }
+GET  /api/relays/:id/popularity  → { readCount, writeCount, readers, writers }
+POST /api/relays/:id/popularity  → upsert relay list entry (auth required)
 ```
 
 **Frontend:**
-- Relay profile shows "Listed as write relay by 18 users"
+- `RelayListBadge.svelte` — "Listed as write relay by 18 users"
 - Directory cards show popularity badges
 
 ### 5. NIP-50 Search Filter
 
 > **Existing:** `GET /api/directory?search=...` already filters via SQL `ILIKE` on name/url (Phase 5).
 
-Add **NIP-50 `search` field forwarding** when the target relay supports it:
-
-**API change:**
-```
-GET /api/directory?search=nostr+relays
-→ Forward `search` filter to WebSocket REQ as `search` field
-```
+NIP-50 `search` field forwarding when the target relay supports it:
 
 **Frontend:**
 - Directory search bar uses NIP-50 `search` when relay supports it (check `supported_nips` includes `50`)
@@ -188,116 +170,24 @@ GET /api/directory?search=nostr+relays
 
 ### 6. Zod Validation Schemas (Shared Package)
 
-Add runtime validation for **NIP protocol data** at the shared package level. API DTO schemas already exist in Phase 6 — this phase adds NIP schemas and optionally consolidates DTOs into shared.
+Added runtime validation for **NIP protocol data** at the shared package level.
 
 **New file: `packages/shared/src/schemas.ts`**
 
-Includes: `RelayNip11Schema`, `NostrEventSchema`, `RelayDiscoverySchema`, `RelayListEventSchema`, `AuthEventSchema`, `PaginationSchema`.
-
-Does **not** re-implement (already in `apps/api/src/lib/schemas.ts` from Phase 6):
-- `createRelaySchema` / `updateRelaySchema` — move here only if consolidating; keep field rules identical
-
-```typescript
-import { z } from 'zod';
-
-// NIP-11 Schema
-export const RelayLimitationSchema = z.object({
-  max_message_length: z.number().int().positive().optional(),
-  max_subscriptions: z.number().int().positive().optional(),
-  max_filters: z.number().int().positive().optional(),
-  max_limit: z.number().int().positive().optional(),
-  max_subid_length: z.number().int().positive().optional(),
-  max_event_tags: z.number().int().positive().optional(),
-  max_content_length: z.number().int().positive().optional(),
-  min_pow_difficulty: z.number().int().min(0).optional(),
-  auth_required: z.boolean().optional(),
-  payment_required: z.boolean().optional(),
-  restricted_writes: z.boolean().optional(),
-  created_at_lower_limit: z.number().int().optional(),
-  created_at_upper_limit: z.number().int().optional(),
-  default_limit: z.number().int().positive().optional(),
-});
-
-export const RelayFeeEntrySchema = z.object({
-  kinds: z.array(z.number().int()).optional(),
-  amount: z.number().int().min(0),
-  unit: z.enum(['msats', 'sats']),
-  period: z.number().int().positive().optional(),
-});
-
-export const RelayFeesSchema = z.object({
-  admission: z.array(RelayFeeEntrySchema).optional(),
-  subscription: z.array(RelayFeeEntrySchema).optional(),
-  publication: z.array(RelayFeeEntrySchema).optional(),
-});
-
-export const RelayNip11Schema = z.object({
-  name: z.string().max(30).optional(),
-  description: z.string().optional(),
-  banner: z.string().url().optional(),
-  icon: z.string().url().optional(),
-  pubkey: z.string().regex(/^[0-9a-f]{64}$/).optional(),
-  self: z.string().regex(/^[0-9a-f]{64}$/).optional(),
-  contact: z.string().optional(),
-  supported_nips: z.array(z.number().int().min(1)).optional(),
-  software: z.string().optional(),
-  version: z.string().optional(),
-  terms_of_service: z.string().url().optional(),
-  limitation: RelayLimitationSchema.optional(),
-  payments_url: z.string().url().optional(),
-  fees: RelayFeesSchema.optional(),
-}).passthrough(); // Allow unknown fields (NIP says ignore unknown)
-
-// NIP-01 Event Schema
-export const NostrEventSchema = z.object({
-  id: z.string().regex(/^[0-9a-f]{64}$/),
-  pubkey: z.string().regex(/^[0-9a-f]{64}$/),
-  created_at: z.number().int().min(0),
-  kind: z.number().int().min(0),
-  tags: z.array(z.array(z.string().nullable()).min(1)),
-  content: z.string(),
-  sig: z.string().regex(/^[0-9a-f]{128}$/),
-});
-
-// NIP-66 Relay Discovery Schema
-export const RelayDiscoverySchema = z.object({
-  kind: z.literal(30166),
-  tags: z.array(z.array(z.string())),
-  content: z.string(),
-}).passthrough();
-
-// NIP-65 Relay List Schema
-export const RelayListEventSchema = z.object({
-  kind: z.literal(10002),
-  tags: z.array(z.array(z.string())),
-  content: z.string(),
-}).passthrough();
-
-// NIP-42 Auth Event Schema
-export const AuthEventSchema = z.object({
-  kind: z.literal(22242),
-  content: z.literal(''),
-  tags: z.array(z.array(z.string())),
-  created_at: z.number().int(),
-}).passthrough();
-
-// Pagination Schema (shared — API already caps at 100 in Phase 6)
-export const PaginationSchema = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
-  sortBy: z.enum(['name', 'url', 'lastChecked', 'latency']).default('name'),
-  sortOrder: z.enum(['asc', 'desc']).default('asc'),
-});
-
-// Re-export or move from apps/api/src/lib/schemas.ts (Phase 6):
-// CreateRelaySchema, UpdateRelaySchema — same field rules, no duplication
-```
+Schemas implemented:
+- `RelayNip11Schema` — NIP-11 document validation
+- `NostrEventSchema` — NIP-01 event structure validation
+- `RelayDiscoverySchema` — NIP-66 discovery event validation
+- `RelayListEventSchema` — NIP-65 relay list event validation
+- `AuthEventSchema` — NIP-42 auth event validation
+- `PaginationSchema` — Shared pagination parameters
+- `RelayLimitationSchema`, `RelayFeeEntrySchema`, `RelayFeesSchema` — Sub-schemas
 
 ### 7. NIP-40 Expiration Timestamp
 Display expired event indicators.
 
-**Frontend changes:**
-- EventCard: Show "⚠ Expired" badge if `tags` contains `["expiration", "<past_timestamp>"]`
+**Frontend:**
+- `ExpiredBadge.svelte` — "⚠ Expired" badge if `tags` contains `["expiration", "<past_timestamp>"]`
 - EventVerifier: Show expiration status and date
 - Live Stream: Filter expired events option
 
@@ -305,78 +195,60 @@ Display expired event indicators.
 
 > **Already done in Phase 6:** Challenge format validation (printable ASCII, max 256 chars) and `relayUrl` normalization before signing in `useNip42Auth.svelte.ts`.
 
-**Still to implement:**
+**Implemented in Phase 7:**
 
 **Frontend:**
-- Show `auth-required:` and `restricted:` prefixes in OK/CLOSED messages (`AuthPrefixDisplay.svelte`)
-- Display auth timing warning if signed event `created_at` is suspicious (>10 min skew)
-
-**Optional backend helper** (client-side signing remains via NIP-07; this is for verification/display logic only):
-```typescript
-// Verify AUTH event structure per NIP-42 spec
-function verifyAuthEvent(event: AuthEvent, challenge: string, relayUrl: string): boolean {
-  if (event.kind !== 22242) return false;
-
-  const now = Math.floor(Date.now() / 1000);
-  if (Math.abs(event.created_at - now) > 600) return false;
-
-  const challengeTag = event.tags.find(([k]) => k === 'challenge');
-  if (!challengeTag || challengeTag[1] !== challenge) return false;
-
-  const relayTag = event.tags.find(([k]) => k === 'relay');
-  if (!relayTag) return false;
-  const eventDomain = new URL(relayTag[1]).hostname;
-  const expectedDomain = new URL(relayUrl).hostname;
-  if (eventDomain !== expectedDomain) return false;
-
-  return true;
-}
-```
+- `AuthPrefixDisplay.svelte` — Show `auth-required:` and `restricted:` prefixes in OK/CLOSED messages
+- `AuthStatusBadge.svelte` — Auth status indicator (authenticated / auth required / anonymous / failed)
 
 ## Component Structure
 
 ```
-src/
-├── components/
-│   ├── MonitorDataPanel.svelte      # NIP-66 monitor observations
-│   ├── EoseIndicator.svelte         # NIP-67 completeness hint
-│   ├── RelayListBadge.svelte        # NIP-65 popularity display
-│   ├── FeeDisplay.svelte            # Updated for new fees structure
-│   ├── ExpiredBadge.svelte          # NIP-40 expiration indicator
-│   └── AuthPrefixDisplay.svelte     # NIP-42 OK/CLOSED prefix display
-├── lib/
-│   └── composables/
-│       ├── useRelayDiscovery.svelte.ts  # NIP-66 subscription
-│       └── useEoseHints.svelte.ts       # NIP-67 parsing
-└── utils/
-    └── nipValidation.ts                 # Zod schema usage
+components/
+├── MonitorDataPanel.svelte      # NIP-66 monitor observations
+├── EoseIndicator.svelte         # NIP-67 completeness hint
+├── RelayListBadge.svelte        # NIP-65 popularity display
+├── FeeDisplay.svelte            # Updated for new fees structure
+├── ExpiredBadge.svelte          # NIP-40 expiration indicator
+├── AuthPrefixDisplay.svelte     # NIP-42 OK/CLOSED prefix display
+├── AuthStatusBadge.svelte       # NIP-42 auth status display
+└── ConnectionStatusPanel.svelte # Connection status overview
+
+lib/composables/
+└── useRelayDiscovery.svelte.ts  # NIP-66 subscription
+
+packages/shared/
+├── src/schemas.ts               # Zod NIP validation schemas
+└── src/types.ts                 # Updated NIP types
 ```
 
 ## API Changes
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/directory/:id/discoveries` | NIP-66 monitor observations for a relay |
-| `GET` | `/api/directory/:id/popularity` | NIP-65 read/write relay counts |
-| `GET` | `/api/directory?search=...` | **Enhance** existing ILIKE search with NIP-50 forwarding when relay supports it |
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/api/relays/:id/discoveries` | — | NIP-66 monitor observations for a relay |
+| `POST` | `/api/relays/:id/discoveries` | ✅ | Upsert discovery from monitor |
+| `GET` | `/api/relays/:id/popularity` | — | NIP-65 read/write relay counts |
+| `POST` | `/api/relays/:id/popularity` | ✅ | Upsert relay list entry |
+| `GET` | `/api/directory?search=...` | — | Enhanced ILIKE search (NIP-50 forwarding when relay supports it) |
 
-No changes to mutating relay routes — auth and rate limits from Phase 6 remain in place.
+No changes to existing mutating relay routes — auth and rate limits from Phase 6 remain in place.
 
 ## Database Changes
 
 | Table | Change |
 |-------|--------|
-| `relay_discoveries` | **New** — NIP-66 monitor observations |
-| `relay_list_entries` | **New** — NIP-65 relay list tracking |
-| `relays` | Add `banner`, `pubkey`, `self`, `contact`, `terms_of_service`, `payments_url`, `fees` columns |
-| `health_checks` | Add `nip67_eose_hints` JSONB column |
+| `relays` | **Add columns**: `banner`, `pubkey`, `self`, `contact`, `terms_of_service`, `payments_url`, `fees` |
+| `health_checks` | **Add column**: `nip67_eose_hints` (JSONB) |
+| `relay_discoveries` | **New table** — NIP-66 monitor observations |
+| `relay_list_entries` | **New table** — NIP-65 relay list tracking |
 
 ## Dependencies
 
-| Package | Package location | Purpose | Version |
-|---------|------------------|---------|---------|
-| `zod` | `packages/shared` (new) | NIP protocol validation schemas | `^4.4.3` |
-| `zod` | `apps/api` (existing from Phase 6) | API DTO validation — Zod 4 | `^4.4.3` |
+| Package | Package location | Purpose |
+|---------|------------------|---------|
+| `zod` | `packages/shared` (new) | NIP protocol validation schemas |
+| `zod` | `apps/api` (existing from Phase 6) | API DTO validation |
 
 ## Testing
 
@@ -390,18 +262,22 @@ No changes to mutating relay routes — auth and rate limits from Phase 6 remain
 
 ## Migration from Phase 6
 
-- API DTO schemas may move from `apps/api/src/lib/schemas.ts` → `packages/shared/src/schemas.ts` (optional refactor, same rules)
-- Do not remove SSRF guard, auth middleware, or rate limiting — Phase 7 is additive
-- NIP-42 challenge/URL validation stays in `useNip42Auth.svelte.ts`; Phase 7 adds prefix display and timing warnings only
+- API DTO schemas relocated from `apps/api/src/lib/schemas.ts` → `packages/shared/src/schemas.ts` (NIP schemas live in shared)
+- SSRF guard, auth middleware, and rate limiting unchanged — Phase 7 is additive
+- NIP-42 challenge/URL validation stays in `useNip42Auth.svelte.ts`; Phase 7 adds prefix display and status badge
 
 ## Migration from Phase 5
 
 - `FeeInfo` type → deprecated, replaced by `RelayFees`
-- `posting_limit` field → removed (not a real NIP-11 field)
-- `relay_limitation` field → removed (not a real NIP-11 field)
-- `RelayNip11.tags` field → removed (not a real NIP-11 field)
+- `posting_limit` field → deprecated (not a real NIP-11 field)
+- `relay_limitation` field → deprecated (not a real NIP-11 field)
+- `RelayNip11.tags` field → deprecated (not a real NIP-11 field)
 - Frontend `FeeDisplay` component → rewritten for new fee structure
 
 ---
 
-*Previous: [Phase 6 — Security Hardening](phase-6-security-hardening.md)*
+*Previous: [Phase 6 — Security Hardening](phase-6-security-hardening.md) | Next: [Phase 8 — Developer Toolkit](phase-8-developer-toolkit.md)*
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

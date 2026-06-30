@@ -157,3 +157,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Con
 - Feature specs (Phase 1-3)
 - ADR-001: Monorepo with Turborepo + Bun
 - ADR-002: Drizzle ORM over Prisma
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

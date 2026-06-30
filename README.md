@@ -188,6 +188,11 @@ bun run db:studio        # Open Drizzle Studio
 | `POST` | `/api/relays/:id/check` | ✅ | Run health check |
 | `GET` | `/api/relays/:id/history` | — | Health check history |
 | `GET` | `/api/relays/:id/nip11` | — | NIP-11 snapshot history |
+| `GET` | `/api/relays/:id/discoveries` | — | NIP-66 monitor observations |
+| `GET` | `/api/relays/:id/popularity` | — | NIP-65 read/write relay counts |
+| `GET` | `/api/directory` | — | Browse directory with filters |
+| `GET` | `/api/directory/countries` | — | List available countries |
+| `GET` | `/api/directory/compare/:id1/:id2` | — | Compare two relays side by side |
 
 **Auth**: `Authorization: Bearer <API_KEY>` header required on mutating endpoints.
 
@@ -206,6 +211,7 @@ bun run db:studio        # Open Drizzle Studio
 | 7 | NIP Compliance | ✅ Complete |
 | 8 | Developer Toolkit Expansion | ✅ Complete |
 | 9 | WCAG 2.2 AA Accessibility | ✅ Complete |
+| 10 | Infrastructure Hardening | ✅ Complete |
 
 ---
 

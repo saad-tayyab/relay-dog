@@ -1,6 +1,6 @@
 # 🗄️ Database Schema
 
-Relay Scope uses **PostgreSQL** with **Drizzle ORM**. The schema defines 5 tables for tracking relays, their info, health status, events, and monitoring jobs.
+Relay Scope uses **PostgreSQL** with **Drizzle ORM**. The schema defines 7 tables for tracking relays, their info, health status, events, monitoring jobs, NIP-66 discoveries, and NIP-65 relay lists.
 
 ## Entity Relationship Diagram
 
@@ -10,6 +10,8 @@ erDiagram
     relays ||--o{ health_checks : "has health history"
     relays ||--o{ relay_events : "captures events"
     relays ||--o| monitoring_jobs : "scheduled checks"
+    relays ||--o{ relay_discoveries : "NIP-66 monitor data"
+    relays ||--o{ relay_list_entries : "NIP-65 relay lists"
 
     relays {
         uuid id PK
@@ -25,6 +27,13 @@ erDiagram
         boolean is_public
         timestamp created_at
         timestamp updated_at
+        text banner
+        text pubkey
+        text self
+        text contact
+        text terms_of_service
+        text payments_url
+        jsonb fees
     }
 
     relay_info_snapshots {
@@ -45,6 +54,7 @@ erDiagram
         integer http_status_code
         text error_message
         timestamp checked_at
+        jsonb nip67_eose_hints
     }
 
     relay_events {
@@ -67,6 +77,30 @@ erDiagram
         timestamp last_run_at
         timestamp next_run_at
         timestamp created_at
+    }
+
+    relay_discoveries {
+        uuid id PK
+        text relay_url
+        text monitor_pubkey
+        integer rtt_open
+        integer rtt_read
+        integer rtt_write
+        text network_type
+        text relay_type
+        integer[] supported_nips
+        text[] requirements
+        text[] topics
+        text geohash
+        timestamp discovered_at
+    }
+
+    relay_list_entries {
+        uuid id PK
+        text author_pubkey
+        text relay_url
+        text marker
+        timestamp listed_at
     }
 ```
 
@@ -91,6 +125,13 @@ Core table storing relay information. One row per relay.
 | `is_public` | `boolean` | ✅ | Show in public directory (default: true) |
 | `created_at` | `timestamptz` | NOT NULL | First seen timestamp |
 | `updated_at` | `timestamptz` | NOT NULL | Last updated timestamp |
+| `banner` | `text` | ✅ | Relay banner image URL (NIP-11) |
+| `pubkey` | `text` | ✅ | Admin contact pubkey (32-byte hex, NIP-11) |
+| `self` | `text` | ✅ | Relay's own identity pubkey (NIP-11) |
+| `contact` | `text` | ✅ | Contact URI — mailto, https (NIP-11) |
+| `terms_of_service` | `text` | ✅ | Link to ToS document (NIP-11) |
+| `payments_url` | `text` | ✅ | Payment portal URL (NIP-11) |
+| `fees` | `jsonb` | ✅ | Structured fee schedule — `RelayFees` (NIP-11) |
 
 **Indexes**: `url`, `supported_nips` (GIN)
 
@@ -121,8 +162,9 @@ Each row represents a single health check result for a relay.
 | `websocket_connectable` | `boolean` | NOT NULL | WebSocket connection succeeded |
 | `latency_ms` | `integer` | ✅ | HTTP round-trip time in ms |
 | `http_status_code` | `integer` | ✅ | HTTP response status code |
-| `error_message` | `text` | ✅ | Error details if check failed |
+| `error_message` | `text` | ✅ | Categorized error — `timeout`, `connection_refused`, `dns_error`, `tls_error`, `invalid_target`, `websocket_error` |
 | `checked_at` | `timestamptz` | NOT NULL | When this check was performed |
+| `nip67_eose_hints` | `jsonb` | ✅ | NIP-67 EOSE completeness hints (`EoseResult`) |
 
 **Indexes**: `relay_id`, `checked_at`
 
@@ -160,6 +202,42 @@ Scheduled monitoring configuration per relay. One job per relay.
 
 **Indexes**: `enabled`
 
+### `relay_discoveries`
+
+NIP-66 relay discovery data from monitor observations. One row per (relay_url, monitor_pubkey) pair.
+
+| Column | Type | Nullable | Description |
+|--------|------|----------|-------------|
+| `id` | `uuid` | PK | Auto-generated UUID |
+| `relay_url` | `text` | NOT NULL | Discovered relay URL |
+| `monitor_pubkey` | `text` | NOT NULL | Monitor's public key (hex) |
+| `rtt_open` | `integer` | ✅ | Round-trip time to open (ms) |
+| `rtt_read` | `integer` | ✅ | Round-trip time to read (ms) |
+| `rtt_write` | `integer` | ✅ | Round-trip time to write (ms) |
+| `network_type` | `text` | ✅ | Network type — `clearnet`, `tor`, `i2p`, `loki` |
+| `relay_type` | `text` | ✅ | Relay type (PascalCase enum) |
+| `supported_nips` | `integer[]` | ✅ | NIPs observed by this monitor |
+| `requirements` | `text[]` | ✅ | Requirements — `auth`, `!payment`, `pow` |
+| `topics` | `text[]` | ✅ | Topic tags from discovery event |
+| `geohash` | `text` | ✅ | Geographic geohash |
+| `discovered_at` | `timestamptz` | NOT NULL | When this observation was recorded |
+
+**Constraints**: `UNIQUE(relay_url, monitor_pubkey)`
+
+### `relay_list_entries`
+
+NIP-65 relay list entries tracking which relays users list for read/write. One row per (author_pubkey, relay_url) pair.
+
+| Column | Type | Nullable | Description |
+|--------|------|----------|-------------|
+| `id` | `uuid` | PK | Auto-generated UUID |
+| `author_pubkey` | `text` | NOT NULL | Author's public key (hex) |
+| `relay_url` | `text` | NOT NULL | Listed relay URL |
+| `marker` | `text` | ✅ | `read`, `write`, or NULL (both) |
+| `listed_at` | `timestamptz` | NOT NULL | When this listing was recorded |
+
+**Constraints**: `UNIQUE(author_pubkey, relay_url)`
+
 ## Common Queries
 
 ### Get relays with latest health check
@@ -195,6 +273,38 @@ WHERE hc.checked_at > NOW() - INTERVAL '24 hours'
 GROUP BY r.url;
 ```
 
+### Relay popularity (NIP-65)
+
+```sql
+SELECT
+  r.url,
+  COUNT(CASE WHEN rle.marker = 'read' OR rle.marker IS NULL THEN 1 END) as read_count,
+  COUNT(CASE WHEN rle.marker = 'write' OR rle.marker IS NULL THEN 1 END) as write_count
+FROM relays r
+LEFT JOIN relay_list_entries rle ON r.url = rle.relay_url
+GROUP BY r.url;
+```
+
+### Monitor observations for a relay (NIP-66)
+
+```sql
+SELECT rd.*, COUNT(DISTINCT rd.monitor_pubkey) as monitor_count
+FROM relay_discoveries rd
+WHERE rd.relay_url = 'wss://relay.example.com'
+GROUP BY rd.id
+ORDER BY rd.discovered_at DESC;
+```
+
+## Data Retention
+
+Unbounded table growth is prevented by a daily cron job:
+
+| Table | Retention | Rationale |
+|-------|-----------|-----------|
+| `health_checks` | 90 days | Operational data, not historical analytics |
+| `relay_events` | 30 days | Captured events are ephemeral debug data |
+| `relay_info_snapshots` | 180 days | NIP-11 changes are infrequent, keep longer |
+
 ## Migrations
 
 ```bash
@@ -210,3 +320,7 @@ bun run db:push
 # Open Drizzle Studio (visual browser)
 bun run db:studio
 ```
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

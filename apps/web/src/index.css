@@ -29,6 +29,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* WCAG 2.2 SC 2.4.11: Ensure focused elements aren't obscured by sticky/fixed UI */
+html {
+  scroll-padding-top: 5rem;
+  scroll-padding-bottom: 5rem;
+}
+
 #root {
   min-height: 100vh;
 }

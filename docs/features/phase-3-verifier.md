@@ -79,20 +79,23 @@ function serializeEvent(event: NostrEvent): Uint8Array {
 ### Component Structure
 
 ```
-EventVerifier/
+verifier/
+├── EventVerifier.svelte       # Main verifier container
 ├── EventInput.svelte          # Paste JSON textarea
 ├── VerificationPanel.svelte   # Signature + ID verification results
 ├── EventDetails.svelte        # Decoded event fields
 ├── TagDecoder.svelte          # Tag explanations
-├── Nip05Check.svelte          # NIP-05 verification
 └── KindBadge.svelte           # Event kind display
+
+utils/
+├── nostrVerify.ts             # Signature + event ID verification logic
+└── nip05.ts                   # NIP-05 DNS identity verification
 ```
 
 ### Dependencies
 
-- `@noble/curves`: Schnorr signature verification
-- `@noble/hashes`: SHA-256 for event ID computation
-- NIP-05 DNS lookup (browser `fetch`)
+- `nostr-tools`: Event verification, NIP-19 bech32 encoding
+- NIP-05 DNS lookup (browser `fetch` via `utils/nip05.ts`)
 
 ## Testing
 
@@ -105,3 +108,7 @@ EventVerifier/
 ---
 
 *Previous: [Phase 2 — Live Event Stream](phase-2-events.md)*
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

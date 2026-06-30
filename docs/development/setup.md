@@ -105,23 +105,40 @@ No manual setup needed — hooks run on `git commit`.
 ```
 relayscope/
 ├── apps/
-│   ├── web/                    # Vite + Svelte 5 frontend
+│   ├── web/                    # Vite + Svelte 5 + Tailwind v4 frontend
 │   │   ├── src/
-│   │   │   ├── App.svelte     # Main app component
-│   │   │   ├── index.css       # Tailwind styles
-│   │   │   └── main.ts         # Svelte mount
+│   │   │   ├── App.svelte     # Main app component (section-based routing)
+│   │   │   ├── components/    # Svelte components (40+ files)
+│   │   │   │   ├── nav/       # NavBar, MobileNav
+│   │   │   │   ├── inspector/ # InspectorSection
+│   │   │   │   ├── publisher/ # EventComposer, EventDeleter, TagEditor
+│   │   │   │   ├── tools/     # KeyConverter, Nip05Checker, QRCode, Backup
+│   │   │   │   ├── shared/    # AccessibleTabs, Toast (WCAG 2.2 AA)
+│   │   │   │   └── verifier/  # EventVerifier, VerificationPanel
+│   │   │   ├── lib/
+│   │   │   │   ├── composables/  # Svelte 5 runes composables (10 files)
+│   │   │   │   └── stores/       # relaySocket.svelte.ts
+│   │   │   └── utils/         # router, keys, nip05, backup, relay, nostrVerify
 │   │   └── vite.config.ts      # Vite config with API proxy
 │   └── api/                    # Hono + Bun backend
 │       ├── src/
-│       │   ├── index.ts        # Server entry point
-│       │   ├── routes/         # API endpoints
-│       │   ├── jobs/           # Background tasks
-│       │   └── db/             # Database schema + connection
+│       │   ├── index.ts        # Server entry point (middleware, security headers)
+│       │   ├── routes/         # relays, directory, discover, popularity
+│       │   ├── middleware/     # auth.ts (Bearer token)
+│       │   ├── lib/            # schemas.ts, ssrf.ts, errors.ts
+│       │   ├── jobs/           # relayMonitor.ts
+│       │   └── db/             # schema.ts (7 tables), index.ts
 │       └── drizzle.config.ts
 ├── packages/
-│   └── shared/                 # Shared TypeScript types
-│       └── src/types.ts
+│   ├── shared/                 # Shared types + Zod schemas
+│   │   └── src/
+│   │       ├── types.ts        # TypeScript interfaces
+│   │       └── schemas.ts      # Zod validation schemas
+│   └── config/                 # Shared configs
+│       ├── env/                # Server env validation
+│       └── tsconfig/           # TypeScript configs (base, bun, svelte)
 ├── docs/                       # Documentation
+├── docker-compose.yml          # PostgreSQL container
 ├── turbo.json                  # Turborepo task config
 └── package.json                # Workspace root
 ```
@@ -174,3 +191,7 @@ bunx turbo daemon clean
 # Or
 rm -rf .turbo
 ```
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

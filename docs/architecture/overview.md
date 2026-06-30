@@ -29,29 +29,32 @@ graph TB
     API <-->|"SQL Queries"| DB
     MON <-->|"Periodic Health Checks"| RELAY
     MON -->|"Store Results"| DB
-    WEB -->|"WebSocket (Phase 2)"| RELAY
+    WEB -->|"WebSocket"| RELAY
 ```
 
 ## Package Architecture
 
-The monorepo contains three packages with clear dependency boundaries:
+The monorepo contains four packages with clear dependency boundaries:
 
 ```mermaid
 graph LR
-    SHARED["@relayscope/shared<br/>Types & Interfaces"]
+    CONFIG["@relayscope/config<br/>Env & TS Config"]
+    SHARED["@relayscope/shared<br/>Types & Schemas"]
     WEB["@relayscope/web<br/>Svelte Frontend"]
     API["@relayscope/api<br/>Hono Backend"]
 
     WEB -->|"imports types"| SHARED
     API -->|"imports types"| SHARED
+    API -->|"imports env"| CONFIG
     WEB -.->|"proxy /api"| API
 ```
 
 | Package | Stack | Responsibility |
 |---------|-------|----------------|
-| `@relayscope/web` | Vite + Svelte 5 + Tailwind v4 | Browser UI, NIP-11 viewer, connection checks |
-| `@relayscope/api` | Hono + Bun + Drizzle ORM | REST API, relay CRUD, health checks, monitoring |
-| `@relayscope/shared` | TypeScript (no deps) | Shared types, DTOs, entity interfaces |
+| `@relayscope/web` | Vite + Svelte 5 + Tailwind v4 | Browser UI, NIP-11 viewer, connection checks, event tools |
+| `@relayscope/api` | Hono + Bun + Drizzle ORM | REST API, relay CRUD, health checks, monitoring, directory |
+| `@relayscope/shared` | TypeScript + Zod | Shared types, DTOs, entity interfaces, NIP validation schemas |
+| `@relayscope/config` | TypeScript configs + env | Shared tsconfig presets and server env validation |
 
 ## Data Flow
 
@@ -84,12 +87,12 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant Cron as Scheduler (60s)
+    participant Cron as Scheduler (configurable)
     participant Monitor as Monitor Job
     participant DB as PostgreSQL
     participant Relay as Nostr Relays
 
-    loop Every 60 seconds
+    loop Every N seconds (default 60s)
         Cron->>Monitor: Run cycle
         Monitor->>DB: SELECT due jobs
         DB-->>Monitor: Jobs list
@@ -104,6 +107,25 @@ sequenceDiagram
     end
 ```
 
+### NIP-66 Discovery Flow
+
+```mermaid
+sequenceDiagram
+    participant Dir as Directory UI
+    participant API as API Server
+    participant MonRelay as Monitor Relay
+    participant DB as PostgreSQL
+
+    Dir->>API: POST /api/relays/:id/discoveries
+    API->>API: Validate + SSRF check
+    API->>DB: UPSERT relay_discoveries
+    API-->>Dir: 201 Created
+
+    Dir->>API: GET /api/relays/:id/discoveries
+    API->>DB: SELECT + aggregate stats
+    API-->>Dir: discoveries + stats
+```
+
 ## Technology Decisions
 
 | Decision | Choice | Rationale |
@@ -113,15 +135,24 @@ sequenceDiagram
 | HTTP Framework | **Hono** | Lightweight, edge-ready, middleware ecosystem |
 | ORM | **Drizzle** | SQL-like API, zero runtime overhead, Bun-optimized |
 | Database | **PostgreSQL** | JSON support, array columns, mature ecosystem |
-| Frontend | **Svelte 5 + Vite** | Compiler-based reactivity, zero runtime overhead, Runes API for explicit state |
-| CSS | **Tailwind v4** | Utility-first, custom theme tokens, zero config |
+| Frontend | **Svelte 5 + Vite** | Compiler-based reactivity, Runes API for explicit state |
+| CSS | **Tailwind v4** | Utility-first, custom theme tokens |
+| Validation | **Zod 4** | Runtime type validation on API and shared schemas |
+| Linting | **Biome** | Fast Rust-based linter + formatter |
+| Linting | **Biome** | Fast Rust-based linter + formatter |
 
 ## Security Considerations
 
-- **CORS**: API allows only `localhost:5173` and `localhost:3000` origins
-- **Input Validation**: URL normalization prevents injection via relay URLs
+- **CORS**: Configurable via `CORS_ORIGINS` env var (defaults to `localhost:5173`, `localhost:3000`)
+- **API Key Auth**: Bearer token required on all mutating routes (`POST`, `PUT`, `DELETE`)
+- **SSRF Protection**: `assertSafeUrl()` blocks private IPs, loopback, link-local, cloud metadata targets
+- **Rate Limiting**: 20 write / 200 read requests per minute per IP
+- **Input Validation**: Zod schemas on all create/update endpoints
+- **Mass Assignment**: PUT only allows whitelisted fields (`name`, `description`, `isPublic`, `country`)
 - **Timeouts**: All external fetches use `AbortSignal.timeout(10000)` to prevent hanging
-- **No Auth (Phase 1)**: Public read-only API; auth planned for Phase 4
+- **Security Headers**: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `CSP`, `Permissions-Policy`, `HSTS` (production)
+- **Body Size Limit**: 100 KB max request body
+- **Production Error Handler**: Generic error messages; full details logged server-side only
 
 ## Scalability Notes
 
@@ -129,8 +160,13 @@ sequenceDiagram
 - **Horizontal**: Stateless API servers can scale behind a load balancer
 - **Database**: Connection pooling via `postgres.js` (built-in pool)
 - **Monitoring**: Sequential relay checks prevent thundering herd
+- **Data Retention**: Daily cron cleans old health checks (90d), events (30d), snapshots (180d)
 - **Caching**: Turborepo caches builds; consider Redis for API response caching in production
 
 ---
 
 *See [Database Schema](database.md) for table details and [ADR-001](decisions/001-monorepo.md) for the monorepo decision.*
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

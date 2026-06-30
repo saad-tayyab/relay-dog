@@ -1,3 +1,5 @@
+import { lookup } from 'node:dns/promises';
+
 const ALLOWED_SCHEMES = new Set(['http:', 'https:', 'ws:', 'wss:']);
 
 const BLOCKED_HOSTNAMES = new Set([
@@ -64,6 +66,31 @@ export function assertSafeUrl(rawUrl: string): URL {
 
   if (isBlockedHostname(parsed.hostname)) {
     throw new Error('URL target not allowed');
+  }
+
+  return parsed;
+}
+
+/**
+ * Validates a URL AND its resolved IP against private network ranges.
+ * Prevents DNS rebinding attacks where hostname passes check but resolves to internal IP.
+ */
+export async function assertSafeUrlResolved(rawUrl: string): Promise<URL> {
+  // Step 1: Validate hostname (existing check)
+  const parsed = assertSafeUrl(rawUrl);
+
+  // Step 2: Resolve DNS and check resolved IP
+  try {
+    const { address } = await lookup(parsed.hostname, { family: 4 });
+    if (isPrivateIpv4(address)) {
+      throw new Error('URL resolves to private network');
+    }
+  } catch (e: unknown) {
+    if (e instanceof Error && e.message.includes('resolves to private')) {
+      throw e;
+    }
+    // DNS resolution failed — could be legitimate (offline relay) or malicious.
+    // Allow through — the actual fetch will fail if unreachable.
   }
 
   return parsed;

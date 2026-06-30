@@ -1,15 +1,15 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { healthChecks, relayInfoSnapshots, relays } from '../db/schema';
 import { categorizeError } from '../lib/errors';
-import { assertSafeUrl } from '../lib/ssrf';
+import { assertSafeUrl, assertSafeUrlResolved } from '../lib/ssrf';
 
-function toHttpUrl(url: string): string {
+async function toHttpUrl(url: string): Promise<string> {
   const httpUrl = url
     .replace(/^wss:\/\//, 'https://')
     .replace(/^ws:\/\//, 'http://')
     .replace(/\/$/, '');
-  assertSafeUrl(httpUrl);
+  await assertSafeUrlResolved(httpUrl);
   return httpUrl;
 }
 
@@ -26,7 +26,7 @@ async function checkRelayHealth(url: string) {
   let wsUrl: string;
 
   try {
-    httpUrl = toHttpUrl(url);
+    httpUrl = await toHttpUrl(url);
     wsUrl = toWsUrl(url);
   } catch {
     return {
@@ -152,6 +152,49 @@ async function monitorRelay(relayId: string, url: string) {
   await db.update(relays).set({ updatedAt: new Date() }).where(eq(relays.id, relayId));
 }
 
+// ─── Data Retention Cleanup ───
+
+let lastRetentionRun: Date | null = null;
+
+function shouldRunRetention(): boolean {
+  if (!lastRetentionRun) return true;
+  const hoursSinceLastRun = (Date.now() - lastRetentionRun.getTime()) / (1000 * 60 * 60);
+  return hoursSinceLastRun >= 24;
+}
+
+async function runRetentionCleanup() {
+  try {
+    // Health checks: keep 90 days
+    await db.execute(sql`DELETE FROM health_checks WHERE checked_at < NOW() - INTERVAL '90 days'`);
+
+    // Relay events: keep 30 days
+    await db.execute(sql`DELETE FROM relay_events WHERE received_at < NOW() - INTERVAL '30 days'`);
+
+    // NIP-11 snapshots: keep 180 days
+    await db.execute(
+      sql`DELETE FROM relay_info_snapshots WHERE fetched_at < NOW() - INTERVAL '180 days'`,
+    );
+
+    // Discovery data: keep 180 days
+    await db.execute(
+      sql`DELETE FROM relay_discoveries WHERE discovered_at < NOW() - INTERVAL '180 days'`,
+    );
+
+    lastRetentionRun = new Date();
+  } catch {
+    // Retention cleanup failed — non-critical, log and continue
+    process.stderr.write(
+      `${JSON.stringify({
+        level: 'error',
+        msg: 'Data retention cleanup failed',
+        timestamp: new Date().toISOString(),
+      })}\n`,
+    );
+  }
+}
+
+// ─── Monitoring Cycle ───
+
 let isRunning = false;
 
 async function runMonitoringCycle() {
@@ -171,6 +214,11 @@ async function runMonitoringCycle() {
       } catch {
         // Relay check failed — logged via health check record
       }
+    }
+
+    // Run retention cleanup once per day
+    if (shouldRunRetention()) {
+      await runRetentionCleanup();
     }
   } catch {
     // Monitoring cycle failed — will retry on next interval

@@ -9,7 +9,7 @@ Welcome to the Relay Scope documentation. This is the single source of truth for
 ```
 docs/
 ├── README.md                          # You are here
-├── roadmap.md                         # Full 10-phase project plan
+├── roadmap.md                         # Full 11-phase project plan
 │
 ├── architecture/
 │   ├── overview.md                    # System architecture + Mermaid diagrams
@@ -46,7 +46,8 @@ docs/
 │   ├── phase-7-nip-compliance.md     # NIP compliance (complete ✅)
 │   ├── phase-8-developer-toolkit.md  # Developer toolkit (complete ✅)
 │   ├── phase-9-accessibility.md      # WCAG 2.2 AA (complete ✅)
-│   └── phase-10-infrastructure-hardening.md # DevSecOps (complete ✅)
+│   ├── phase-10-infrastructure-hardening.md # DevSecOps (complete ✅)
+│   └── phase-11-production-deployment.md # Fly.io deploy (planned 📋)
 │
 ├── prompts/
 │   ├── best-practices.md             # AI prompt engineering practices
@@ -92,6 +93,7 @@ Quick check if a doc is current with the codebase. Updated with every significan
 | features/phase-7-nip-compliance.md | `v0.9.0` | 2026-07-01 | Fixed API changes, file references |
 | features/phase-9-accessibility.md | `v0.9.0` | 2026-07-01 | WCAG 2.2 AA |
 | features/phase-10-infrastructure-hardening.md | `v0.9.0` | 2026-07-01 | DevSecOps |
+| features/phase-11-production-deployment.md | `v0.10.0` | — | Fly.io deployment |
 | prompts/best-practices.md | `v0.9.0` | 2026-07-01 | AI prompt guidelines |
 | roadmap.md | `v0.9.0` | 2026-07-01 | Phase 7 API count, Phase 10 |
 | changelog.md | `v0.9.0` | 2026-07-01 | Release history |

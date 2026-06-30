@@ -15,6 +15,7 @@ Phase 7  ████████████████████  NIP Compl
 Phase 8  ████████████████████  Developer Toolkit Expansion       ✅ Done
 Phase 9  ████████████████████  WCAG 2.2 AA Accessibility          ✅ Done
 Phase 10 ████████████████████  Infrastructure Hardening             ✅ Done
+Phase 11 ░░░░░░░░░░░░░░░░░░░░  Production Deployment (Fly.io)      📋 Planned
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅
@@ -216,6 +217,31 @@ Comprehensive infrastructure security audit and remediation following NIST SP 80
 
 ---
 
+## Phase 11: Production Deployment (Fly.io) 📋
+
+> *Day 17*
+
+Deploy Relay Dog to production on Fly.io. Two separate Fly apps — API (Hono + Bun) and Web (Svelte static assets) — backed by Fly Postgres. Takes the app from "runs locally" to "live on the internet with a real domain."
+
+**What ships:**
+- **API Dockerfile** — multi-stage build (install → build → slim production image with non-root user)
+- **Web Dockerfile** — multi-stage build (install → build → Nginx static serving with SPA fallback)
+- **Fly.io configs** — `fly.toml` for API and web apps with auto-stop/start, concurrency limits
+- **Fly Postgres** — provisioned with auto-backup, connected to API via internal network
+- **Secrets management** — all credentials via `fly secrets`, never in code or images
+- **Custom domain + TLS** — Let's Encrypt auto-provisioned via Fly
+- **Deploy script** — `scripts/deploy.sh` with migration + health check verification
+- **Staging environment** — separate Fly apps, auto-deploy from main
+- **Production checklist** — pre-deploy, post-deploy, and ongoing verification steps
+
+**Architecture:** Web (Nginx :80) → API (Bun :3001) → Fly Postgres (internal :5432)
+
+**Effort:** ~3 hours
+
+**Feature doc**: [phase-11-production-deployment.md](features/phase-11-production-deployment.md)
+
+---
+
 ## Effort Summary
 
 | Phase | Duration | Difficulty | API Changes | DB Changes |
@@ -230,6 +256,7 @@ Comprehensive infrastructure security audit and remediation following NIST SP 80
 | 8 | 2–3 weekends | Medium | None (client-side) | None |
 | 9 | 1 day | Easy | None | None |
 | 10 | 1 day | Medium | Health check, retention | None |
+| 11 | 0.5 day | Easy | None | None |
 
 ---
 

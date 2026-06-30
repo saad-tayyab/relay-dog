@@ -1,3 +1,4 @@
+import { defineRelations } from 'drizzle-orm';
 import {
   boolean,
   index,
@@ -113,6 +114,44 @@ export const monitoringJobs = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('monitoring_jobs_enabled_idx').on(table.enabled)],
+);
+
+// ─── Relations ───
+
+export const relations = defineRelations(
+  { relays, relayInfoSnapshots, healthChecks, relayEvents, monitoringJobs },
+  (r) => ({
+    relays: {
+      infoSnapshots: r.many.relayInfoSnapshots(),
+      healthChecks: r.many.healthChecks(),
+      events: r.many.relayEvents(),
+      monitoringJob: r.one.monitoringJobs(),
+    },
+    relayInfoSnapshots: {
+      relay: r.one.relays({
+        from: r.relayInfoSnapshots.relayId,
+        to: r.relays.id,
+      }),
+    },
+    healthChecks: {
+      relay: r.one.relays({
+        from: r.healthChecks.relayId,
+        to: r.relays.id,
+      }),
+    },
+    relayEvents: {
+      relay: r.one.relays({
+        from: r.relayEvents.relayId,
+        to: r.relays.id,
+      }),
+    },
+    monitoringJobs: {
+      relay: r.one.relays({
+        from: r.monitoringJobs.relayId,
+        to: r.relays.id,
+      }),
+    },
+  }),
 );
 
 // ─── Type exports for use in routes ───

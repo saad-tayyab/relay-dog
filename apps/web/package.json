@@ -11,10 +11,11 @@
   },
   "dependencies": {
     "@relayscope/shared": "workspace:*",
-    "svelte": "^5.35.0"
+    "nostr-tools": "^2.23.8",
+    "svelte": "^5.56.4"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tailwindcss/vite": "^4.1.7",
     "svelte-check": "^4.1.0",
     "tailwindcss": "^4.1.7",

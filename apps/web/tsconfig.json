@@ -4,7 +4,8 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "noEmit": true,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "types": ["svelte", "vite/client"]
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.svelte.ts"]
 }

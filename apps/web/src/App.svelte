@@ -14,8 +14,9 @@ import LimitationsPanel from './components/LimitationsPanel.svelte';
 import LoadingSpinner from './components/LoadingSpinner.svelte';
 import NipBadgeGrid from './components/NipBadgeGrid.svelte';
 import RelayProfile from './components/RelayProfile.svelte';
+import EventVerifier from './components/verifier/EventVerifier.svelte';
 
-type Tab = 'nip11' | 'stream';
+type Tab = 'nip11' | 'stream' | 'verifier';
 
 const POPULAR_RELAYS = [
   'relay.damus.io',
@@ -45,6 +46,7 @@ const socket = relaySocket(() => normalizedUrl);
 
 const isNip11Tab = $derived(activeTab === 'nip11');
 const isStreamTab = $derived(activeTab === 'stream');
+const isVerifierTab = $derived(activeTab === 'verifier');
 const hasRelay = $derived(normalizedUrl.length > 0);
 
 // ─── Actions ───
@@ -114,7 +116,7 @@ function handleQuickPick(relay: string) {
       <span
         class="ml-auto text-[10px] font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted"
       >
-        Phase 2
+        Phase 3
       </span>
     </div>
   </header>
@@ -193,35 +195,42 @@ function handleQuickPick(relay: string) {
     </form>
 
     <!-- Tab Toggle -->
-    {#if hasRelay}
-      <div class="flex gap-1 p-1 mb-6 rounded-xl bg-dark-surface border border-dark-border">
-        <button
-          type="button"
-          onclick={() => (activeTab = 'nip11')}
-          class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isNip11Tab
-            ? 'bg-dark-card border border-dark-border text-text-primary'
-            : 'text-text-muted hover:text-text-secondary'}"
-        >
-          NIP-11 Info
-        </button>
-        <button
-          type="button"
-          onclick={() => (activeTab = 'stream')}
-          class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isStreamTab
-            ? 'bg-dark-card border border-dark-border text-text-primary'
-            : 'text-text-muted hover:text-text-secondary'}"
-        >
-          Live Stream
-          {#if socket.events.length > 0}
-            <span
-              class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent"
-            >
-              {socket.events.length.toLocaleString()}
-            </span>
-          {/if}
-        </button>
-      </div>
-    {/if}
+    <div class="flex gap-1 p-1 mb-6 rounded-xl bg-dark-surface border border-dark-border">
+      <button
+        type="button"
+        onclick={() => (activeTab = 'nip11')}
+        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isNip11Tab
+          ? 'bg-dark-card border border-dark-border text-text-primary'
+          : 'text-text-muted hover:text-text-secondary'}"
+      >
+        NIP-11 Info
+      </button>
+      <button
+        type="button"
+        onclick={() => (activeTab = 'stream')}
+        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isStreamTab
+          ? 'bg-dark-card border border-dark-border text-text-primary'
+          : 'text-text-muted hover:text-text-secondary'}"
+      >
+        Live Stream
+        {#if socket.events.length > 0}
+          <span
+            class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent"
+          >
+            {socket.events.length.toLocaleString()}
+          </span>
+        {/if}
+      </button>
+      <button
+        type="button"
+        onclick={() => (activeTab = 'verifier')}
+        class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all {isVerifierTab
+          ? 'bg-dark-card border border-dark-border text-text-primary'
+          : 'text-text-muted hover:text-text-secondary'}"
+      >
+        🔐 Event Verifier
+      </button>
+    </div>
 
     <!-- NIP-11 Tab -->
     {#if isNip11Tab}
@@ -335,6 +344,11 @@ function handleQuickPick(relay: string) {
         <FilterBuilder connected={socket.status === 'connected'} onSend={socket.send} />
         <EventFeed events={socket.events} />
       </div>
+    {/if}
+
+    <!-- Event Verifier Tab -->
+    {#if isVerifierTab}
+      <EventVerifier />
     {/if}
   </main>
 

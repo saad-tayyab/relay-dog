@@ -4,6 +4,35 @@ All notable changes to Relay Scope are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Conventional Commits](https://conventionalcommits.org).
 
+## [0.3.0] - 2026-06-30
+
+### Added
+
+#### Web (`@relayscope/web`)
+- **Event Verifier & Inspector (Phase 3)**
+  - Client-side Nostr event signature verification (Schnorr via nostr-tools)
+  - Event ID verification (SHA-256 of canonical serialization)
+  - Tag decoder with human-readable explanations for all standard tag types (e, p, t, d, expiration, relay, alt)
+  - Event details panel with hex/npub pubkey display, copy buttons, relative timestamps
+  - Color-coded KindBadge component (Metadata, Note, DM, Repost, Reaction, Zap)
+  - EventInput with JSON validation, error states, and example event loader
+  - 3-column responsive layout: Verification → Details → Tags
+  - Empty state with guidance icon
+  - New "🔐 Event Verifier" tab in main navigation
+  - Added `nostr-tools` 2.23.8 dependency (NIP-01, NIP-19)
+
+### Changed
+
+#### API (`@relayscope/api`)
+- **Drizzle ORM v1 RC upgrade**: drizzle-orm 0.45.2 → 1.0.0-rc.4, drizzle-kit 0.31.10 → 1.0.0-rc.4
+  - Migrated to `defineRelations()` API (Relational Queries v2)
+  - Updated `drizzle()` instantiation to v1 object syntax: `drizzle({ client, relations })`
+
+#### Web (`@relayscope/web`)
+- **Svelte 5 + Vite 8 compatibility**: svelte 5.35.0 → 5.56.4, @sveltejs/vite-plugin-svelte 5.0.0 → 7.1.2
+  - Fixed Vite 8 Rolldown deprecation warnings
+  - Plugin v7 requires Vite 8 and Svelte ≥5.46.4
+
 ## [0.2.0] - 2026-06-30
 
 ### Changed

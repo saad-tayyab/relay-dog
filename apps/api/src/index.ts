@@ -1,9 +1,9 @@
+import { getServerEnv } from '@relayscope/env/server';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { prettyJSON } from 'hono/pretty-json';
 import { rateLimiter } from 'hono-rate-limiter';
 import { db } from './db';
 import { relays } from './db/schema';
@@ -13,18 +13,21 @@ import discoverRoutes from './routes/discover';
 import popularityRoutes from './routes/popularity';
 import relayRoutes from './routes/relays';
 
-const isProduction = process.env.NODE_ENV === 'production';
+// ─── Validate environment at startup (single source of truth) ───
+const env = getServerEnv();
 
-if (isProduction && !process.env.API_KEY) {
+if (env.NODE_ENV === 'production' && !env.API_KEY) {
   process.stderr.write('API_KEY is required in production\n');
   process.exit(1);
 }
 
-if (!isProduction && !process.env.API_KEY) {
+if (env.NODE_ENV !== 'production' && !env.API_KEY) {
   process.stderr.write(
     '⚠️  WARNING: API_KEY is not set — write endpoints are UNPROTECTED in development\n',
   );
 }
+
+const isProduction = env.NODE_ENV === 'production';
 
 const app = new Hono();
 
@@ -53,8 +56,8 @@ if (!isProduction) {
   app.use('*', logger());
 }
 
-const corsOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
+const corsOrigins = env.CORS_ORIGINS
+  ? env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
   : ['http://localhost:5173', 'http://localhost:3000'];
 
 app.use(
@@ -65,10 +68,6 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization'],
   }),
 );
-
-if (!isProduction) {
-  app.use('/api/*', prettyJSON());
-}
 
 app.use('/api/*', async (c, next) => {
   const isWrite = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(c.req.method);
@@ -148,22 +147,18 @@ app.onError((err, c) => {
   return c.json({ success: false, error: 'Internal server error' }, 500);
 });
 
-// ─── Start Server with Graceful Shutdown ───
-const port = parseInt(process.env.PORT || '3001', 10);
-
+// ─── Start Server ───
 const server = Bun.serve({
   fetch: app.fetch,
-  port,
+  port: env.PORT,
 });
 
-const shutdown = async () => {
-  server.stop();
-  process.exit(0);
-};
+// Graceful shutdown — Bun-native pattern
+process.on('SIGTERM', () => server.stop());
+process.on('SIGINT', () => server.stop());
 
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+process.stderr.write(`🚀 Server running on port ${env.PORT}\n`);
 
 // Monitor interval: min 10s to prevent abuse
-const monitorInterval = Math.max(10_000, parseInt(process.env.MONITOR_INTERVAL_MS || '60000', 10));
+const monitorInterval = Math.max(10_000, env.MONITOR_INTERVAL_MS);
 startMonitor(monitorInterval);

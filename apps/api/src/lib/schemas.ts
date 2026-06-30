@@ -34,5 +34,7 @@ export const createPopularitySchema = z.object({
   marker: z.enum(['read', 'write']).nullable().optional(),
 });
 
-export type CreateRelayInput = z.output<typeof createRelaySchema>;
-export type UpdateRelayInput = z.output<typeof updateRelaySchema>;
+export type CreateRelayInput = z.infer<typeof createRelaySchema>;
+export type UpdateRelayInput = z.infer<typeof updateRelaySchema>;
+export type CreateDiscoveryInput = z.infer<typeof createDiscoverySchema>;
+export type CreatePopularityInput = z.infer<typeof createPopularitySchema>;

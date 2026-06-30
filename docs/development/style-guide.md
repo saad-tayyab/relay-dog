@@ -427,3 +427,7 @@ Same format as commit messages:
 ```
 feat(web): add live event stream viewer
 ```
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

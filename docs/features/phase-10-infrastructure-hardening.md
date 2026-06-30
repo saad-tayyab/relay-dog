@@ -446,3 +446,7 @@ jobs:
 | CI test step | 10 min |
 | Documentation | 60 min |
 | **Total** | **~4 hours** |
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

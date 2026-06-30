@@ -578,3 +578,7 @@ export function setHashSection(section: Section): void {
 ---
 
 *Previous: [Phase 7 — NIP Compliance](phase-7-nip-compliance.md)*
+
+---
+
+*Last updated: v0.8.0 — 2026-06-30*

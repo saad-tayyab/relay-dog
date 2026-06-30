@@ -174,3 +174,7 @@ bun run db:generate
 - **Validate** all user input at the API boundary
 - **Use** `AbortSignal.timeout()` for all external HTTP/WS calls
 - **Sanitize** error messages — don't leak internal details to the client
+
+---
+
+*Last updated: v0.1.0 — 2026-06-30*

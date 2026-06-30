@@ -109,3 +109,7 @@ TEMPLATE CHECKLIST — remove this section before publishing:
 - [ ] Effort table with individual task estimates
 - [ ] No TODO placeholders left in the doc
 -->
+
+---
+
+*Last updated: v0.1.0 — 2026-06-30*

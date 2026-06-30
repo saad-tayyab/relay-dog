@@ -158,11 +158,13 @@ Bring relay-dog in line with the latest NIP specs (June 2026). Fix outdated type
 - NIP-65 relay list display — show read/write popularity per relay
 - NIP-50 search filter — forward `search` to relays that support it (directory ILIKE already exists)
 - NIP-40 expiration — expired event indicators
-- NIP-42 auth hardening — OK/CLOSED prefix display, timing warnings (challenge validation done in Phase 6)
-- Zod NIP schemas in `packages/shared` (optional consolidation of API DTO schemas from Phase 6)
+- NIP-42 auth hardening — OK/CLOSED prefix display, auth status badge
+- Zod NIP schemas in `packages/shared` (consolidation of API DTO schemas from Phase 6)
 - Deprecated incorrect types (FeeInfo, posting_limit, relay_limitation)
 
 **NIPs**: NIP-11 (updated), NIP-40, NIP-42 (display/timing), NIP-50, NIP-65, NIP-66 (integrated), NIP-67
+
+**New API endpoints**: `GET/POST /api/relays/:id/discoveries`, `GET/POST /api/relays/:id/popularity`
 
 **New dependencies**: `zod` in `packages/shared` (already in `apps/api` from Phase 6)
 
@@ -224,7 +226,7 @@ Comprehensive infrastructure security audit and remediation following NIST SP 80
 | 4 | 2 weekends | **Hard** | Auth endpoints | health_checks expansion |
 | 5 | 2–3 weekends | Medium | Directory endpoints | monitoring_jobs expansion |
 | 6 | 1 weekend | Medium | Auth + rate limits | None |
-| 7 | 1–2 weekends | Medium | 3 endpoints | relay_discoveries, relay_list_entries |
+| 7 | 1–2 weekends | Medium | 5 endpoints (CRUD + upsert) | relay_discoveries, relay_list_entries, relays+7 cols, health_checks+1 col |
 | 8 | 2–3 weekends | Medium | None (client-side) | None |
 | 9 | 1 day | Easy | None | None |
 | 10 | 1 day | Medium | Health check, retention | None |
@@ -258,4 +260,8 @@ Comprehensive accessibility audit and fix to achieve WCAG 2.2 Level AA complianc
 **New components**: `AccessibleTabs.svelte`, `Toast.svelte`
 **New composables**: `useDebounce.svelte.ts`, `useCopyToClipboard.svelte.ts`
 
-**Feature doc**: [phase-9-accessibility.md](features/phase-9-accessibility.md) (to be created)
+**Feature doc**: [phase-9-accessibility.md](features/phase-9-accessibility.md)
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

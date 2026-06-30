@@ -221,3 +221,7 @@ Relays SHOULD include `67` in `supported_nips` if implemented.
 | NIP-65 | https://nips.nostr.com/65 |
 | NIP-66 | https://nips.nostr.com/66 |
 | NIP-67 | https://nips.nostr.com/67 |
+
+---
+
+*Last updated: v0.7.0 — 2026-06-30*

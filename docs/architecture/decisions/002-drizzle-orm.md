@@ -47,3 +47,7 @@ We use **Drizzle ORM** with **postgres.js** as the PostgreSQL driver.
 - [Drizzle ORM docs](https://orm.drizzle.team)
 - [Drizzle + Bun](https://orm.drizzle.team/docs/get-started/bun-existing)
 - [postgres.js](https://github.com/porsager/postgres)
+
+---
+
+*Last updated: v0.1.0 — 2026-06-30*

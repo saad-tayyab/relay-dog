@@ -438,3 +438,7 @@ bun audit
 ---
 
 *Previous: [Phase 5 — Relay Directory & Comparison](phase-5-directory.md) | Next: [Phase 7 — NIP Compliance & Modernization](phase-7-nip-compliance.md)*
+
+---
+
+*Last updated: v0.6.0 — 2026-06-30*

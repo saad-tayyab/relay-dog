@@ -522,3 +522,7 @@ When creating or modifying a component, verify:
 ---
 
 *Previous: [Phase 8 — Developer Toolkit](phase-8-developer-toolkit.md)*
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

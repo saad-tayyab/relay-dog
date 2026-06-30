@@ -1011,3 +1011,7 @@ error            /* Error state */
 
 *Last updated: 2026-07-01*
 *Feature spec: docs/features/phase-8-developer-toolkit.md*
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

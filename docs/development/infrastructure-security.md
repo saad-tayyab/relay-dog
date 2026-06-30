@@ -366,3 +366,7 @@ app.get('/api/health', (c) => {
 | Docker image vulnerability scan | Every build | `docker scout cves` or Trivy |
 | SSL certificate expiry | Monthly | Auto-renewed via Fly/Caddy |
 | Database backup integrity | Weekly | Restore test to verify |
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

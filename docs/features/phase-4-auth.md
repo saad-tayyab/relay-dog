@@ -109,3 +109,7 @@ async function measureWsLatency(url: string): Promise<number> {
 ---
 
 *Previous: [Phase 3 — Event Verifier](phase-3-verifier.md) | Next: [Phase 5 — Relay Directory](phase-5-directory.md)*
+
+---
+
+*Last updated: v0.4.0 — 2026-06-30*

@@ -18,115 +18,70 @@ Go from a single-relay inspector to a directory. Users can browse known relays, 
 
 ## Features
 
-### Relay Discovery (NIP-66)
+### Directory Browse & Filter
 
-> **Deferred to Phase 7:** The items below were specified for Phase 5 but **not implemented**. Directory browse, filter, and compare shipped; NIP-66 monitor integration (`GET /api/discover`, auto-add from `kind:30166`) is planned for [Phase 7 — NIP Compliance](phase-7-nip-compliance.md).
-
-- Query `kind:30166` events from relay monitors *(Phase 7)*
-- Extract relay URLs from monitor events *(Phase 7)*
-- Auto-add discovered relays to directory *(Phase 7)*
-- Periodic re-scan for new relays *(Phase 7)*
-
-### Filter & Search
+- **Search**: Full-text search across relay names and URLs (ILIKE)
 - **NIP filter**: Show only relays supporting specific NIPs (e.g., "NIP-42 auth")
 - **Free/paid filter**: Toggle by auth_required, payment_required
-- **Country filter**: Filter by country code
-- **Search**: Full-text search across relay names and descriptions
+- **Country filter**: Filter by ISO country code
+- **Sort**: By name, URL, last checked, or latency
 
 ### Side-by-Side Comparison
+
 - Select two relays from directory
 - Compare: NIP-11 info, supported NIPs, limitations, health status
-- Highlight differences (green = better, red = worse)
-- Share comparison as URL
+- Highlight differences (latency winner, health winner, NIPs only in A/B)
+- Diff analysis: shared NIPs, NIPs unique to each relay
 
-### Uptime Sparklines
-- Store health check history in database
-- Render 7-day/30-day sparklines
-- Color-coded: green = up, red = down, gray = unknown
+### Country List
+
+- `GET /api/directory/countries` returns distinct country codes from public relays
+- Used for country filter dropdown
 
 ### Shareable Permalinks
+
 - URL format: `relayscope.app/relay/relay.damus.io`
 - Deep-link to specific relay profile
 - Share comparison URLs: `relayscope.app/compare/relay1/relay2`
 
 ## Technical Details
 
-### NIP-66 Discovery
-
-```typescript
-async function discoverRelays(monitorRelay: string): Promise<string[]> {
-  const ws = new WebSocket(monitorRelay)
-  const relays: string[] = []
-
-  ws.onopen = () => {
-    ws.send(JSON.stringify([
-      'REQ',
-      'discovery',
-      { kinds: [30166], limit: 100 }
-    ]))
-  }
-
-  ws.onmessage = (msg) => {
-    const [type, , event] = JSON.parse(msg.data)
-    if (type === 'EVENT') {
-      const relayTag = event.tags.find(([k]) => k === 'relay')
-      if (relayTag) relays.push(relayTag[1])
-    }
-    if (type === 'EOSE') {
-      ws.close()
-    }
-  }
-
-  return relays
-}
-```
-
-### Uptime Sparkline
-
-```typescript
-// Query last 7 days of health checks
-const checks = await db
-  .select()
-  .from(healthChecks)
-  .where(
-    and(
-      eq(healthChecks.relayId, relayId),
-      gte(healthChecks.checkedAt, sevenDaysAgo)
-    )
-  )
-  .orderBy(healthChecks.checkedAt)
-
-// Render as SVG sparkline
-const points = checks.map((c, i) =>
-  `${i * (width / checks.length)},${c.httpReachable ? 0 : height}`
-)
-```
-
 ### Component Structure
 
 ```
-Directory/
+components/
 ├── RelayDirectory.svelte      # Main directory page
 ├── RelayCard.svelte            # Individual relay card
 ├── FilterBar.svelte            # NIP, country, free/paid filters
-├── ComparisonView.svelte       # Side-by-side comparison
-├── UptimeSparkline.svelte      # 7-day/30-day sparkline
-└── ShareButton.svelte          # Copy permalink to clipboard
+├── ComparisonView.svelte       # Side-by-side comparison (semantic <table>)
+├── AddRelay.svelte             # Add relay form
+├── AddToDirectory.svelte       # Add to directory toggle
+├── MonitorDataPanel.svelte     # NIP-66 monitor observations display
+├── FeeDisplay.svelte           # Admission/subscription/publication fee display
+├── ExpiredBadge.svelte         # NIP-40 expiration indicator
+├── AuthPrefixDisplay.svelte    # NIP-42 OK/CLOSED prefix display
+├── AuthStatusBadge.svelte      # Auth status indicator
+├── EoseIndicator.svelte        # NIP-67 EOSE completeness hint
+├── RelayListBadge.svelte       # NIP-65 relay list popularity badge
+├── LatencyPanel.svelte         # Latency metrics display
+├── WriteTestPanel.svelte       # Write test results
+├── ConnectionStatusPanel.svelte # Connection status overview
+└── SectionCard.svelte          # Consistent card layout
 ```
 
-## API Endpoints (New)
+## API Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/api/discover` | Trigger NIP-66 relay discovery *(deferred — Phase 7)* |
-| `GET` | `/api/directory` | Browse directory with filters |
-| `GET` | `/api/directory/compare/:id1/:id2` | Compare two relays |
+| `GET` | `/api/directory` | Browse directory with filters (public relays only) |
+| `GET` | `/api/directory/countries` | List available country codes |
+| `GET` | `/api/directory/compare/:id1/:id2` | Compare two relays side by side |
 
 ## Database Changes
 
-- **health_checks**: Add `checked_at` index for sparkline queries
-- **relays**: Add `country`, `is_public` columns for filtering
-- **monitoring_jobs**: Add `next_run_at` for scheduling
+Already shipped in Phase 1/7:
+- **relays**: `country`, `is_public` columns for filtering; `banner`, `pubkey`, `self`, `contact`, `terms_of_service`, `payments_url`, `fees` columns from NIP-11
+- **health_checks**: `checked_at` index for sparkline queries
 
 ## Dependencies
 
@@ -136,12 +91,17 @@ Directory/
 
 ## Testing
 
-1. Browse directory → should show discovered relays
+1. Browse directory → should show public relays
 2. Filter by NIP-42 → should show only auth-capable relays
-3. Compare two relays → should show side-by-side table
-4. Share permalink → should open correct relay page
-5. View sparkline → should show 7-day history
+3. Filter by country → should show only relays from that country
+4. Compare two relays → should show side-by-side table with diff analysis
+5. Search by name → should return matching relays
+6. Sort by latency → should order relays by last health check latency
 
 ---
 
 *Previous: [Phase 4 — Auth & Health Dashboard](phase-4-auth.md) | Next: [Phase 6 — Security Hardening](phase-6-security-hardening.md)*
+
+---
+
+*Last updated: v0.9.0 — 2026-07-01*

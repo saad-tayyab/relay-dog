@@ -1,17 +1,44 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { healthChecks, monitoringJobs, relayInfoSnapshots, relays } from '../db/schema';
+import { categorizeError } from '../lib/errors';
+import { assertSafeUrl } from '../lib/ssrf';
 
-// ─── Health Check Logic ───
-
-async function checkRelayHealth(url: string) {
+function toHttpUrl(url: string): string {
   const httpUrl = url
     .replace(/^wss:\/\//, 'https://')
     .replace(/^ws:\/\//, 'http://')
     .replace(/\/$/, '');
+  assertSafeUrl(httpUrl);
+  return httpUrl;
+}
+
+function toWsUrl(url: string): string {
   const wsUrl = url.startsWith('http')
     ? url.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://')
     : url;
+  assertSafeUrl(wsUrl);
+  return wsUrl;
+}
+
+async function checkRelayHealth(url: string) {
+  let httpUrl: string;
+  let wsUrl: string;
+
+  try {
+    httpUrl = toHttpUrl(url);
+    wsUrl = toWsUrl(url);
+  } catch {
+    return {
+      httpReachable: false,
+      corsConfigured: false,
+      websocketConnectable: false,
+      latencyMs: null,
+      httpStatusCode: null,
+      errorMessage: 'invalid_target',
+      nip11: null,
+    };
+  }
 
   let httpReachable = false;
   let corsConfigured = false;
@@ -20,7 +47,6 @@ async function checkRelayHealth(url: string) {
   let httpStatusCode: number | null = null;
   let errorMessage: string | null = null;
 
-  // HTTP check
   try {
     const start = performance.now();
     const res = await fetch(httpUrl, {
@@ -33,7 +59,6 @@ async function checkRelayHealth(url: string) {
     httpStatusCode = res.status;
     corsConfigured = true;
 
-    // Also refresh NIP-11 data if reachable
     if (res.ok) {
       try {
         const nip11 = await res.json();
@@ -51,10 +76,9 @@ async function checkRelayHealth(url: string) {
       }
     }
   } catch (e: unknown) {
-    errorMessage = e instanceof Error ? e.message : 'HTTP check failed';
+    errorMessage = categorizeError(e);
   }
 
-  // WebSocket check
   try {
     const ws = new WebSocket(wsUrl);
     await new Promise<void>((resolve, reject) => {
@@ -74,7 +98,7 @@ async function checkRelayHealth(url: string) {
       };
     });
   } catch (e: unknown) {
-    if (!errorMessage) errorMessage = e instanceof Error ? e.message : 'WebSocket check failed';
+    if (!errorMessage) errorMessage = categorizeError(e);
   }
 
   return {
@@ -88,12 +112,9 @@ async function checkRelayHealth(url: string) {
   };
 }
 
-// ─── Monitor a Single Relay ───
-
 async function monitorRelay(relayId: string, url: string) {
   const result = await checkRelayHealth(url);
 
-  // Store health check
   await db.insert(healthChecks).values({
     relayId,
     httpReachable: result.httpReachable,
@@ -104,7 +125,6 @@ async function monitorRelay(relayId: string, url: string) {
     errorMessage: result.errorMessage,
   });
 
-  // Update NIP-11 info if we got new data
   if (result.nip11 && typeof result.nip11 === 'object') {
     const nip11 = result.nip11 as Record<string, unknown>;
 
@@ -114,7 +134,6 @@ async function monitorRelay(relayId: string, url: string) {
       rawJson: nip11,
     });
 
-    // Update relay record with latest info
     await db
       .update(relays)
       .set({
@@ -130,17 +149,14 @@ async function monitorRelay(relayId: string, url: string) {
       .where(eq(relays.id, relayId));
   }
 
-  // Update job timestamps
   await db
     .update(monitoringJobs)
     .set({
       lastRunAt: new Date(),
-      nextRunAt: new Date(Date.now() + 60000), // Default 1 min interval
+      nextRunAt: new Date(Date.now() + 60000),
     })
     .where(eq(monitoringJobs.relayId, relayId));
 }
-
-// ─── Scheduler Loop ───
 
 let isRunning = false;
 
@@ -152,7 +168,6 @@ async function runMonitoringCycle() {
   isRunning = true;
 
   try {
-    // Find all enabled jobs that are due
     const now = new Date();
     const dueJobs = await db
       .select({
@@ -168,7 +183,6 @@ async function runMonitoringCycle() {
         ),
       );
 
-    // Process each job (sequentially to avoid hammering)
     for (const { job, relay } of dueJobs) {
       try {
         await monitorRelay(job.relayId, relay.url);
@@ -183,13 +197,8 @@ async function runMonitoringCycle() {
   }
 }
 
-// ─── Public API ───
-
 export function startMonitor(intervalMs = 30_000) {
-  // Run immediately
   runMonitoringCycle();
-
-  // Then on interval
   const timer = setInterval(runMonitoringCycle, intervalMs);
 
   return {

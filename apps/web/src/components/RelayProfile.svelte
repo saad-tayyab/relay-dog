@@ -1,8 +1,11 @@
 <script lang="ts">
 import type { RelayInfo } from '../utils/relay';
+import { safeHttpsIconUrl } from '../utils/relay';
 import SectionCard from './SectionCard.svelte';
 
 let { info }: { info: RelayInfo } = $props();
+
+const iconUrl = $derived(safeHttpsIconUrl(info.icon));
 
 function handleImageError(e: Event) {
   const img = e.target as HTMLImageElement;
@@ -12,11 +15,12 @@ function handleImageError(e: Event) {
 
 <SectionCard className="animate-fade-in">
   <div class="flex items-start gap-5">
-    {#if info.icon}
+    {#if iconUrl}
       <img
-        src={info.icon}
+        src={iconUrl}
         alt="Relay icon"
         class="w-16 h-16 rounded-xl border border-dark-border object-cover shrink-0"
+        referrerpolicy="no-referrer"
         onerror={handleImageError}
       />
     {/if}

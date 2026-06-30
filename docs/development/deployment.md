@@ -250,6 +250,105 @@ yourdomain.com {
 
 ---
 
+## Release Process
+
+Every deployment follows this sequence: **branch → migrate → test → tag → deploy**.
+
+```
+┌─────────────────────────────────────────────────┐
+│  LOCAL DEVELOPMENT                               │
+│                                                  │
+│  1. Write code + migrations                      │
+│  2. bun run db:generate (review generated SQL)   │
+│  3. bun run type-check && bun run lint           │
+│  4. docker compose up (test locally)             │
+│  5. git commit                                   │
+└──────────────────┬──────────────────────────────┘
+                   │
+┌──────────────────▼──────────────────────────────┐
+│  DEPLOY (./scripts/deploy.sh)                    │
+│                                                  │
+│  a. Backup database (always, before any change)  │
+│  b. Pull latest code                             │
+│  c. Build new Docker images                      │
+│  d. Swap containers (minimal downtime)           │
+│  e. Run migrations on new container              │
+│  f. Verify health check                          │
+│  g. ✅ Done  OR  🔄 Auto-rollback               │
+└─────────────────────────────────────────────────┘
+```
+
+### Version Management
+
+Versions follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
+
+| Change Type | Version Bump | Example |
+|-------------|-------------|---------|
+| New feature, non-breaking | MINOR | 0.8.0 → 0.9.0 |
+| Bug fix, no schema change | PATCH | 0.9.0 → 0.9.1 |
+| Breaking schema change, column drop | MAJOR | 0.9.1 → 1.0.0 |
+
+Version lives in `apps/api/package.json` and `apps/web/package.json`. Bump both together.
+
+### Migration Safety Rules
+
+Drizzle migrations are **forward-only** — there's no built-in rollback. A bad migration can destroy data.
+
+**Safe migrations (can deploy anytime):**
+- `ALTER TABLE ... ADD COLUMN` (nullable or with default)
+- `CREATE TABLE`
+- `CREATE INDEX`
+- `ALTER COLUMN ... SET DEFAULT`
+- `ALTER COLUMN ... DROP NOT NULL`
+
+**Dangerous migrations (require careful sequencing):**
+- `ALTER TABLE ... DROP COLUMN` — **two-release cycle**:
+  1. Release 1: Stop using the column in code (deploy, verify)
+  2. Release 2: Drop the column (deploy, verify)
+- `ALTER TABLE ... RENAME COLUMN` — same two-release pattern
+- `ALTER TABLE ... DROP TABLE` — ensure no code references it
+- `UPDATE ... SET column = value` on large tables — can lock the table
+
+> **Golden rule:** The old code version must work with the new schema. If you can't roll back the code without breaking the database, the migration is too aggressive.
+
+### Pre-Deploy Checklist (Run Locally)
+
+```bash
+# 1. Clean working tree
+git status  # Should be clean
+
+# 2. Type-check and lint
+bun run type-check
+bun run lint
+
+# 3. Generate and review migrations
+cd apps/api
+bun run db:generate
+# Review the generated SQL in drizzle/ before committing
+
+# 4. Test Docker build
+docker compose build --no-cache api
+docker compose build --no-cache web
+
+# 5. Test locally with Docker Compose
+docker compose up -d
+sleep 5
+curl -sf http://localhost:3001/api/health | jq .
+curl -sf http://localhost:8080/ | head -5
+docker compose down
+```
+
+### Rollback Quick Reference
+
+| Scenario | Action |
+|----------|--------|
+| Code bug, no migration ran | `git checkout <prev-tag>` → rebuild → restart |
+| Code bug, migration ran (non-destructive) | `git checkout <prev-tag>` → rebuild → restart |
+| Destructive migration (column drop, data loss) | `git checkout <prev-tag>` → rebuild → restart → **restore DB from backup** |
+| Deploy failed (health check never passed) | Deploy script auto-rollbacks code. Restore DB if needed |
+
+---
+
 ## Deployment Checklist
 
 > **Security:** See [Infrastructure Security Best Practices](infrastructure-security.md) and [Phase 10](../features/phase-10-infrastructure-hardening.md) for container hardening, supply chain, and CI/CD security requirements.

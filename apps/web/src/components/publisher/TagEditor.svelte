@@ -38,7 +38,7 @@ function handlePreset(key: string) {
 </script>
 
 <div class="space-y-3">
-  <label class="block text-xs text-text-muted">Tags</label>
+  <p class="block text-xs text-text-muted font-medium" id="tags-heading">Tags</p>
 
   <!-- Existing Tags -->
   {#if tags.length > 0}
@@ -51,10 +51,11 @@ function handlePreset(key: string) {
           {/if}
           <button
             type="button"
+            aria-label="Remove tag"
             onclick={() => onRemove(i)}
-            class="text-text-muted hover:text-error transition-colors"
+            class="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-muted hover:text-error transition-colors"
           >
-            ✕
+            <span aria-hidden="true">✕</span>
           </button>
         </div>
       {/each}
@@ -67,7 +68,7 @@ function handlePreset(key: string) {
       <button
         type="button"
         onclick={() => handlePreset(preset.key)}
-        class="px-2 py-1 rounded text-[10px] bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
+        class="min-h-[44px] px-3 py-2 rounded text-xs bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
       >
         {preset.label}
       </button>
@@ -76,13 +77,17 @@ function handlePreset(key: string) {
 
   <!-- Add Custom Tag -->
   <div class="flex gap-2">
+    <label for="tag-key" class="sr-only">Tag Key</label>
     <input
+      id="tag-key"
       type="text"
       bind:value={tagKey}
       placeholder="Key"
       class="w-24 px-2 py-1.5 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
     />
+    <label for="tag-value" class="sr-only">Tag Value</label>
     <input
+      id="tag-value"
       type="text"
       bind:value={tagValue}
       placeholder="Value (optional)"
@@ -92,7 +97,7 @@ function handlePreset(key: string) {
       type="button"
       onclick={handleAdd}
       disabled={!tagKey.trim()}
-      class="px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      class="min-h-[44px] px-3 py-2 rounded-lg bg-accent text-white text-xs font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
     >
       Add
     </button>

@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { db } from '../db';
 import { healthChecks, relayInfoSnapshots, relays } from '../db/schema';
@@ -90,38 +90,52 @@ relayRoutes.get('/', async (c) => {
     .from(relays)
     .where(whereClause);
 
-  const results = await db
-    .select({
-      relay: relays,
-      lastHealthCheck: healthChecks,
-    })
+  // Step 1: Paginate on relays only (no JOIN inflation)
+  const paginatedRelays = await db
+    .select()
     .from(relays)
-    .leftJoin(healthChecks, eq(relays.id, healthChecks.relayId))
     .where(whereClause)
     .orderBy(desc(relays.updatedAt))
     .limit(limit)
     .offset(offset);
 
-  const relayMap = new Map();
-  for (const row of results) {
-    const existing = relayMap.get(row.relay.id);
-    if (!existing) {
-      relayMap.set(row.relay.id, {
-        ...row.relay,
-        lastHealthCheck: row.lastHealthCheck,
-      });
-    } else if (
-      row.lastHealthCheck &&
-      (!existing.lastHealthCheck ||
-        row.lastHealthCheck.checkedAt > existing.lastHealthCheck.checkedAt)
-    ) {
-      existing.lastHealthCheck = row.lastHealthCheck;
+  if (paginatedRelays.length === 0) {
+    return c.json({
+      success: true,
+      data: [],
+      meta: {
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil(count / limit),
+      },
+    });
+  }
+
+  // Step 2: Fetch health checks for relays in this page, pick latest in JS
+  const relayIds = paginatedRelays.map((r) => r.id);
+  const allHC = await db
+    .select()
+    .from(healthChecks)
+    .where(inArray(healthChecks.relayId, relayIds))
+    .orderBy(desc(healthChecks.checkedAt));
+
+  const hcMap = new Map<string, typeof healthChecks.$inferSelect>();
+  for (const hc of allHC) {
+    if (!hcMap.has(hc.relayId)) {
+      hcMap.set(hc.relayId, hc);
     }
   }
 
+  // Step 3: Assemble final results
+  const data = paginatedRelays.map((relay) => ({
+    ...relay,
+    lastHealthCheck: hcMap.get(relay.id) ?? null,
+  }));
+
   return c.json({
     success: true,
-    data: Array.from(relayMap.values()),
+    data,
     meta: {
       page,
       limit,

@@ -12,6 +12,7 @@ export function useWriteTest() {
   });
 
   async function runTest(url: string): Promise<WriteTestResult> {
+    if (result.status === 'testing') return result; // Concurrency guard
     result = { status: 'testing', latencyMs: null, error: null, eventId: null };
 
     if (!window.nostr) {
@@ -74,6 +75,7 @@ export function useWriteTest() {
 
         ws.onerror = () => {
           clearTimeout(timeout);
+          ws.close();
           reject(new Error('WebSocket error during write test'));
         };
       });

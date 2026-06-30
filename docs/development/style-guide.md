@@ -158,6 +158,118 @@ const socket = relaySocket(() => normalizedUrl);
 // Access reactively: socket.status
 ```
 
+
+
+---
+
+## Accessibility (WCAG 2.2 AA)
+
+### ARIA Roles & Labels
+
+```svelte
+<!-- ✅ Use role="alert" for error messages that appear dynamically -->
+<div role="alert" class="text-error">...</div>
+
+<!-- ✅ Use role="status" for loading states and non-critical updates -->
+<div role="status" aria-label="Loading">...</div>
+
+<!-- ✅ Use aria-live="polite" for dynamic content that should be announced -->
+<div aria-live="polite" role="status">...</div>
+
+<!-- ✅ Always label icon-only buttons -->
+<button aria-label="Close comparison view">✕</button>
+
+<!-- ✅ Add aria-hidden to decorative emojis and SVGs -->
+<span aria-hidden="true">⚡</span>
+
+<!-- ✅ Associate labels with inputs using for/id -->
+<label for="relay-url" class="sr-only">Relay URL</label>
+<input id="relay-url" ... />
+```
+
+### WAI-ARIA Tabs Pattern
+
+```svelte
+<!-- ✅ Use AccessibleTabs component for all tab interfaces -->
+<script>
+  import AccessibleTabs from '../shared/AccessibleTabs.svelte';
+</script>
+
+<AccessibleTabs
+  ariaLabel="Section tabs"
+  tabs={[
+    { id: 'tab1', label: 'Tab 1', icon: '⚡' },
+    { id: 'tab2', label: 'Tab 2', icon: '🔐' },
+  ]}
+  activeTab={current}
+  onTabChange={(id) => (current = id)}
+>
+  {#if current === 'tab1'}...{/if}
+</AccessibleTabs>
+```
+
+Never implement tabs manually — always use `AccessibleTabs`. It provides:
+- `role="tablist"` / `role="tab"` / `role="tabpanel"`
+- Arrow key navigation
+- `aria-selected`, `aria-controls`, `aria-labelledby`
+- 44×44px touch targets
+
+### Touch Targets (WCAG 2.2 SC 2.5.8)
+
+```svelte
+<!-- ✅ Minimum 44×44px for all interactive elements -->
+<button class="min-h-[44px] min-w-[44px] px-4 py-2.5 ...">Action</button>
+
+<!-- ✅ Use the .touch-target class for convenience -->
+<button class="touch-target ...">Action</button>
+
+<!-- ❌ Never use small padding without explicit min dimensions -->
+<button class="px-2 py-1 ...">Too small</button>
+```
+
+### Focus Indicators
+
+```css
+/* ✅ Already in index.css — :focus-visible ring */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+```
+
+### Reduced Motion
+
+```css
+/* ✅ Already in index.css — respects user preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+### Composable Patterns
+
+```typescript
+// ✅ Always handle clipboard errors
+const clipboard = createClipboard();
+await clipboard.copy(text);
+// clipboard.copied, clipboard.error for UI feedback
+
+// ✅ Always debounce search inputs
+const debouncedFetch = createDebounce(fetchRelays, 300);
+
+// ✅ Always add concurrency guards
+if (publishing) return; // Prevent double-submit
+
+// ✅ Always close WebSockets on error
+ws.onerror = () => {
+  ws.close();  // Don't forget this!
+  resolve(null);
+};
+```
+
 ---
 
 ## API (Backend)

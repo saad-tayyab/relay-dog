@@ -74,7 +74,9 @@ export function useNip42Auth() {
    * Returns the signed AUTH event to send back to the relay.
    */
   async function authenticate(relayUrl: string): Promise<string | null> {
-    if (!pendingChallenge) {
+    // Capture challenge BEFORE any async operations to prevent race condition
+    const challenge = pendingChallenge;
+    if (!challenge) {
       state = { ...state, error: 'No pending challenge', status: 'auth_failed' };
       return null;
     }
@@ -108,14 +110,14 @@ export function useNip42Auth() {
         content: '',
         tags: [
           ['relay', normalizedRelayUrl],
-          ['challenge', pendingChallenge],
+          ['challenge', challenge],
         ],
         created_at: now,
       });
 
       state = {
         status: 'authenticated',
-        challenge: pendingChallenge,
+        challenge,
         error: null,
         pubkey,
       };

@@ -58,7 +58,7 @@ let {
         type="button"
         onclick={onConnect}
         disabled={!relayUrl}
-        class="px-4 py-1.5 rounded-lg bg-success/15 border border-success/30 text-success text-sm font-medium hover:bg-success/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        class="min-h-[44px] px-4 py-2.5 rounded-lg bg-success/15 border border-success/30 text-success text-sm font-medium hover:bg-success/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
       >
         Connect
       </button>
@@ -66,7 +66,7 @@ let {
       <button
         type="button"
         onclick={onDisconnect}
-        class="px-4 py-1.5 rounded-lg bg-error/15 border border-error/30 text-error text-sm font-medium hover:bg-error/25 transition-all"
+        class="min-h-[44px] px-4 py-2.5 rounded-lg bg-error/15 border border-error/30 text-error text-sm font-medium hover:bg-error/25 transition-all"
       >
         Disconnect
       </button>
@@ -94,7 +94,7 @@ let {
         d="M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101"
       />
     </svg>
-    <span class="font-mono truncate">{relayUrl || 'No relay URL'}</span>
+    <span class="font-mono truncate" title={relayUrl}>{relayUrl || 'No relay URL'}</span>
   </div>
 
   <!-- Stats row -->
@@ -117,23 +117,23 @@ let {
   {#if eose.received && eose.historicalCount > 0}
     <EoseIndicator eoseResult={eoseHints} />
     {#if !eoseHints}
-      <div class="mt-3 px-3 py-2 rounded-lg bg-success-dim border border-success/20 text-xs text-success">
-        ✓ Loaded {eose.historicalCount.toLocaleString()} historical events
+      <div role="status" class="mt-3 px-3 py-2 rounded-lg bg-success-dim border border-success/20 text-xs text-success">
+        <span aria-hidden="true">✓</span> Loaded {eose.historicalCount.toLocaleString()} historical events
       </div>
     {/if}
   {/if}
 
   <!-- Error display -->
   {#if error}
-    <div class="mt-3 px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-xs text-error">
-      ✕ {error}
+    <div role="alert" class="mt-3 px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-xs text-error">
+      <span aria-hidden="true">✕</span> {error}
     </div>
   {/if}
 
   <!-- Notices -->
   {#if notices.length > 0}
-    <div class="mt-3 space-y-1.5">
-      {#each notices as notice (notice)}
+    <div role="status" aria-live="polite" class="mt-3 space-y-1.5">
+      {#each notices as notice, i (`notice-${i}`)}
         <div
           class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs"
         >

@@ -11,11 +11,13 @@ import MobileNav from './components/nav/MobileNav.svelte';
 import NavBar from './components/nav/NavBar.svelte';
 import PublisherSection from './components/publisher/PublisherSection.svelte';
 import RelayDirectory from './components/RelayDirectory.svelte';
+import Toast from './components/shared/Toast.svelte';
 import ToolsSection from './components/tools/ToolsSection.svelte';
 import EventVerifier from './components/verifier/EventVerifier.svelte';
 
 // Composables
 import { useLatencyMeasurement } from './lib/composables/useLatencyMeasurement.svelte';
+import { useToast } from './lib/composables/useToast.svelte';
 import { useWriteTest } from './lib/composables/useWriteTest.svelte';
 
 const POPULAR_RELAYS = [
@@ -37,6 +39,7 @@ let loading = $state(false);
 let error = $state<string | null>(null);
 let activeSection = $state<Section>(getHashSection());
 let dbRelayId = $state<string | null>(null);
+let inDirectory = $state(false);
 let prefilledEvent = $state<unknown>(null);
 
 const normalizedUrl = $derived(normalizeUrl(url));
@@ -49,6 +52,8 @@ const socket = relaySocket(() => normalizedUrl);
 const latency = useLatencyMeasurement();
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const writeTest = useWriteTest();
+// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
+const toast = useToast();
 
 // ─── Navigation ───
 
@@ -72,6 +77,36 @@ function handleEditAndRepublish(event: unknown) {
   setHashSection('publisher');
 }
 
+function handleInDirectoryChange(inDir: boolean, relayId?: string, relayUrl?: string) {
+  inDirectory = inDir;
+  if (inDir && relayId && relayUrl) {
+    toast.show({
+      message: `"${relayUrl}" added to directory`,
+      type: 'success',
+      undoLabel: 'Undo',
+      onUndo: () => {
+        // Remove the relay we just added
+        const headers: Record<string, string> = {};
+        const savedKey = localStorage.getItem('relayscope_api_key');
+        if (savedKey) {
+          headers.Authorization = `Bearer ${savedKey}`;
+        }
+        fetch(`/api/relays/${relayId}`, {
+          method: 'DELETE',
+          headers,
+          signal: AbortSignal.timeout(10_000),
+        })
+          .then(() => {
+            inDirectory = false;
+          })
+          .catch(() => {
+            // Undo failed — silently ignore
+          });
+      },
+    });
+  }
+}
+
 // ─── Actions ───
 
 async function handleFetch(targetUrl?: string) {
@@ -84,6 +119,8 @@ async function handleFetch(targetUrl?: string) {
   relayInfo = null;
   connectionStatus = null;
   dbRelayId = null;
+  inDirectory = false;
+  toast.hide();
   latency.reset();
   writeTest.reset();
 
@@ -110,11 +147,13 @@ async function handleFetch(targetUrl?: string) {
 
     // Look up DB relay ID for Phase 7 data
     dbRelayId = null;
+    inDirectory = false;
     try {
       const lookupRes = await fetch(`/api/relays/lookup?url=${encodeURIComponent(normalized)}`);
       const lookupJson = await lookupRes.json();
       if (lookupJson.success && lookupJson.data) {
         dbRelayId = lookupJson.data.id;
+        inDirectory = true;
       }
     } catch {
       // Not in DB — that's fine, Phase 7 panels won't show
@@ -160,16 +199,20 @@ function handleQuickPick(relay: string) {
         <p class="text-xs text-text-muted">Nostr relay inspector</p>
       </div>
       <span
-        class="ml-auto text-[10px] font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted"
+        aria-hidden="true"
+        class="ml-auto text-xs font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted"
       >
         Phase 8
       </span>
     </div>
   </header>
 
-  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
+  <main id="main-content" class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
     <!-- URL Input -->
-    <form onsubmit={handleSubmit} class="mb-8 animate-fade-in">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-accent focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">
+      Skip to main content
+    </a>
+    <form onsubmit={handleSubmit} class="mb-8 animate-fade-in" role="search" aria-label="Inspect a relay">
       <div class="flex gap-2">
         <div class="relative flex-1">
           <div class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
@@ -188,7 +231,9 @@ function handleQuickPick(relay: string) {
               />
             </svg>
           </div>
+          <label for="relay-url" class="sr-only">Relay URL</label>
           <input
+            id="relay-url"
             type="text"
             bind:value={url}
             placeholder="wss://relay.damus.io"
@@ -232,7 +277,7 @@ function handleQuickPick(relay: string) {
           <button
             type="button"
             onclick={() => handleQuickPick(relay)}
-            class="text-xs px-2.5 py-1 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
+            class="text-xs min-h-[44px] px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
           >
             {relay}
           </button>
@@ -255,7 +300,9 @@ function handleQuickPick(relay: string) {
         {latency}
         {writeTest}
         {dbRelayId}
+        {inDirectory}
         onRetry={() => handleFetch()}
+        onInDirectoryChange={handleInDirectoryChange}
       />
     {/if}
 
@@ -288,7 +335,7 @@ function handleQuickPick(relay: string) {
 
     <!-- Empty State -->
     {#if !loading && !error && !relayInfo && activeSection === 'inspector'}
-      <div class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+      <section aria-label="Welcome" class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
         <div
           class="w-20 h-20 rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center mb-6"
         >
@@ -347,7 +394,7 @@ function handleQuickPick(relay: string) {
             Relay Directory
           </span>
         </div>
-      </div>
+      </section>
     {/if}
   </main>
 
@@ -363,4 +410,18 @@ function handleQuickPick(relay: string) {
       <span class="font-mono">v0.8.0</span>
     </div>
   </footer>
+
+  <!-- Toast notification for "Add to Directory" -->
+  {#if toast.visible}
+    {#key toast.key}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        duration={toast.duration}
+        undoLabel={toast.undoLabel}
+        onUndo={toast.onUndo}
+        onDismiss={() => toast.hide()}
+      />
+    {/key}
+  {/if}
 </div>

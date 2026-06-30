@@ -22,11 +22,15 @@ function handleAddIds() {
   inputIds = '';
 }
 
+let confirmDelete = $state(false);
+
 async function handleDelete() {
-  if (!confirm(`Delete ${deleter.eventIds.length} events from ${targetRelay}?`)) {
+  if (!confirmDelete) {
+    confirmDelete = true;
     return;
   }
   await deleter.deleteEvents();
+  confirmDelete = false;
 }
 </script>
 
@@ -71,10 +75,11 @@ async function handleDelete() {
               <span class="font-mono text-text-secondary truncate">{id}</span>
               <button
                 type="button"
+                aria-label="Remove event ID"
                 onclick={() => deleter.removeEventId(id)}
-                class="text-text-muted hover:text-error transition-colors ml-2"
+                class="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-muted hover:text-error transition-colors ml-2"
               >
-                ✕
+                <span aria-hidden="true">✕</span>
               </button>
             </div>
           {/each}
@@ -109,27 +114,50 @@ async function handleDelete() {
     </div>
 
     <!-- Warning -->
-    <div class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs text-warning">
-      ⚠ Deletion is a request — relays may not honor it.
+    <div role="note" class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs text-warning">
+      <span aria-hidden="true">⚠</span> Deletion is a request — relays may not honor it.
     </div>
 
-    <!-- Delete Button -->
-    <button
-      type="button"
-      onclick={handleDelete}
-      disabled={deleter.deleting || deleter.eventIds.length === 0 || !deleter.targetRelay}
-      class="w-full px-4 py-3 rounded-lg bg-error text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-    >
-      {#if deleter.deleting}
-        Deleting...
-      {:else}
+    <!-- Confirmation Banner -->
+    {#if confirmDelete}
+      <div role="alert" class="p-3 bg-warning-dim border border-warning/30 rounded-lg text-xs">
+        <p class="text-warning mb-2">
+          Confirm deletion of {deleter.eventIds.length} event{deleter.eventIds.length !== 1 ? 's' : ''} from {deleter.targetRelay || 'relay'}?
+        </p>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            onclick={handleDelete}
+            disabled={deleter.deleting}
+            class="min-h-[44px] px-4 py-2.5 bg-error text-white text-xs font-semibold rounded-lg hover:opacity-90 disabled:opacity-40 transition-all"
+          >
+            {deleter.deleting ? 'Deleting...' : 'Yes, delete'}
+          </button>
+          <button
+            type="button"
+            onclick={() => (confirmDelete = false)}
+            class="min-h-[44px] px-4 py-2.5 bg-dark-surface border border-dark-border text-text-secondary text-xs rounded-lg hover:text-text-primary transition-all"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    {:else}
+      <!-- Delete Button -->
+      <button
+        type="button"
+        aria-label={`Delete ${deleter.eventIds.length} events`}
+        onclick={handleDelete}
+        disabled={deleter.deleting || deleter.eventIds.length === 0 || !deleter.targetRelay}
+        class="w-full min-h-[44px] px-4 py-3 rounded-lg bg-error text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      >
         Delete {deleter.eventIds.length} Event{deleter.eventIds.length !== 1 ? 's' : ''}
-      {/if}
-    </button>
+      </button>
+    {/if}
 
     <!-- Results -->
     {#if deleter.results.length > 0}
-      <div class="space-y-1">
+      <div role="status" aria-live="polite" class="space-y-1">
         <p class="text-xs text-text-muted">Results</p>
         {#each deleter.results as r (r.eventId)}
           <div

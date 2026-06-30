@@ -1,8 +1,10 @@
 <script lang="ts">
+// 1. Internal packages (stores, utils)
 import type { relaySocket } from '../../lib/stores/relaySocket.svelte';
 import type { ConnectionStatus, RelayInfo } from '../../utils/relay';
 
-// Components
+// 2. Relative component imports
+import AddToDirectory from '../AddToDirectory.svelte';
 import AuthStatusBadge from '../AuthStatusBadge.svelte';
 import ConnectionPanel from '../ConnectionPanel.svelte';
 import ConnectionStatusPanel from '../ConnectionStatusPanel.svelte';
@@ -15,6 +17,7 @@ import LimitationsPanel from '../LimitationsPanel.svelte';
 import LoadingSpinner from '../LoadingSpinner.svelte';
 import NipBadgeGrid from '../NipBadgeGrid.svelte';
 import RelayProfile from '../RelayProfile.svelte';
+import AccessibleTabs from '../shared/AccessibleTabs.svelte';
 import WriteTestPanel from '../WriteTestPanel.svelte';
 
 type SocketStore = ReturnType<typeof relaySocket>;
@@ -29,7 +32,9 @@ let {
   latency,
   writeTest,
   dbRelayId,
+  inDirectory,
   onRetry,
+  onInDirectoryChange,
 }: {
   url: string;
   relayInfo: RelayInfo | null;
@@ -56,138 +61,141 @@ let {
     reset: () => void;
   };
   dbRelayId: string | null;
+  inDirectory: boolean;
   onRetry: () => void;
+  onInDirectoryChange: (inDir: boolean, relayId?: string, relayUrl?: string) => void;
 } = $props();
 
-let showStream = $state(false);
+let activeTab = $state<'nip11' | 'stream'>('nip11');
+
+const tabs = $derived([
+  { id: 'nip11' as const, label: 'NIP-11 Info' },
+  {
+    id: 'stream' as const,
+    label: 'Live Stream',
+    badge: socket.events.length > 0 ? socket.events.length.toLocaleString() : null,
+  },
+]);
 </script>
 
 <div class="space-y-5">
-  <!-- Toggle between NIP-11 and Stream -->
-  <div class="flex gap-2 mb-4">
-    <button
-      type="button"
-      onclick={() => (showStream = false)}
-      class="px-4 py-2 rounded-lg text-sm font-medium transition-all {!showStream
-        ? 'bg-dark-card border border-dark-border text-text-primary'
-        : 'text-text-muted hover:text-text-secondary'}"
-    >
-      NIP-11 Info
-    </button>
-    <button
-      type="button"
-      onclick={() => (showStream = true)}
-      class="px-4 py-2 rounded-lg text-sm font-medium transition-all {showStream
-        ? 'bg-dark-card border border-dark-border text-text-primary'
-        : 'text-text-muted hover:text-text-secondary'}"
-    >
-      Live Stream
-      {#if socket.events.length > 0}
-        <span class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent">
-          {socket.events.length.toLocaleString()}
-        </span>
+  <AccessibleTabs
+    ariaLabel="Inspector views"
+    {tabs}
+    activeTab={activeTab}
+    onTabChange={(id) => (activeTab = id as typeof activeTab)}
+  >
+    {#if activeTab === 'nip11'}
+      <!-- NIP-11 Info View -->
+      {#if loading}
+        <LoadingSpinner />
       {/if}
-    </button>
-  </div>
 
-  {#if !showStream}
-    <!-- NIP-11 Info View -->
-    {#if loading}
-      <LoadingSpinner />
-    {/if}
+      {#if !loading && error && !relayInfo}
+        <ErrorMessage message={error} {onRetry} />
+      {/if}
 
-    {#if !loading && error && !relayInfo}
-      <ErrorMessage message={error} {onRetry} />
-    {/if}
+      {#if !loading && relayInfo}
+        <div class="space-y-5">
+          <RelayProfile relayId={dbRelayId ?? undefined} relay={{ url }} info={relayInfo} />
 
-    {#if !loading && relayInfo}
-      <div class="space-y-5">
-        <RelayProfile relayId={dbRelayId ?? undefined} relay={{ url }} info={relayInfo} />
-        <NipBadgeGrid nips={relayInfo.supported_nips || []} />
-        <LimitationsPanel limitation={relayInfo.limitation} />
-        <ConnectionStatusPanel status={connectionStatus} />
+          <!-- Add to Directory — shows prompt after inspect, or status when already in directory -->
+          <AddToDirectory
+            relayUrl={url}
+            relayName={relayInfo.name ?? undefined}
+            {inDirectory}
+            onAdded={(id) => onInDirectoryChange(true, id, url)}
+            {onInDirectoryChange}
+          />
 
-        <!-- Latency & Performance -->
-        <LatencyPanel
-          metrics={latency.metrics}
-          measuring={latency.measuring}
-          onMeasure={() => latency.measureAll(url)}
-        />
+          <NipBadgeGrid nips={relayInfo.supported_nips || []} />
+          <LimitationsPanel limitation={relayInfo.limitation} />
+          <ConnectionStatusPanel status={connectionStatus} />
 
-        <!-- Write Test -->
-        <WriteTestPanel
-          status={writeTest.status}
-          latencyMs={writeTest.latencyMs}
-          error={writeTest.error}
-          eventId={writeTest.eventId}
-          onRunTest={() => writeTest.runTest(url)}
-        />
+          <!-- Latency & Performance -->
+          <LatencyPanel
+            metrics={latency.metrics}
+            measuring={latency.measuring}
+            onMeasure={() => latency.measureAll(url)}
+          />
 
-        <!-- Fee Display -->
-        {#if relayInfo?.fees}
-          <FeeDisplay fees={relayInfo.fees} />
-        {/if}
+          <!-- Write Test -->
+          <WriteTestPanel
+            status={writeTest.status}
+            latencyMs={writeTest.latencyMs}
+            error={writeTest.error}
+            eventId={writeTest.eventId}
+            onRunTest={() => writeTest.runTest(url)}
+          />
 
-        <!-- Raw JSON toggle -->
-        <details class="group">
-          <summary
-            class="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2"
-          >
-            <svg
-              aria-hidden="true"
-              class="w-4 h-4 transition-transform group-open:rotate-90"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
+          <!-- Fee Display -->
+          {#if relayInfo?.fees}
+            <FeeDisplay fees={relayInfo.fees} />
+          {/if}
+
+          <!-- Raw JSON toggle -->
+          <details class="group">
+            <summary
+              class="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2"
             >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-            Raw NIP-11 JSON
-          </summary>
-          <pre
-            class="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
-              relayInfo,
-              null,
-              2,
-            )}</pre>
-        </details>
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 transition-transform group-open:rotate-90"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+              Raw NIP-11 JSON
+            </summary>
+            <pre
+              aria-label="Raw NIP-11 JSON response"
+              class="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
+                relayInfo,
+                null,
+                2,
+              )}</pre>
+          </details>
 
-        <!-- Error details if connection had issues -->
-        {#if !loading && error && relayInfo}
-          <div
-            class="px-4 py-3 rounded-xl bg-warning-dim border border-warning/20 text-sm text-warning"
-          >
-            ⚠ {error}
-          </div>
-        {/if}
-      </div>
-    {/if}
-  {:else}
-    <!-- Live Stream View -->
-    <div class="space-y-5">
-      <!-- Auth Status -->
-      {#if socket.status === 'connected' || socket.authStatus !== 'anonymous'}
-        <AuthStatusBadge status={socket.authStatus} onAuthenticate={socket.authenticate} />
-      {/if}
-      {#if socket.authError}
-        <div class="px-4 py-3 rounded-xl bg-error-dim border border-error/20 text-sm text-error">
-          ⚠ {socket.authError}
+          <!-- Error details if connection had issues -->
+          {#if !loading && error && relayInfo}
+            <div
+              role="alert"
+              class="px-4 py-3 rounded-xl bg-warning-dim border border-warning/20 text-sm text-warning"
+            >
+              <span aria-hidden="true">⚠</span> {error}
+            </div>
+          {/if}
         </div>
       {/if}
-      <ConnectionPanel
-        relayUrl={url}
-        status={socket.status}
-        eventCount={socket.events.length}
-        eose={socket.eose}
-        eoseHints={socket.eoseHints}
-        error={socket.error}
-        notices={socket.notices}
-        onConnect={socket.connect}
-        onDisconnect={socket.disconnect}
-      />
-      <FilterBuilder connected={socket.status === 'connected'} onSend={socket.send} />
-      <EventFeed events={socket.events} />
-    </div>
-  {/if}
+    {:else}
+      <!-- Live Stream View -->
+      <div class="space-y-5">
+        <!-- Auth Status -->
+        {#if socket.status === 'connected' || socket.authStatus !== 'anonymous'}
+          <AuthStatusBadge status={socket.authStatus} onAuthenticate={socket.authenticate} />
+        {/if}
+        {#if socket.authError}
+          <div role="alert" class="px-4 py-3 rounded-xl bg-error-dim border border-error/20 text-sm text-error">
+            <span aria-hidden="true">⚠</span> {socket.authError}
+          </div>
+        {/if}
+        <ConnectionPanel
+          relayUrl={url}
+          status={socket.status}
+          eventCount={socket.events.length}
+          eose={socket.eose}
+          eoseHints={socket.eoseHints}
+          error={socket.error}
+          notices={socket.notices}
+          onConnect={socket.connect}
+          onDisconnect={socket.disconnect}
+        />
+        <FilterBuilder connected={socket.status === 'connected'} onSend={socket.send} />
+        <EventFeed events={socket.events} />
+      </div>
+    {/if}
+  </AccessibleTabs>
 </div>

@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
+import { getServerEnv } from '@relayscope/env/server';
 import { createMiddleware } from 'hono/factory';
 
 /**
@@ -7,10 +8,11 @@ import { createMiddleware } from 'hono/factory';
  * In development, requests are allowed when API_KEY is unset (with a one-time warning).
  */
 export const requireApiKey = createMiddleware(async (c, next) => {
-  const expected = Bun.env.API_KEY;
+  const env = getServerEnv();
+  const expected = env.API_KEY;
 
   if (!expected) {
-    if (Bun.env.NODE_ENV === 'production') {
+    if (env.NODE_ENV === 'production') {
       return c.json({ success: false, error: 'Unauthorized' }, 401);
     }
     // Dev-only: allow through, but warning was logged at startup (see index.ts)

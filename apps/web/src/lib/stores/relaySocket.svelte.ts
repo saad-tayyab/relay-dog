@@ -134,6 +134,11 @@ export function relaySocket(getRelayUrl: () => string) {
 
         // Deduplicate
         if (eventIds.has(nostrEvent.id)) return;
+        // Cap eventIds to prevent unbounded memory growth
+        if (eventIds.size >= MAX_EVENTS) {
+          const toEvict = Array.from(eventIds).slice(0, Math.floor(MAX_EVENTS * 0.1));
+          for (const id of toEvict) eventIds.delete(id);
+        }
         eventIds.add(nostrEvent.id);
 
         // Append to reactive array (cap at MAX_EVENTS to prevent memory exhaustion)

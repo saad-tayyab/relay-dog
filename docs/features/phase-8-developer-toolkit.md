@@ -321,6 +321,8 @@ apps/web/src/
 │   │   ├── ComparisonView.svelte
 │   │   └── RelayListBadge.svelte
 │   └── shared/                             # Shared/reusable components
+│       ├── AccessibleTabs.svelte           # NEW: WAI-ARIA tabs pattern
+│       ├── Toast.svelte                    # NEW: Accessible notifications
 │       ├── SectionCard.svelte              # (moved from root)
 │       ├── StatusDot.svelte                # (moved from root)
 │       ├── LoadingSpinner.svelte           # (moved from root)
@@ -335,9 +337,11 @@ apps/web/src/
 │   │   ├── useWriteTest.svelte.ts          # (existing)
 │   │   ├── useKeyConverter.svelte.ts       # NEW: Key conversion state
 │   │   ├── useNip05Checker.svelte.ts       # NEW: NIP-05 check state
-│   │   ├── useEventComposer.svelte.ts      # NEW: Publisher state
-│   │   ├── useEventDeleter.svelte.ts       # NEW: Deleter state
-│   │   └── useEventBackup.svelte.ts        # NEW: Backup/restore state
+│   │   ├── useEventComposer.svelte.ts      # NEW: Publisher state (uses SimplePool)
+│   │   ├── useEventDeleter.svelte.ts       # NEW: Deleter state (uses SimplePool)
+│   │   ├── useEventBackup.svelte.ts        # NEW: Backup/restore state
+│   │   ├── useDebounce.svelte.ts           # NEW: Debounce utility
+│   │   └── useCopyToClipboard.svelte.ts    # NEW: Clipboard with feedback
 │   └── stores/
 │       └── relaySocket.svelte.ts           # (existing)
 ├── utils/                                  # (existing + new)
@@ -373,16 +377,22 @@ export function hexToNsec(hex: string): string {
   return bech32.encode(NSEC_PREFIX, bech32.toWords(bytes))
 }
 
+function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
 export function npubToHex(npub: string): string {
   const { prefix, words } = bech32.decode(npub)
   if (prefix !== NPUB_PREFIX) throw new Error('Not an npub')
-  return Buffer.from(bech32.fromWords(words)).toString('hex')
+  return bytesToHex(Uint8Array.from(bech32.fromWords(words)))
 }
 
 export function nsecToHex(nsec: string): string {
   const { prefix, words } = bech32.decode(nsec)
   if (prefix !== NSEC_PREFIX) throw new Error('Not an nsec')
-  return Buffer.from(bech32.fromWords(words)).toString('hex')
+  return bytesToHex(Uint8Array.from(bech32.fromWords(words)))
 }
 
 export function detectKeyFormat(input: string): 'npub' | 'nsec' | 'hex' | 'unknown' {

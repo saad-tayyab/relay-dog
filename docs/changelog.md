@@ -4,6 +4,59 @@ All notable changes to Relay Scope are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Conventional Commits](https://conventionalcommits.org).
 
+## [0.9.0] - 2026-07-01
+
+### Added
+
+#### Web (`@relayscope/web`)
+- **Accessibility Foundation (WCAG 2.2 AA)**
+  - New `AccessibleTabs` component — WAI-ARIA tabs pattern with arrow key navigation, `role="tablist"/"tab"/"tabpanel"`, `aria-selected`, 44×44px touch targets
+  - New `Toast` component — replaces all `window.alert()`/`window.confirm()` with accessible in-app notifications
+  - New `createDebounce` composable — prevents firehose of HTTP requests on search input (300ms debounce)
+  - New `createClipboard` composable — clipboard API with success/error feedback state
+  - Added `prefers-reduced-motion` media query to disable animations for vestibular disorders
+  - Added `:focus-visible` ring for keyboard navigation (2px accent outline)
+  - Added `.sr-only` utility class for screen-reader-only content
+  - Added `.touch-target` utility class for WCAG 2.2 SC 2.5.8 compliance
+  - Bumped `text-muted` from oklch 55.4% to 62% for WCAG AA 4.5:1 contrast ratio
+
+### Fixed
+
+#### Web (`@relayscope/web`)
+- **Critical: Event publishing completely broken** — Rewrote `useEventComposer.publish()` to use `nostr-tools SimplePool` (was creating orphaned WebSockets, checking status synchronously, returning fake `setTimeout` success)
+- **Critical: Event deletion was a no-op** — Wired up `useEventDeleter` to actually send kind 5 events to relay via `SimplePool` (was returning fake `success: true` without transmitting)
+- **Critical: `Buffer` crash in browser** — Replaced Node.js `Buffer` API in `keys.ts` with browser-compatible `Uint8Array` and manual hex conversion
+- **Critical: NIP-42 auth race condition** — Captured `pendingChallenge` into local variable before async operations in `useNip42Auth.authenticate()` (prevents wrong challenge being signed)
+- **Memory leak: `eventIds` Set unbounded** — Capped `eventIds` Set in `relaySocket` at `MAX_EVENTS` with LRU-style eviction
+- **Memory leak: WebSocket not closed on error** — Added `ws.close()` in `onerror` handlers in `useLatencyMeasurement` and `useWriteTest`
+- **Stale data: Directory search firehose** — Added `AbortController` cancellation and 300ms debounce to `useDirectory.setSearch()`
+- **Race condition: Rapid filter changes** — Added request cancellation to `useDirectory.fetchRelays()` to prevent stale responses overwriting fresh data
+- All 4 tab interfaces (ToolsSection, PublisherSection, InspectorSection, EventBackup) — Converted to `AccessibleTabs` / WAI-ARIA tabs pattern with keyboard navigation
+- All `<label>` elements now properly associated with inputs via `for`/`id` (EventComposer, EventDeleter, TagEditor)
+- All error/status containers now have `role="alert"` or `aria-live` (ErrorMessage, ConnectionPanel, InspectorSection, EventInput, VerificationPanel)
+- All icon-only buttons now have `aria-label` (Remove ✕, Close ✕, Copy, Edit & Re-publish)
+- All toggle buttons now have `aria-expanded` or `aria-pressed` (content expand, nsec show/hide, kind presets)
+- All decorative emojis wrapped in `<span aria-hidden="true">` (MobileNav, EventDeleter, EventComposer)
+- All copy-to-clipboard buttons now use `createClipboard` composable with success/error feedback
+- All `window.alert()`/`window.confirm()` replaced with in-app state-driven UI (EventBackup, EventDeleter)
+- ComparisonView converted from CSS grid to semantic `<table>` with `<th>`/`<td>` structure
+- EventBackup progress bar now has `role="progressbar"` with `aria-valuenow`/`aria-valuemin`/`aria-valuemax`
+- Quick-pick buttons, Connect/Disconnect, Kind presets, Tag presets, Size selectors — all increased to 44×44px minimum
+- Navigation bars (`NavBar`, `MobileNav`) now have `aria-label`, `aria-current="page"`, and arrow key support
+- Skip-to-content link added to `App.svelte` for keyboard/screen reader users
+- Search form has `role="search"` landmark
+- Truncated URLs now have `title` attribute for full text on hover
+- `text-[10px]` replaced with `text-xs` (12px minimum) across all components
+- NIP-05 input now shows validation hint when identifier doesn't contain `@`
+- Backup import now validates each event has required Nostr fields before processing
+
+### Changed
+- `useEventComposer.publish()` now uses `nostr-tools SimplePool` instead of manual WebSocket
+- `useEventDeleter.deleteEvents()` now uses `nostr-tools SimplePool` instead of mock success
+- `PublisherSection` and `ToolsSection` now use `AccessibleTabs` component
+- `useEventDeleter.reset()` now properly resets `deleting` flag
+- `useWriteTest.runTest()` now has concurrency guard to prevent double-submit
+
 ## [0.3.0] - 2026-06-30
 
 ### Added

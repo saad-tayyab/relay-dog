@@ -48,13 +48,14 @@ async function handlePublish() {
 
     <!-- Kind Selector -->
     <div>
-      <label class="block text-xs text-text-muted mb-1">Kind</label>
+      <label for="kind-input" class="block text-xs text-text-muted mb-1">Kind</label>
       <div class="flex gap-1 mb-2">
         {#each commonKinds as k (k.kind)}
           <button
             type="button"
+            aria-pressed={composer.state.kind === k.kind}
             onclick={() => composer.setKind(k.kind)}
-            class="px-2 py-1 rounded text-[10px] transition-all {composer.state.kind === k.kind
+            class="min-h-[44px] px-3 py-2 rounded text-xs transition-all {composer.state.kind === k.kind
               ? 'bg-accent text-white'
               : 'bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary'}"
           >
@@ -63,7 +64,9 @@ async function handlePublish() {
         {/each}
       </div>
       <input
+        id="kind-input"
         type="number"
+        min="0"
         value={composer.state.kind}
         oninput={(e) => composer.setKind(Number((e.target as HTMLInputElement).value))}
         class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary focus:outline-none focus:border-accent-border transition-all font-mono"
@@ -74,7 +77,7 @@ async function handlePublish() {
     <div>
       <div class="flex items-center justify-between mb-1">
         <label for="event-content" class="text-xs text-text-muted">Content</label>
-        <span class="text-[10px] {isOverLimit ? 'text-error' : 'text-text-muted'}">
+        <span class="text-xs {isOverLimit ? 'text-error' : 'text-text-muted'}">
           {charCount.toLocaleString()} / {maxChars.toLocaleString()}
         </span>
       </div>
@@ -97,8 +100,9 @@ async function handlePublish() {
 
     <!-- Created At -->
     <div>
-      <label class="block text-xs text-text-muted mb-1">Created At</label>
+      <label for="created-at" class="block text-xs text-text-muted mb-1">Created At</label>
       <input
+        id="created-at"
         type="datetime-local"
         value={new Date(composer.state.createdAt * 1000).toISOString().slice(0, 16)}
         oninput={(e) => {
@@ -124,9 +128,11 @@ async function handlePublish() {
     <!-- Publish Button -->
     <button
       type="button"
+      aria-label={composer.publishing ? 'Publishing event...' : 'Sign and publish event'}
+      aria-busy={composer.publishing}
       onclick={handlePublish}
       disabled={composer.publishing || !composer.state.targetRelay || isOverLimit}
-      class="w-full px-4 py-3 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      class="w-full min-h-[44px] px-4 py-3 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
     >
       {#if composer.publishing}
         <span class="flex items-center justify-center gap-2">
@@ -141,15 +147,16 @@ async function handlePublish() {
     <!-- Result -->
     {#if composer.result}
       <div
+        role="status"
         class="px-3 py-2 rounded-lg text-xs {composer.result.success
           ? 'bg-success/10 border border-success/20 text-success'
           : 'bg-error/10 border border-error/20 text-error'}"
       >
         {#if composer.result.success}
-          ✅ Published! Event ID: <span class="font-mono">{composer.result.eventId}</span>
+          <span aria-hidden="true">✅</span> Published! Event ID: <span class="font-mono">{composer.result.eventId}</span>
           <span class="text-text-muted ml-2">({Math.round(composer.result.latencyMs)}ms)</span>
         {:else}
-          ❌ {composer.result.error}
+          <span aria-hidden="true">❌</span> {composer.result.error}
         {/if}
       </div>
     {/if}

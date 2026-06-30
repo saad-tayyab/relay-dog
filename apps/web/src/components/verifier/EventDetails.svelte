@@ -71,8 +71,9 @@ async function copyToClipboard(text: string, which: 'id' | 'pubkey'): Promise<vo
       <p class="text-xs text-text-muted">ID</p>
       <button
         type="button"
+        aria-label="Copy event ID to clipboard"
         onclick={() => copyToClipboard(event.id, 'id')}
-        class="text-[10px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+        class="min-h-[44px] text-xs px-2 py-1 text-text-muted hover:text-accent transition-colors flex items-center gap-1"
       >
         {#if copiedId}
           <svg
@@ -116,8 +117,9 @@ async function copyToClipboard(text: string, which: 'id' | 'pubkey'): Promise<vo
       <p class="text-xs text-text-muted">Pubkey</p>
       <button
         type="button"
+        aria-label="Copy pubkey to clipboard"
         onclick={() => copyToClipboard(event.pubkey, 'pubkey')}
-        class="text-[10px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+        class="min-h-[44px] text-xs px-2 py-1 text-text-muted hover:text-accent transition-colors flex items-center gap-1"
       >
         {#if copiedPubkey}
           <svg
@@ -178,8 +180,9 @@ async function copyToClipboard(text: string, which: 'id' | 'pubkey'): Promise<vo
     {#if contentTooLong}
       <button
         type="button"
+        aria-expanded={contentExpanded}
         onclick={() => (contentExpanded = !contentExpanded)}
-        class="text-xs text-accent hover:text-accent/80 transition-colors mt-1.5"
+        class="min-h-[44px] text-xs px-2 py-1 text-accent hover:text-accent/80 transition-colors mt-1.5"
       >
         {contentExpanded ? 'Show less' : `Show all (${event.content.length} chars)`}
       </button>

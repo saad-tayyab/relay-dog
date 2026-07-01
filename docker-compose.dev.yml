@@ -1,0 +1,26 @@
+# docker-compose.dev.yml
+# Local development — only runs Postgres.
+# API and Web run locally via `bun run dev` (Vite + Hono --watch).
+
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: relay-dog-db
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+      POSTGRES_DB: relayscope
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d relayscope']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  pgdata:

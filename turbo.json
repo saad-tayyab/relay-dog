@@ -5,7 +5,7 @@
     "errorsOnlyShowHash": true
   },
   "global": {
-    "inputs": ["tsconfig.json", ".env"],
+    "inputs": ["tsconfig.json"],
     "env": ["NODE_ENV"]
   },
   "tasks": {

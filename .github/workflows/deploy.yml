@@ -1,0 +1,80 @@
+# .github/workflows/deploy.yml
+
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [production]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VM via SSH
+        uses: appleboy/ssh-action@cf5a46efce55453e07e15b7f32f261562e158901 # v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -euo pipefail
+
+            cd /opt/relay-dog
+
+            echo "=== Pre-deploy backup ==="
+            mkdir -p /opt/backups/relay-dog
+            docker compose exec -T db pg_dump -U postgres relayscope | gzip > /opt/backups/relay-dog/pre-deploy_$(date +%Y%m%d_%H%M%S).sql.gz 2>/dev/null || echo "Warning: DB backup failed (may not exist yet)"
+
+            echo "=== Saving current commit for rollback ==="
+            PREVIOUS_COMMIT=$(git rev-parse HEAD)
+
+            echo "=== Pulling latest code ==="
+            git fetch origin production
+            git reset --hard origin/production
+            NEW_COMMIT=$(git rev-parse HEAD)
+
+            if [ "$PREVIOUS_COMMIT" = "$NEW_COMMIT" ]; then
+              echo "No new commits — nothing to deploy"
+              exit 0
+            fi
+
+            echo "=== Building containers ==="
+            docker compose build
+
+            echo "=== Starting containers ==="
+            docker compose up -d --remove-orphans
+
+            echo "=== Waiting for database to be healthy ==="
+            timeout 60 bash -c 'until docker compose exec -T db pg_isready -U postgres -q 2>/dev/null; do sleep 2; done'
+
+            echo "=== Running database migrations ==="
+            docker compose exec -T api bun run db:migrate
+
+            echo "=== Health check ==="
+            for i in $(seq 1 12); do
+              if curl -sf http://localhost:3001/api/health > /dev/null 2>&1; then
+                echo "Health check passed"
+                exit 0
+              fi
+              echo "Waiting for API... (attempt $i/12)"
+              sleep 5
+            done
+
+            echo "Health check failed after 60s — rolling back"
+            echo "=== Reverting code to $PREVIOUS_COMMIT ==="
+            git checkout "$PREVIOUS_COMMIT"
+            docker compose build
+            docker compose up -d --remove-orphans
+
+            echo "=== Waiting for rollback to stabilize ==="
+            sleep 5
+            curl -sf http://localhost:3001/api/health && echo "Rollback healthy" || echo "Rollback also unhealthy — manual intervention needed"
+            exit 1

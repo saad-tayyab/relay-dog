@@ -1,0 +1,109 @@
+# docker-compose.staging.yml
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: relay-dog-api-staging
+    ports:
+      - "127.0.0.1:3011:3001"
+    environment:
+      DATABASE_URL: postgresql://postgres:${STAGING_POSTGRES_PASSWORD}@db-staging:5432/relayscope
+      API_KEY: ${STAGING_API_KEY}
+      NODE_ENV: production
+      CORS_ORIGINS: ${STAGING_CORS_ORIGINS:-http://localhost:3011}
+      MONITOR_INTERVAL_MS: ${MONITOR_INTERVAL_MS:-60000}
+      PORT: 3001
+    depends_on:
+      db-staging:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      - staging
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: relay-dog-web-staging
+    ports:
+      - "127.0.0.1:3080:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 64M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+    networks:
+      - staging
+
+  db-staging:
+    image: postgres:18-alpine
+    container_name: relay-dog-db-staging
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${STAGING_POSTGRES_PASSWORD:?Set STAGING_POSTGRES_PASSWORD}
+      POSTGRES_DB: relayscope
+    volumes:
+      - pgdata-staging:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d relayscope']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_READ_SEARCH
+    tmpfs:
+      - /tmp
+      - /run/postgresql
+    networks:
+      - staging
+
+volumes:
+  pgdata-staging:
+
+networks:
+  staging:
+    driver: bridge

@@ -1,12 +1,55 @@
-.git
+# .dockerignore
+# Excludes files from Docker build context to speed up builds and
+# prevent secrets/unnecessary files from being copied into images.
+
+# Dependencies
+node_modules
+.bun
+bun.lockb
+
+# Build outputs
+dist
+build
+.turbo
+
+# Environment (secrets)
 .env
 .env.*
 !.env.example
-node_modules
-.turbo
-dist
-build
+
+# Version control
+.git
+.gitignore
+
+# CI/CD and deployment
+.github
+scripts
+docker-compose*.yml
+
+# Documentation
+*.md
+LICENSE
+CONTRIBUTING.md
+
+# Nginx config (mounted at runtime, not needed in build)
+nginx
+
+# IDE / Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# Testing / Coverage
 coverage
-*.log
-.DS_Store
+.nyc_output
+*.lcov
+*.test.*
+*.spec.*
+
+# Database artifacts
 apps/api/drizzle
+
+# OS files
+.DS_Store
+Thumbs.db

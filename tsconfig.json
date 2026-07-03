@@ -1,4 +1,4 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "extends": "@relayscope/tsconfig/base.json"
+  "extends": "./packages/config/tsconfig/base.json"
 }

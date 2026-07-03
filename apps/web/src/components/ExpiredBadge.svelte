@@ -28,6 +28,6 @@ function formatRemaining(ms: number): string {
     class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-warning/10 border border-warning/20 text-warning"
   >
     <span>⏰</span>
-    <span>Expires in {formatRemaining(expirationInfo.remainingMs!)}</span>
+    <span>Expires in {formatRemaining(expirationInfo.remainingMs ?? 0)}</span>
   </span>
 {/if}

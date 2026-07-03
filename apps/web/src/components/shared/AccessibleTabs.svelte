@@ -54,6 +54,7 @@ function handleKeydown(e: KeyboardEvent) {
   >
     {#each tabs as tab (tab.id)}
       <button
+        type="button"
         role="tab"
         id="tab-{tab.id}"
         aria-selected={activeTab === tab.id}

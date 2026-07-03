@@ -18,7 +18,10 @@ let {
 
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const composer = useEventComposer();
-composer.setTargetRelay(targetRelay);
+
+$effect(() => {
+  composer.setTargetRelay(targetRelay);
+});
 
 const commonKinds = [
   { kind: 0, label: 'Metadata' },

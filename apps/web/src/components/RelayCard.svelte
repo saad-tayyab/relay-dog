@@ -94,7 +94,7 @@ function isSoftwareUrl(raw: string): boolean {
           type="button"
           class="text-xs text-text-muted font-mono truncate mb-2 cursor-pointer hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors inline-flex items-center gap-1 text-left"
           onclick={handleUrlClick}
-          onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleUrlClick(e as any); }}
+          onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); const httpUrl = relay.url.replace(/^wss:\/\//i, 'https://').replace(/^ws:\/\//i, 'http://'); window.open(httpUrl, '_blank', 'noopener,noreferrer'); } }}
           title="Open relay URL"
         >
           {relay.url}
@@ -163,6 +163,7 @@ function isSoftwareUrl(raw: string): boolean {
           </svg>
         </button>
 
+        <!-- biome-ignore lint/a11y/noLabelWithoutControl: label wraps input, valid association -->
         <label class="relative flex items-center justify-center p-1 cursor-pointer">
           <input
             type="checkbox"

@@ -151,7 +151,6 @@ const tabs = $derived([
               Raw NIP-11 JSON
             </summary>
             <pre
-              aria-label="Raw NIP-11 JSON response"
               class="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
                 relayInfo,
                 null,

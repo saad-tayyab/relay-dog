@@ -1,4 +1,4 @@
-import { SimplePool } from 'nostr-tools/pool';
+import { signAndPublish } from '../utils/nostr';
 
 export interface EventComposerState {
   kind: number;
@@ -19,6 +19,8 @@ export interface PublishResult {
 const MAX_CONTENT_LENGTH = 65536;
 
 export function useEventComposer() {
+  // $state creates deeply reactive Proxies — mutate properties directly,
+  // no need to spread-recreate the entire object on each change.
   let state = $state<EventComposerState>({
     kind: 1,
     content: '',
@@ -30,44 +32,44 @@ export function useEventComposer() {
   let publishing = $state(false);
   let result = $state<PublishResult | null>(null);
 
+  // ─── Direct mutation setters (Proxy handles reactivity) ───
+
   function setKind(kind: number) {
-    state = { ...state, kind: Math.max(0, Math.floor(kind)) };
+    state.kind = Math.max(0, Math.floor(kind));
   }
 
   function setContent(content: string) {
-    state = { ...state, content };
+    state.content = content;
   }
 
   function setCreatedAt(createdAt: number) {
-    state = { ...state, createdAt };
+    state.createdAt = createdAt;
   }
 
   function setTargetRelay(relay: string) {
-    state = { ...state, targetRelay: relay };
+    state.targetRelay = relay;
   }
 
   function addTag(tag: string[]) {
-    state = { ...state, tags: [...state.tags, tag] };
+    state.tags.push(tag);
   }
 
   function removeTag(index: number) {
-    state = { ...state, tags: state.tags.filter((_, i) => i !== index) };
+    state.tags.splice(index, 1);
   }
 
   function updateTag(index: number, tag: string[]) {
-    const newTags = [...state.tags];
-    newTags[index] = tag;
-    state = { ...state, tags: newTags };
+    state.tags[index] = tag;
   }
 
+  // ─── Full reassignment (reset replaces entire state) ───
+
   function reset() {
-    state = {
-      kind: 1,
-      content: '',
-      tags: [],
-      createdAt: Math.floor(Date.now() / 1000),
-      targetRelay: '',
-    };
+    state.kind = 1;
+    state.content = '';
+    state.tags.length = 0;
+    state.createdAt = Math.floor(Date.now() / 1000);
+    state.targetRelay = '';
     result = null;
   }
 
@@ -77,13 +79,11 @@ export function useEventComposer() {
     tags?: string[][];
     created_at?: number;
   }) {
-    state = {
-      kind: event.kind || 1,
-      content: event.content || '',
-      tags: event.tags || [],
-      createdAt: event.created_at || Math.floor(Date.now() / 1000),
-      targetRelay: state.targetRelay,
-    };
+    state.kind = event.kind || 1;
+    state.content = event.content || '';
+    state.tags.length = 0;
+    if (event.tags) state.tags.push(...event.tags);
+    state.createdAt = event.created_at ?? Math.floor(Date.now() / 1000);
     result = null;
   }
 
@@ -110,56 +110,29 @@ export function useEventComposer() {
       };
     }
 
-    // Check for NIP-07 signer
-    if (!window.nostr) {
-      return { success: false, error: 'No NIP-07 signer detected', latencyMs: 0 };
-    }
-
     publishing = true;
     result = null;
-    const start = performance.now();
 
     try {
-      // Sign via NIP-07
-      const signedEvent = await window.nostr.signEvent({
+      const { signedEvent, latencyMs } = await signAndPublish(state.targetRelay, {
         kind: state.kind,
         content: state.content,
         tags: state.tags,
         created_at: state.createdAt,
       });
 
-      // Use nostr-tools SimplePool for proper WebSocket lifecycle
-      const pool = new SimplePool();
-      try {
-        // pool.publish returns promises that resolve on OK from relay
-        const pubs = pool.publish([state.targetRelay], signedEvent);
-        await Promise.any(pubs); // Wait for any relay to accept
-
-        const latencyMs = performance.now() - start;
-        const publishResult: PublishResult = {
-          success: true,
-          eventId: signedEvent.id,
-          latencyMs,
-        };
-        result = publishResult;
-        return publishResult;
-      } catch (e) {
-        const latencyMs = performance.now() - start;
-        const publishResult: PublishResult = {
-          success: false,
-          error: e instanceof Error ? e.message : 'Relay rejected the event',
-          latencyMs,
-        };
-        result = publishResult;
-        return publishResult;
-      } finally {
-        pool.close([state.targetRelay]);
-      }
+      const publishResult: PublishResult = {
+        success: true,
+        eventId: signedEvent.id,
+        latencyMs,
+      };
+      result = publishResult;
+      return publishResult;
     } catch (e) {
       const publishResult: PublishResult = {
         success: false,
         error: e instanceof Error ? e.message : 'Publish failed',
-        latencyMs: performance.now() - start,
+        latencyMs: 0,
       };
       result = publishResult;
       return publishResult;

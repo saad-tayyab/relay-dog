@@ -6,7 +6,14 @@ let { targetRelay }: { targetRelay: string } = $props();
 
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const deleter = useEventDeleter();
-deleter.setTargetRelay(targetRelay);
+
+let localRelay = $state('');
+
+// Sync from prop → local state → composable
+$effect(() => {
+  localRelay = targetRelay;
+  deleter.setTargetRelay(targetRelay);
+});
 
 let inputIds = $state('');
 
@@ -107,7 +114,8 @@ async function handleDelete() {
       <input
         id="delete-relay"
         type="text"
-        bind:value={deleter.targetRelay}
+        bind:value={localRelay}
+        onblur={() => deleter.setTargetRelay(localRelay)}
         placeholder="wss://relay.example.com"
         class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
       />

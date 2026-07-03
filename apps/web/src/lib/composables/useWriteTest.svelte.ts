@@ -3,6 +3,8 @@ import type { WriteTestResult } from '@relayscope/shared';
 const TEST_EVENT_KIND = 27676;
 const TEST_EVENT_CONTENT = 'Relay Dog write test — this event can be safely ignored.';
 
+import { assertNostrAvailable } from '../utils/nostr';
+
 export function useWriteTest() {
   let result = $state<WriteTestResult>({
     status: 'idle',
@@ -15,24 +17,15 @@ export function useWriteTest() {
     if (result.status === 'testing') return result; // Concurrency guard
     result = { status: 'testing', latencyMs: null, error: null, eventId: null };
 
-    if (!window.nostr) {
-      result = {
-        status: 'failed',
-        latencyMs: null,
-        error: 'No NIP-07 extension detected. Install a Nostr browser extension.',
-        eventId: null,
-      };
-      return result;
-    }
-
     try {
+      const nostr = assertNostrAvailable();
       // Call getPublicKey() to verify extension is available
-      await window.nostr.getPublicKey();
+      await nostr.getPublicKey();
       const now = Math.floor(Date.now() / 1000);
 
       const start = performance.now();
 
-      const signedEvent = await window.nostr.signEvent({
+      const signedEvent = await nostr.signEvent({
         kind: TEST_EVENT_KIND,
         content: TEST_EVENT_CONTENT,
         tags: [],

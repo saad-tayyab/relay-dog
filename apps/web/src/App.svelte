@@ -212,7 +212,7 @@ function handleQuickPick(relay: string) {
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-accent focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">
       Skip to main content
     </a>
-    <form onsubmit={handleSubmit} class="mb-8 animate-fade-in" role="search" aria-label="Inspect a relay">
+    <search onsubmit={handleSubmit} class="mb-8 animate-fade-in" aria-label="Inspect a relay">
       <div class="flex gap-2">
         <div class="relative flex-1">
           <div class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
@@ -283,7 +283,7 @@ function handleQuickPick(relay: string) {
           </button>
         {/each}
       </div>
-    </form>
+    </search>
 
     <!-- Navigation -->
     <NavBar {activeSection} onNavigate={handleNavigate} eventCount={socket.events.length} />

@@ -1,29 +1,5 @@
 import type { AuthState } from '@relayscope/shared';
-
-// NIP-07 window.nostr type
-interface NostrProvider {
-  signEvent(event: {
-    kind: number;
-    content: string;
-    tags: string[][];
-    created_at: number;
-  }): Promise<{
-    id: string;
-    sig: string;
-    pubkey: string;
-    created_at: number;
-    kind: number;
-    tags: string[][];
-    content: string;
-  }>;
-  getPublicKey(): Promise<string>;
-}
-
-declare global {
-  interface Window {
-    nostr?: NostrProvider;
-  }
-}
+import { assertNostrAvailable } from '../utils/nostr';
 
 export function useNip42Auth() {
   let state = $state<AuthState>({
@@ -81,7 +57,10 @@ export function useNip42Auth() {
       return null;
     }
 
-    if (!window.nostr) {
+    let nostr: ReturnType<typeof assertNostrAvailable>;
+    try {
+      nostr = assertNostrAvailable();
+    } catch (_e) {
       state = {
         ...state,
         status: 'auth_failed',
@@ -102,10 +81,10 @@ export function useNip42Auth() {
         return null;
       }
 
-      const pubkey = await window.nostr.getPublicKey();
+      const pubkey = await nostr.getPublicKey();
       const now = Math.floor(Date.now() / 1000);
 
-      const signedEvent = await window.nostr.signEvent({
+      const signedEvent = await nostr.signEvent({
         kind: 22242,
         content: '',
         tags: [

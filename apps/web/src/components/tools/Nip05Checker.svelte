@@ -148,7 +148,7 @@ const clipboard = createClipboard();
               <button
                 type="button"
                 aria-label="Copy to clipboard"
-                onclick={() => clipboard.copy(result!.resolvedPubkey!)}
+                onclick={() => result?.resolvedPubkey && clipboard.copy(result.resolvedPubkey)}
                 class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
               >
                 {clipboard.copied ? '✓ Copied' : 'Copy'}
@@ -166,7 +166,7 @@ const clipboard = createClipboard();
                 <button
                   type="button"
                   aria-label="Copy to clipboard"
-                  onclick={() => clipboard.copy(result!.npub!)}
+                  onclick={() => result?.npub && clipboard.copy(result.npub)}
                   class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
                 >
                   {clipboard.copied ? '✓ Copied' : 'Copy'}

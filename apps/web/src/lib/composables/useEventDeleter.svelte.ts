@@ -1,4 +1,4 @@
-import { SimplePool } from 'nostr-tools/pool';
+import { signAndPublish } from '../utils/nostr';
 
 export interface DeleteResult {
   eventId: string;
@@ -7,6 +7,7 @@ export interface DeleteResult {
 }
 
 export function useEventDeleter() {
+  // $state creates deeply reactive Proxies — mutate properties directly
   let eventIds = $state<string[]>([]);
   let reason = $state('');
   let targetRelay = $state('');
@@ -14,17 +15,20 @@ export function useEventDeleter() {
   let results = $state<DeleteResult[]>([]);
 
   function addEventId(id: string) {
-    if (!eventIds.includes(id.trim())) {
-      eventIds = [...eventIds, id.trim()];
+    const trimmed = id.trim();
+    if (!eventIds.includes(trimmed)) {
+      eventIds.push(trimmed);
     }
   }
 
   function removeEventId(id: string) {
-    eventIds = eventIds.filter((eid) => eid !== id);
+    const idx = eventIds.indexOf(id);
+    if (idx !== -1) eventIds.splice(idx, 1);
   }
 
   function setEventIds(ids: string[]) {
-    eventIds = ids;
+    eventIds.length = 0;
+    eventIds.push(...ids);
   }
 
   function setReason(r: string) {
@@ -36,9 +40,9 @@ export function useEventDeleter() {
   }
 
   function reset() {
-    eventIds = [];
+    eventIds.length = 0;
     reason = '';
-    results = [];
+    results.length = 0;
     deleting = false;
   }
 
@@ -50,17 +54,8 @@ export function useEventDeleter() {
       return [];
     }
 
-    // Check for NIP-07 signer
-    if (!window.nostr) {
-      return eventIds.map((id) => ({
-        eventId: id,
-        success: false,
-        error: 'No NIP-07 signer detected',
-      }));
-    }
-
     deleting = true;
-    results = [];
+    results.length = 0;
 
     try {
       // Build kind 5 deletion event per NIP-09
@@ -69,46 +64,28 @@ export function useEventDeleter() {
         tags.push(['reason', reason]);
       }
 
-      const unsignedEvent = {
+      await signAndPublish(targetRelay, {
         kind: 5,
         content: reason || '',
         tags,
         created_at: Math.floor(Date.now() / 1000),
-      };
+      });
 
-      // Sign via NIP-07
-      const signedEvent = await window.nostr.signEvent(unsignedEvent);
-
-      // Publish to relay via nostr-tools SimplePool
-      const pool = new SimplePool();
-      try {
-        await Promise.any(pool.publish([targetRelay], signedEvent));
-
-        // All events were included in the deletion event
-        const deleteResults: DeleteResult[] = eventIds.map((id) => ({
-          eventId: id,
-          success: true,
-        }));
-        results = deleteResults;
-        return deleteResults;
-      } catch (e) {
-        const errorResults: DeleteResult[] = eventIds.map((id) => ({
-          eventId: id,
-          success: false,
-          error: e instanceof Error ? e.message : 'Relay rejected deletion event',
-        }));
-        results = errorResults;
-        return errorResults;
-      } finally {
-        pool.close([targetRelay]);
-      }
+      const deleteResults: DeleteResult[] = eventIds.map((id) => ({
+        eventId: id,
+        success: true,
+      }));
+      results.length = 0;
+      results.push(...deleteResults);
+      return deleteResults;
     } catch (e) {
       const errorResults: DeleteResult[] = eventIds.map((id) => ({
         eventId: id,
         success: false,
         error: e instanceof Error ? e.message : 'Deletion failed',
       }));
-      results = errorResults;
+      results.length = 0;
+      results.push(...errorResults);
       return errorResults;
     } finally {
       deleting = false;

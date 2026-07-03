@@ -38,15 +38,23 @@ function handleImageError(e: Event) {
 
 // Fetch discovery and popularity data on mount
 $effect(() => {
-  if (relayId) {
-    discovery.fetchDiscoveries(relayId);
-    fetch(`/api/relays/${relayId}/popularity`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.success) popularity = json.data;
-      })
-      .catch(() => {});
-  }
+  if (!relayId) return;
+
+  const controller = new AbortController();
+  discovery.fetchDiscoveries(relayId);
+
+  fetch(`/api/relays/${relayId}/popularity`, {
+    signal: controller.signal,
+  })
+    .then((res) => res.json())
+    .then((json) => {
+      if (json.success) popularity = json.data;
+    })
+    .catch(() => {});
+
+  return () => {
+    controller.abort();
+  };
 });
 </script>
 

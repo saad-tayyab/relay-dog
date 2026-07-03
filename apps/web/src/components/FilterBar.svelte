@@ -17,9 +17,28 @@ let {
   supportsNip50?: boolean;
 } = $props();
 
-let searchInput = $state(filters.search || '');
-let nipInput = $state(filters.nips?.join(', ') || '');
-let countryInput = $state(filters.country || '');
+let searchInput = $state('');
+let nipInput = $state('');
+let countryInput = $state('');
+let sortLocal = $state<DirectoryFilters['sortBy']>('name');
+let sortDirection = $state<DirectoryFilters['sortOrder']>('asc');
+
+// Sync local state when parent-provided filters change
+$effect(() => {
+  searchInput = filters.search || '';
+});
+$effect(() => {
+  nipInput = filters.nips?.join(', ') || '';
+});
+$effect(() => {
+  countryInput = filters.country || '';
+});
+$effect(() => {
+  sortLocal = filters.sortBy;
+});
+$effect(() => {
+  sortDirection = filters.sortOrder;
+});
 
 // Debounce search
 let searchTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -104,8 +123,8 @@ function handleCountryChange() {
   <label for="dir-sort" class="sr-only">Sort by</label>
   <select
     id="dir-sort"
-    bind:value={filters.sortBy}
-    onchange={() => onSort(filters.sortBy, filters.sortOrder)}
+    bind:value={sortLocal}
+    onchange={() => onSort(sortLocal, sortDirection)}
     class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary focus:outline-none focus:border-accent-border transition-all"
   >
     <option value="name">Name</option>
@@ -116,10 +135,10 @@ function handleCountryChange() {
 
   <button
     type="button"
-    onclick={() => onSort(filters.sortBy, filters.sortOrder === 'asc' ? 'desc' : 'asc')}
-    aria-label="Toggle sort order (currently {filters.sortOrder === 'asc' ? 'ascending' : 'descending'})"
+    onclick={() => onSort(sortLocal, sortDirection === 'asc' ? 'desc' : 'asc')}
+    aria-label="Toggle sort order (currently {sortDirection === 'asc' ? 'ascending' : 'descending'})"
     class="p-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary transition-all"
   >
-    {filters.sortOrder === 'asc' ? '↑' : '↓'}
+    {sortDirection === 'asc' ? '↑' : '↓'}
   </button>
 </div>

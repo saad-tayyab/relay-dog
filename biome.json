@@ -50,9 +50,9 @@
       "includes": ["**/*.svelte"],
       "linter": {
         "rules": {
-          "correctness": {
-            "noUnusedImports": "off",
-            "noUnusedVariables": "off"
+          "a11y": {
+            "useValidAriaValues": "off",
+            "noNoninteractiveTabindex": "off"
           }
         }
       }
@@ -68,6 +68,9 @@
       }
     }
   ],
+  "html": {
+    "experimentalFullSupportEnabled": true
+  },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",

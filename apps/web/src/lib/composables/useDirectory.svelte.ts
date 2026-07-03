@@ -3,14 +3,17 @@ import type { DirectoryFilters, DirectoryRelay, DirectoryResponse } from '@relay
 const API_BASE = '/api/directory';
 
 export function useDirectory() {
-  let relays = $state<DirectoryRelay[]>([]);
-  let total = $state(0);
-  let page = $state(1);
-  let totalPages = $state(0);
+  // API responses are only reassigned, never mutated → $state.raw avoids proxy overhead
+  let relays = $state.raw<DirectoryRelay[]>([]);
+  let total = $state.raw(0);
+  let page = $state.raw(1);
+  let totalPages = $state.raw(0);
+
+  // UI state that changes frequently
   let loading = $state(false);
   let error = $state<string | null>(null);
 
-  // Filter state
+  // Filter state — reassign on each setter call, never mutate in place
   let filters = $state<DirectoryFilters>({
     sortBy: 'name',
     sortOrder: 'asc',
@@ -19,6 +22,7 @@ export function useDirectory() {
   });
 
   let currentController: AbortController | null = null;
+  let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   async function fetchRelays(): Promise<void> {
     // Cancel any in-flight request to prevent stale data
@@ -57,6 +61,7 @@ export function useDirectory() {
       }
 
       const data: DirectoryResponse = json.data;
+      // Reassignment triggers reactivity even with $state.raw
       relays = data.relays;
       total = data.total;
       page = data.page;
@@ -74,8 +79,6 @@ export function useDirectory() {
     if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
     searchDebounceTimer = setTimeout(() => fetchRelays(), 300);
   }
-
-  let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   function setNips(nips: number[]) {
     filters = { ...filters, nips, page: 1 };

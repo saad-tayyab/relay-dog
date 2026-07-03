@@ -90,9 +90,11 @@ function isSoftwareUrl(raw: string): boolean {
           {/if}
         </div>
 
-        <p
-          class="text-xs text-text-muted font-mono truncate mb-2 cursor-pointer hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors inline-flex items-center gap-1"
+        <button
+          type="button"
+          class="text-xs text-text-muted font-mono truncate mb-2 cursor-pointer hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors inline-flex items-center gap-1 text-left"
           onclick={handleUrlClick}
+          onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleUrlClick(e as any); }}
           title="Open relay URL"
         >
           {relay.url}
@@ -110,7 +112,7 @@ function isSoftwareUrl(raw: string): boolean {
               d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
             />
           </svg>
-        </p>
+        </button>
 
         {#if relay.description}
           <p class="text-xs text-text-secondary line-clamp-2 mb-2">{relay.description}</p>

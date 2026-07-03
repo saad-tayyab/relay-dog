@@ -46,6 +46,7 @@ function handleKeydown(e: KeyboardEvent) {
 <div>
   <div
     role="tablist"
+    tabindex="0"
     aria-label={ariaLabel}
     bind:this={tablistEl}
     onkeydown={handleKeydown}

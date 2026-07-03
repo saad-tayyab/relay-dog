@@ -108,7 +108,26 @@ GET /api/health
 ```json
 {
   "status": "ok",
-  "uptime": 12345.67
+  "uptime": 12345.67,
+  "checks": {
+    "api": "ok",
+    "database": "connected"
+  },
+  "timestamp": "2026-07-04T12:00:00.000Z"
+}
+```
+
+**Response** `503 Service Unavailable` when a dependency is unavailable:
+
+```json
+{
+  "status": "degraded",
+  "uptime": 12345.67,
+  "checks": {
+    "api": "ok",
+    "database": "disconnected"
+  },
+  "timestamp": "2026-07-04T12:00:00.000Z"
 }
 ```
 

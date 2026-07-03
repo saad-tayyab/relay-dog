@@ -15,10 +15,11 @@ All configuration via environment variables. No secrets in code.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `DATABASE_URL` | `postgresql://localhost:5432/relayscope` | PostgreSQL connection string in development |
 | `PORT` | `3001` | API server port |
 | `NODE_ENV` | `development` | `development` or `production` |
 | `CORS_ORIGINS` | `http://localhost:5173,http://localhost:3000` | Comma-separated allowed CORS origins |
-| `POSTGRES_PASSWORD` | — | Postgres password for Docker (`docker-compose.yml` interpolation) |
+| `POSTGRES_PASSWORD` | `postgres` | Postgres password for env parsing; Docker compose still requires this in `.env` |
 | `MONITOR_INTERVAL_MS` | `60000` | Background health check interval (ms). Minimum 10000. |
 
 ## Setup
@@ -61,6 +62,7 @@ MONITOR_INTERVAL_MS=300000
 - **Use** `.env.example` as documentation (no real values)
 - **Rotate** database passwords if accidentally exposed
 - **Set a strong `API_KEY`** — this is the only protection on mutating endpoints
+- **Leave `API_KEY` unset only for local development** if you intentionally want unprotected write endpoints
 - **Set `POSTGRES_PASSWORD`** — Docker compose requires it; never use default `postgres`
 
 ---

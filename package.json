@@ -15,6 +15,7 @@
     "type-check": "turbo run type-check",
     "db:generate": "bun run --filter @relayscope/api db:generate",
     "db:migrate": "bun run --filter @relayscope/api db:migrate",
+    "db:push": "bun run --filter @relayscope/api db:push",
     "db:studio": "bun run --filter @relayscope/api db:studio",
     "lint:root": "biome check biome.json turbo.json docs .github CONTRIBUTING.md README.md package.json"
   },

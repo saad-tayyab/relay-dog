@@ -1,49 +1,60 @@
 # 🔒 Package Audit
 
-Version tracking for all dependencies. Updated each time packages are modified.
+Version tracking for declared dependencies. Updated each time package manifests are modified.
 
-## Last Audit: 2026-06-30
+## Last Audit: 2026-07-04
 
 ### Runtime & Tooling
 
-| Package | Version | Latest | Status | Updated |
-|---------|---------|--------|--------|---------|
-| bun | 1.3.14 | 1.3.14 | ✅ Current | 2026-06-30 |
-| turbo | 2.10.2 | 2.10.2 | ✅ Current | 2026-06-30 |
-| typescript | 6.0.3 | 6.0.3 | ✅ Current | 2026-06-30 |
+| Package | Declared Version | Source | Notes |
+|---------|------------------|--------|-------|
+| bun | 1.3.14 | `packageManager` | Runtime + package manager |
+| turbo | ^2.10.3 | root `devDependencies` | Monorepo task runner |
+| typescript | ^6.0.3 | root/package `devDependencies` | Strict TypeScript |
 
 ### Frontend (apps/web)
 
-| Package | Version | Latest | Status | Updated |
-|---------|---------|--------|--------|---------|
-| svelte | 5.56.4 | 5.56.4 | ✅ Current | 2026-06-30 |
-| @sveltejs/vite-plugin-svelte | 7.1.2 | 7.1.2 | ✅ Current | 2026-06-30 |
-| svelte-check | 4.1.0 | 4.1.0 | ✅ Current | 2026-06-30 |
-| vite | 8.1.0 | 8.1.2 | ⏳ Patch available (npm; Bun registry on 8.1.0) | 2026-06-30 |
-| tailwindcss | 4.3.2 | 4.3.2 | ✅ Current | 2026-06-30 |
-| @tailwindcss/vite | 4.3.2 | 4.3.2 | ✅ Current | 2026-06-30 |
-| nostr-tools | 2.23.8 | 2.23.8 | ✅ Current | 2026-06-30 |
+| Package | Declared Version | Source | Notes |
+|---------|------------------|--------|-------|
+| svelte | ^5.56.4 | `apps/web/package.json` | Svelte 5 runes UI |
+| @sveltejs/vite-plugin-svelte | ^7.1.2 | `apps/web/package.json` | Vite integration |
+| svelte-check | ^4.7.1 | `apps/web/package.json` | Svelte type checking |
+| vite | ^8.1.3 | `apps/web/package.json` | Dev server/build |
+| tailwindcss | ^4.3.2 | `apps/web/package.json` | Styling |
+| @tailwindcss/vite | ^4.3.2 | `apps/web/package.json` | Tailwind Vite plugin |
+| nostr-tools | ^2.23.9 | `apps/web/package.json` | Nostr event/key helpers |
+| @scure/base | ^2.2.0 | `apps/web/package.json` | Encoding helpers |
+| qrcode | ^1.5.4 | `apps/web/package.json` | QR code generation |
+| @types/qrcode | ^1.5.6 | `apps/web/package.json` | QR code types |
 
 ### Backend (apps/api)
 
-| Package | Version | Latest | Status | Updated |
-|---------|---------|--------|--------|---------|
-| hono | 4.12.27 | 4.12.27 | ✅ Current | 2026-06-30 |
-| @hono/zod-validator | 0.8.0 | 0.8.0 | ✅ Current | 2026-06-30 |
-| hono-rate-limiter | 0.5.3 | 0.5.3 | ✅ Current | 2026-06-30 |
-| zod | 4.4.3 | 4.4.3 | ✅ Current | 2026-06-30 |
-| drizzle-orm | 1.0.0-rc.4 | 1.0.0-rc.4 | ⚠️ RC | 2026-06-30 |
-| drizzle-kit | 1.0.0-rc.4 | 1.0.0-rc.4 | ⚠️ RC | 2026-06-30 |
-| postgres | 3.4.9 | 3.4.9 | ✅ Current | 2026-06-30 |
-| dotenv | 17.4.2 | 17.4.2 | ✅ Current | 2026-06-30 |
-| @types/bun | 1.3.14 | 1.3.14 | ✅ Current | 2026-06-30 |
-| @types/node | 26.0.1 | 26.0.1 | ✅ Current | 2026-06-30 |
+| Package | Declared Version | Source | Notes |
+|---------|------------------|--------|-------|
+| hono | ^4.12.27 | `apps/api/package.json` | HTTP framework |
+| @hono/zod-validator | ^0.8.0 | `apps/api/package.json` | Request validation |
+| hono-rate-limiter | ^0.5.3 | `apps/api/package.json` | Per-IP rate limits |
+| zod | ^4.4.3 | `apps/api/package.json` | Runtime schemas |
+| drizzle-orm | 1.0.0-rc.4 | `apps/api/package.json` | ORM, currently RC |
+| drizzle-kit | 1.0.0-rc.4 | `apps/api/package.json` | Migration tooling, currently RC |
+| postgres | ^3.4.9 | `apps/api/package.json` | PostgreSQL client |
+| @types/bun | ^1.3.14 | `apps/api/package.json` | Bun runtime types |
 
 ### Code Quality
 
-| Package | Version | Latest | Status | Updated |
-|---------|---------|--------|--------|---------|
-| @biomejs/biome | 2.5.1 | 2.5.1 | ✅ Current | 2026-06-30 |
+| Package | Declared Version | Source | Notes |
+|---------|------------------|--------|-------|
+| @biomejs/biome | ^2.5.2 | root `devDependencies` | Formatter and linter |
+
+### Internal Packages
+
+| Package | Version | Source | Notes |
+|---------|---------|--------|-------|
+| @relayscope/web | 0.8.0 | `apps/web/package.json` | Web app package |
+| @relayscope/api | 0.8.0 | `apps/api/package.json` | API package |
+| @relayscope/shared | 0.8.0 | `packages/shared/package.json` | Shared types and schemas |
+| @relayscope/env | 0.0.0 | `packages/config/env/package.json` | Environment validation |
+| @relayscope/tsconfig | 0.0.0 | `packages/config/tsconfig/package.json` | Shared TypeScript configs |
 
 ### Infrastructure
 
@@ -57,6 +68,7 @@ Version tracking for all dependencies. Updated each time packages are modified.
 
 | Date | Action | Packages Changed |
 |------|--------|-----------------|
+| 2026-07-04 | Synced audit with manifests | turbo 2.10.3, biome 2.5.2, vite 8.1.3, svelte-check 4.7.1, nostr-tools 2.23.9; removed stale dotenv/@types/node entries |
 | 2026-06-30 | Initial setup | All packages at initial versions |
 | 2026-06-30 | Updated all to latest | typescript 5.9→6.0, vite 6.4→8.1, react 19.1→19.2, hono 4.7→4.12, tailwind 4.1→4.3, drizzle 0.44→0.45, node-cron 3.0→4.5, @hono/node-server 1.19→removed |
 | 2026-06-30 | Added Biome | @biomejs/biome 2.5.1 (replaced oxlint) |

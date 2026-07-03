@@ -34,18 +34,23 @@ graph TB
 
 ## Package Architecture
 
-The monorepo contains four packages with clear dependency boundaries:
+The monorepo contains five packages with clear dependency boundaries:
 
 ```mermaid
 graph LR
-    CONFIG["@relayscope/config<br/>Env & TS Config"]
+    ENV["@relayscope/env<br/>Environment Validation"]
+    TSCONFIG["@relayscope/tsconfig<br/>TypeScript Presets"]
     SHARED["@relayscope/shared<br/>Types & Schemas"]
     WEB["@relayscope/web<br/>Svelte Frontend"]
     API["@relayscope/api<br/>Hono Backend"]
 
     WEB -->|"imports types"| SHARED
     API -->|"imports types"| SHARED
-    API -->|"imports env"| CONFIG
+    API -->|"imports env"| ENV
+    WEB -->|"imports env"| ENV
+    API -->|"extends config"| TSCONFIG
+    WEB -->|"extends config"| TSCONFIG
+    SHARED -->|"extends config"| TSCONFIG
     WEB -.->|"proxy /api"| API
 ```
 
@@ -54,7 +59,8 @@ graph LR
 | `@relayscope/web` | Vite + Svelte 5 + Tailwind v4 | Browser UI, NIP-11 viewer, connection checks, event tools |
 | `@relayscope/api` | Hono + Bun + Drizzle ORM | REST API, relay CRUD, health checks, monitoring, directory |
 | `@relayscope/shared` | TypeScript + Zod | Shared types, DTOs, entity interfaces, NIP validation schemas |
-| `@relayscope/config` | TypeScript configs + env | Shared tsconfig presets and server env validation |
+| `@relayscope/env` | TypeScript + Zod | Server/client environment parsing and validation |
+| `@relayscope/tsconfig` | TypeScript configs | Shared TypeScript presets for Bun, Svelte, and base packages |
 
 ## Data Flow
 
@@ -138,7 +144,6 @@ sequenceDiagram
 | Frontend | **Svelte 5 + Vite** | Compiler-based reactivity, Runes API for explicit state |
 | CSS | **Tailwind v4** | Utility-first, custom theme tokens |
 | Validation | **Zod 4** | Runtime type validation on API and shared schemas |
-| Linting | **Biome** | Fast Rust-based linter + formatter |
 | Linting | **Biome** | Fast Rust-based linter + formatter |
 
 ## Security Considerations

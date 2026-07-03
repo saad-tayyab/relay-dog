@@ -87,16 +87,16 @@ relayscope/
 │   │   │   │   ├── tools/        # KeyConverter, Nip05Checker, QRCode, Backup
 │   │   │   │   ├── shared/       # AccessibleTabs, Toast (WCAG 2.2 AA)
 │   │   │   │   └── verifier/     # EventVerifier, VerificationPanel
-│   │   │   ├── composables/      # Svelte 5 runes composables
-│   │   │   │   └── + useDebounce, useCopyToClipboard
-│   │   │   ├── stores/           # relaySocket.svelte.ts
+│   │   │   ├── lib/
+│   │   │   │   ├── composables/  # Svelte 5 runes composables
+│   │   │   │   └── stores/       # relaySocket.svelte.ts
 │   │   │   └── utils/            # router, keys, nip05, backup, relay, nostrVerify
 │   │   └── package.json
 │   └── api/              # Hono + Bun REST API
 │       └── package.json
 ├── packages/
 │   ├── shared/           # Shared TypeScript types
-│   └── config/           # Biome, TypeScript configs
+│   └── config/           # Env validation and TypeScript configs
 ├── docs/                 # Architecture & feature specs
 ├── turbo.json
 └── package.json
@@ -189,7 +189,9 @@ bun run db:studio        # Open Drizzle Studio
 | `GET` | `/api/relays/:id/history` | — | Health check history |
 | `GET` | `/api/relays/:id/nip11` | — | NIP-11 snapshot history |
 | `GET` | `/api/relays/:id/discoveries` | — | NIP-66 monitor observations |
+| `POST` | `/api/relays/:id/discoveries` | ✅ | Upsert discovery from monitor |
 | `GET` | `/api/relays/:id/popularity` | — | NIP-65 read/write relay counts |
+| `POST` | `/api/relays/:id/popularity` | ✅ | Upsert relay list entry |
 | `GET` | `/api/directory` | — | Browse directory with filters |
 | `GET` | `/api/directory/countries` | — | List available countries |
 | `GET` | `/api/directory/compare/:id1/:id2` | — | Compare two relays side by side |

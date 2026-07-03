@@ -29,7 +29,7 @@ createdb relayscope
 bun run db:push
 
 # 6. Start dev servers
-bunx turbo dev
+bun run dev
 ```
 
 This starts:
@@ -82,13 +82,13 @@ bun run db:studio
 
 ```bash
 # Start everything
-bunx turbo dev
+bun run dev
 
 # Start only web
-bunx turbo dev --filter=@relayscope/web
+bun run --filter @relayscope/web dev
 
 # Start only API
-bunx turbo dev --filter=@relayscope/api
+bun run --filter @relayscope/api dev
 ```
 
 ### 4. Git Hooks
@@ -147,9 +147,10 @@ relayscope/
 
 | Command | Description |
 |---------|-------------|
-| `bunx turbo dev` | Start all dev servers |
-| `bunx turbo build` | Build all packages |
-| `bunx turbo type-check` | Run TypeScript checks |
+| `bun run dev` | Start all dev servers |
+| `bun run build` | Build all packages |
+| `bun run type-check` | Run TypeScript checks |
+| `bun run lint` | Run Biome checks |
 | `bun run db:generate` | Generate Drizzle migrations |
 | `bun run db:migrate` | Run migrations |
 | `bun run db:push` | Push schema (dev) |

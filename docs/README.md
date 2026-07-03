@@ -79,7 +79,7 @@ Quick check if a doc is current with the codebase. Updated with every significan
 
 | Doc | Version | Last Updated | Notes |
 |-----|---------|-------------|-------|
-| architecture/overview.md | `v0.9.0` | 2026-07-01 | Updated for 7 tables, 4 packages, security |
+| architecture/overview.md | `v0.9.0` | 2026-07-04 | Updated for 7 tables, 5 packages, security |
 | architecture/database.md | `v0.9.0` | 2026-07-01 | Updated for 7 tables, NIP-66/65, data retention |
 | api/README.md | `v0.9.0` | 2026-07-01 | Updated for 12 files, middleware, security |
 | api/endpoints.md | `v0.9.0` | 2026-07-01 | Updated for 17 endpoints, auth, rate limits |
@@ -95,6 +95,7 @@ Quick check if a doc is current with the codebase. Updated with every significan
 | features/phase-10-infrastructure-hardening.md | `v0.9.0` | 2026-07-01 | DevSecOps |
 | features/phase-11-production-deployment.md | `v0.10.0` | — | Fly.io deployment |
 | prompts/best-practices.md | `v0.9.0` | 2026-07-01 | AI prompt guidelines |
+| AGENTS.md | `v0.1.0` | 2026-07-04 | Agent-facing project guide |
 | roadmap.md | `v0.9.0` | 2026-07-01 | Phase 7 API count, Phase 10 |
 | changelog.md | `v0.9.0` | 2026-07-01 | Release history |
 | features/phase-1-nip11.md | `v0.1.0` | 2026-06-30 | Original — still accurate |

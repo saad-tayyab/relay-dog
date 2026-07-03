@@ -5,7 +5,7 @@ import EventDeleter from './EventDeleter.svelte';
 
 let {
   targetRelay,
-  prefilledEvent,
+  prefilledEvent: _prefilledEvent,
 }: {
   targetRelay: string;
   prefilledEvent?: unknown;

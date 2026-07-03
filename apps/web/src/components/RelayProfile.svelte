@@ -10,7 +10,7 @@ import SectionCard from './SectionCard.svelte';
 
 let {
   relayId,
-  relay,
+  relay: _relay,
   info,
 }: {
   relayId?: string;

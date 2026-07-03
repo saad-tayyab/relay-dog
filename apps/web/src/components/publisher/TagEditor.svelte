@@ -3,7 +3,7 @@ let {
   tags,
   onAdd,
   onRemove,
-  onUpdate,
+  onUpdate: _onUpdate,
 }: {
   tags: string[][];
   onAdd: (tag: string[]) => void;

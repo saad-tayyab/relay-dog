@@ -1,4 +1,19 @@
-# 🛠️ Phase 8: Developer Toolkit Expansion
+---
+title: "🛠️ Phase 8: Developer Toolkit"
+version: "0.10.0"
+status: "complete"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 🛠️ Phase 8: Developer Toolkit
+
+> **v0.10.0** · **Complete** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Status
 
@@ -580,5 +595,3 @@ export function setHashSection(section: Section): void {
 *Previous: [Phase 7 — NIP Compliance](phase-7-nip-compliance.md)*
 
 ---
-
-*Last updated: v0.8.0 — 2026-06-30*

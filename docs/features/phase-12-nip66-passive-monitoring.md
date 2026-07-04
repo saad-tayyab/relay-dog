@@ -1,4 +1,19 @@
+---
+title: "🔄 Phase 12: NIP-66 Passive Monitoring"
+version: "0.10.0"
+status: "planned"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 🔄 Phase 12: NIP-66 Passive Monitoring
+
+> **v0.10.0** · **Planned** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Status
 
@@ -349,5 +364,3 @@ setTimeout(() => {
 | **Total** | **~6 hours** |
 
 ---
-
-*Last updated: v0.9.0 — 2026-07-04*

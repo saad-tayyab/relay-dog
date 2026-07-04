@@ -1,256 +1,366 @@
-# 🐕 Relay Dog
+<p align="center">
+  <img src="https://img.shields.io/badge/version-0.10.0-blue?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/phase-10%2F12%20complete-brightgreen?style=for-the-badge" alt="Phase">
+  <img src="https://img.shields.io/badge/WCAG-2.2%20AA-brightgreen?style=for-the-badge" alt="WCAG">
+  <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/typescript-6.0-blue?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/svelte-5-orange?style=for-the-badge&logo=svelte&logoColor=white" alt="Svelte">
+  <img src="https://img.shields.io/badge/bun-1.3-fbf0df?style=for-the-badge&logo=bun&logoColor=black" alt="Bun">
+</p>
 
-> **Nostr relay inspector & developer toolkit** — "Postman meets Wireshark, for Nostr relays."
+<h1 align="center">🐕 Relay Dog</h1>
 
-Paste a relay URL and get a complete picture: what it supports, how it behaves, what's flowing through it in real time, and how healthy it is. Then use the built-in toolkit to compose events, convert keys, verify identities, and more — all from one place.
+<p align="center">
+  <strong>Nostr relay inspector & developer toolkit</strong><br>
+  <em>"Postman meets Wireshark, for Nostr relays."</em>
+</p>
 
-![Version](https://img.shields.io/badge/version-0.9.0-blue)
-![Phase](https://img.shields.io/badge/phase-9%20complete-brightgreen)
-![License](https://img.shields.io/badge/license-MIT-green)
-![WCAG](https://img.shields.io/badge/WCAG-2.2%20AA-brightgreen)
+<p align="center">
+  <a href="#-features">Features</a> · <a href="#-architecture">Architecture</a> · <a href="#-getting-started">Quick Start</a> · <a href="#-api-endpoints">API</a> · <a href="#-documentation">Docs</a>
+</p>
 
 ---
 
+Paste a relay URL and get a complete picture: what it supports, how it behaves, what's flowing through it in real time, and how healthy it is. Then use the built-in toolkit to compose events, convert keys, verify identities, and more — all from one place.
+
 ## ✨ Features
 
-### ⚡ Inspector
+<table>
+  <tr>
+    <td width="50%" valign="top">
 
-- **NIP-11 Info** — Fetch and render relay info documents with NIP badge grid
-- **Connection Checks** — HTTP, CORS, and WebSocket reachability testing
-- **Latency Metrics** — WebSocket round-trip, HTTP latency, EOSE timing
+### ⚡ Inspector
+- **NIP-11 Info** — Fetch and render relay info with NIP badge grid
+- **Connection Checks** — HTTP, CORS, WebSocket reachability
+- **Latency Metrics** — WebSocket RTT, HTTP latency, EOSE timing
 - **Write Test** — Verify relay accepts signed events
-- **Fee Display** — Admission, subscription, and per-event fee breakdown
-- **Limitations Panel** — Auth requirements, max sizes, restrictions
+- **Fee Display** — Admission, subscription, per-event breakdown
+- **Limitations Panel** — Auth requirements, max sizes
+
+    </td>
+    <td width="50%" valign="top">
 
 ### 🔐 Live Stream
+- **WebSocket Connection** — Auto-reconnect with backoff
+- **REQ Builder** — Filter by kinds, authors, time range
+- **Event Feed** — Live stream with auto-scroll + EOSE
+- **NIP-42 Auth** — Challenge-response authentication
+- **Event Deduplication** — Kind-based color coding
 
-- **WebSocket Connection** — Auto-reconnect with exponential backoff
-- **REQ Builder** — Filter by kinds, authors, limit, since/until
-- **Event Feed** — Live event stream with auto-scroll and EOSE detection
-- **NIP-42 Auth** — Challenge-response authentication support
-- **Event Deduplication** — Kind-based color coding and duplicate filtering
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
 
-### 🔐 Event Verifier
+### 🔍 Event Verifier
+- **Signature Verification** — Client-side Schnorr validation
+- **Event ID Check** — SHA-256 canonical serialization
+- **Tag Decoder** — Parse and display event tags
+- **Edit & Re-publish** — Jump to publisher with data
 
-- **Signature Verification** — Client-side Schnorr signature validation
-- **Event ID Check** — SHA-256 canonical serialization verification
-- **Tag Decoder** — Parse and display event tags with context
-- **Edit & Re-publish** — Jump to publisher with pre-filled event data
+    </td>
+    <td width="50%" valign="top">
 
 ### ✍️ Event Publisher
+- **Event Composer** — Kind selector, content editor, tags
+- **NIP-07 Signing** — Sign via browser extension
+- **Relay Publishing** — Publish to any relay
+- **Event Deleter** — NIP-09 mass deletion
 
-- **Event Composer** — Create events with kind selector, content editor, and tag builder
-- **Tag Editor** — Preset tags (e, p, t, d, expiration, relay) plus custom tags
-- **NIP-07 Signing** — Sign events via browser extension (Alby, nos2x, etc.)
-- **Relay Publishing** — Publish signed events to any relay
-- **Event Deleter** — Mass-delete events via NIP-09 kind 5 deletion requests
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
 
 ### 🧰 Developer Toolkit
 
 | Tool | Description |
 |------|-------------|
-| **🔑 Key Converter** | Convert between npub, nsec, and hex formats (NIP-19) |
-| **📧 NIP-05 Checker** | Verify NIP-05 identifiers against DNS resolution |
-| **📱 QR Code Generator** | Generate QR codes for npub keys, relay URLs, events |
-| **💾 Backup & Restore** | Export/import events to/from JSON files |
+| 🔑 Key Converter | npub ↔ nsec ↔ hex (NIP-19) |
+| 📧 NIP-05 Checker | DNS identity verification |
+| 📱 QR Code Generator | QR for keys, URLs, events |
+| 💾 Backup & Restore | Export/import events as JSON |
+
+    </td>
+    <td width="50%" valign="top">
+
+### 📂 Relay Directory
+- **NIP-66 Discovery** — Find relays via monitors
+- **Relay Comparison** — Side-by-side analysis
+- **Uptime Sparklines** — Visual uptime history
+- **Advanced Filtering** — NIPs, auth, country
+
+    </td>
+  </tr>
+</table>
 
 ### ♿ Accessibility (WCAG 2.2 AA)
 
-- **WAI-ARIA Tabs** — All tab interfaces use `role="tablist"/"tab"/"tabpanel"` with arrow key navigation
-- **Touch Targets** — All interactive elements ≥44×44px (WCAG 2.2 SC 2.5.8)
-- **Focus Indicators** — Visible `:focus-visible` ring for keyboard navigation
-- **Reduced Motion** — Respects `prefers-reduced-motion` user preference
-- **Screen Reader Support** — `role="alert"`, `aria-live`, `aria-label` on all dynamic content
-- **Skip Navigation** — Skip-to-content link for keyboard users
-- **Semantic HTML** — `<table>`, `<nav>`, `<section>` with proper ARIA landmarks
+> All interfaces meet **WCAG 2.2 Level AA** compliance — 123 issues fixed across 43 components.
 
-### 📂 Relay Directory
-
-- **NIP-66 Discovery** — Find relays via monitor announcements
-- **Relay Comparison** — Side-by-side NIP support and health comparison
-- **Uptime Sparklines** — Visual uptime history over 7/30 day periods
-- **Advanced Filtering** — Search by name, NIPs, auth, payment, country
+| Feature | Standard |
+|---------|----------|
+| WAI-ARIA Tabs | Arrow key navigation, `role="tablist"/"tab"/"tabpanel"` |
+| Touch Targets | All interactive elements ≥44×44px (SC 2.5.8) |
+| Focus Indicators | Visible `:focus-visible` ring (SC 2.4.7) |
+| Reduced Motion | Respects `prefers-reduced-motion` (SC 2.3.3) |
+| Screen Reader | `role="alert"`, `aria-live`, `aria-label` everywhere |
+| Skip Navigation | Skip-to-content link for keyboard users |
 
 ---
 
 ## 🏗️ Architecture
 
+```mermaid
+graph TB
+    subgraph Browser
+        WEB["🌐 Web App<br/>Svelte 5 + Vite + Tailwind"]
+    end
+
+    subgraph Server
+        API["⚡ API Server<br/>Hono + Bun"]
+        NIP66["🔄 NIP-66 Ingestor<br/>Passive Monitor"]
+    end
+
+    subgraph Data
+        DB[("🐘 PostgreSQL<br/>Drizzle ORM")]
+    end
+
+    subgraph External
+        RELAY["🔗 Nostr Relays<br/>WSS + NIP-11"]
+    end
+
+    WEB -->|"REST API<br/>:3001"| API
+    API -->|"SQL"| DB
+    NIP66 -->|"Store"| DB
+    NIP66 -.->|"Subscribe"| RELAY
+    WEB -.->|"WebSocket"| RELAY
+```
+
+### Package Structure
+
+```mermaid
+graph LR
+    ENV["@relayscope/env"]
+    SHARED["@relayscope/shared"]
+    DB["@relayscope/database"]
+    AUTH["@relayscope/auth"]
+    UI["@relayscope/ui"]
+    WEB["@relayscope/web"]
+    API["@relayscope/api"]
+
+    WEB --> SHARED
+    WEB --> UI
+    API --> SHARED
+    API --> DB
+    API --> AUTH
+    DB --> SHARED
+    AUTH --> ENV
+    API --> ENV
+    WEB --> ENV
+```
+
+<details>
+<summary><strong>📁 Full Directory Tree</strong></summary>
+
 ```
 relayscope/
 ├── apps/
-│   ├── web/              # Svelte 5 + Vite + Tailwind v4
-│   │   ├── src/
-│   │   │   ├── components/
-│   │   │   │   ├── nav/          # NavBar, MobileNav
-│   │   │   │   ├── inspector/    # InspectorSection
-│   │   │   │   ├── publisher/    # EventComposer, EventDeleter, TagEditor
-│   │   │   │   ├── tools/        # KeyConverter, Nip05Checker, QRCode, Backup
-│   │   │   │   ├── shared/       # AccessibleTabs, Toast (WCAG 2.2 AA)
-│   │   │   │   └── verifier/     # EventVerifier, VerificationPanel
-│   │   │   ├── lib/
-│   │   │   │   ├── composables/  # Svelte 5 runes composables
-│   │   │   │   └── stores/       # relaySocket.svelte.ts
-│   │   │   └── utils/            # router, keys, nip05, backup, relay, nostrVerify
-│   │   └── package.json
-│   └── api/              # Hono + Bun REST API
-│       └── package.json
+│   ├── web/                    # Svelte 5 + Vite + Tailwind v4
+│   │   └── src/
+│   │       ├── components/     # UI components by feature domain
+│   │       │   ├── nav/        # NavBar, MobileNav
+│   │       │   ├── inspector/  # InspectorSection
+│   │       │   ├── publisher/  # EventComposer, EventDeleter, TagEditor
+│   │       │   ├── tools/      # KeyConverter, Nip05Checker, QRCode, Backup
+│   │       │   ├── shared/     # AccessibleTabs, Toast (WCAG 2.2 AA)
+│   │       │   └── verifier/   # EventVerifier, VerificationPanel
+│   │       ├── lib/composables/ # Svelte 5 runes composables
+│   │       └── utils/          # router, keys, nip05, backup, nostrVerify
+│   └── api/                    # Hono + Bun REST API
+│       └── src/
+│           ├── routes/         # API route modules
+│           ├── jobs/           # Background ingestors
+│           └── lib/            # SSRF, validation, errors
 ├── packages/
-│   ├── shared/           # Shared TypeScript types
-│   └── config/           # Env validation and TypeScript configs
-├── docs/                 # Architecture & feature specs
+│   ├── database/               # Drizzle schema, queries, relations, migrations
+│   ├── shared/                 # TypeScript types & Zod schemas
+│   ├── auth/                   # API key middleware
+│   ├── ui/                     # Shared Svelte components
+│   └── config/
+│       ├── env/                # Environment validation
+│       └── tsconfig/           # Shared TypeScript configs
+├── docs/                       # Architecture & feature specs
 ├── turbo.json
 └── package.json
 ```
+
+</details>
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Runtime** | [Bun](https://bun.sh) 1.3 |
-| **Monorepo** | [Turborepo](https://turbo.build) |
-| **Web** | [Svelte 5](https://svelte.dev) + [Vite](https://vite.dev) + [Tailwind CSS v4](https://tailwindcss.com) |
-| **API** | [Hono](https://hono.dev) (HTTP framework) |
-| **Database** | [PostgreSQL](https://www.postgresql.org) + [Drizzle ORM](https://orm.drizzle.team) |
-| **Linting** | [Biome](https://biomejs.dev) |
-| **Language** | [TypeScript](https://typescriptlang.org) 6.0 (strict mode) |
+<p align="center">
+  <img src="https://img.shields.io/badge/Bun-1.3-fbf0df?style=for-the-badge&logo=bun&logoColor=black" alt="Bun">
+  <img src="https://img.shields.io/badge/Turborepo-2.10-cyan?style=for-the-badge&logo=turborepo&logoColor=white" alt="Turborepo">
+  <img src="https://img.shields.io/badge/Svelte-5-orange?style=for-the-badge&logo=svelte&logoColor=white" alt="Svelte">
+  <img src="https://img.shields.io/badge/Vite-8-purple?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-v4-blue?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind">
+  <img src="https://img.shields.io/badge/Hono-4-black?style=for-the-badge" alt="Hono">
+  <img src="https://img.shields.io/badge/PostgreSQL-18-blue?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Drizzle_ORM-v1_RC-blue?style=for-the-badge" alt="Drizzle">
+  <img src="https://img.shields.io/badge/Biome-2.5-yellow?style=for-the-badge" alt="Biome">
+  <img src="https://img.shields.io/badge/TypeScript-6.0-blue?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+</p>
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-
-- [Bun](https://bun.sh) v1.3+
-- [Docker](https://docs.docker.com/get-docker/) (for PostgreSQL)
-
-### Setup
+> [!TIP]
+> **Prerequisites**: [Bun](https://bun.sh) v1.3+ and [Docker](https://docs.docker.com/get-docker/) (for PostgreSQL)
 
 ```bash
-# Clone the repo
-git clone https://github.com/your-username/relayscope.git
+# 1. Clone and install
+git clone https://github.com/SaadTayyab/relayscope.git
 cd relayscope
-
-# Install dependencies
 bun install
 
-# Start PostgreSQL via Docker
+# 2. Start PostgreSQL
 docker compose up -d
 
-# Set up environment
+# 3. Configure environment
 cp .env.example .env
 
-# Generate & run migrations
+# 4. Generate & run migrations
 bun run db:generate
 bun run db:migrate
 
-# Start dev servers (web + API)
+# 5. Start dev servers
 bun run dev
 ```
 
-- **Web**: http://localhost:5173
-- **API**: http://localhost:3001
+| Service | URL |
+|---------|-----|
+| 🌐 Web App | http://localhost:5173 |
+| ⚡ API Server | http://localhost:3001 |
 
 ---
 
 ## 📦 Commands
 
-```bash
-# Development
-bun run dev              # Start all dev servers
-bun install              # Install all dependencies
-
-# Build & Verify
-bun run build            # Build all packages
-bun run type-check       # Type-check all packages
-bun run lint             # Lint all packages
-bun run lint:fix         # Auto-fix lint issues
-
-# Database
-bun run db:generate      # Generate Drizzle migrations
-bun run db:migrate       # Run migrations
-bun run db:push          # Push schema directly (dev)
-bun run db:studio        # Open Drizzle Studio
-```
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Start all dev servers |
+| `bun run build` | Build all packages |
+| `bun run type-check` | Type-check all packages |
+| `bun run lint` | Lint all packages |
+| `bun run lint:fix` | Auto-fix lint issues |
+| `bun run test` | Run all tests |
+| `bun run db:generate` | Generate Drizzle migrations |
+| `bun run db:migrate` | Run pending migrations |
+| `bun run db:push` | Push schema directly (dev) |
+| `bun run db:studio` | Open Drizzle Studio |
 
 ---
 
 ## 🔌 API Endpoints
 
+<details>
+<summary><strong>Click to expand full API reference</strong></summary>
+
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| `GET` | `/api/relays` | — | List relays (search, filter by NIPs, auth, country) |
-| `GET` | `/api/relays/:id` | — | Get relay with latest health check |
+| `GET` | `/api/health` | — | Server health check |
+| `GET` | `/api/relays` | — | List relays (search, filter, paginate) |
+| `GET` | `/api/relays/lookup` | — | Lookup relay by URL |
+| `GET` | `/api/relays/:id` | — | Get relay with latest info |
 | `POST` | `/api/relays` | ✅ | Add relay (auto-fetches NIP-11) |
-| `PUT` | `/api/relays/:id` | ✅ | Update relay (name/description only) |
+| `PUT` | `/api/relays/:id` | ✅ | Update relay |
 | `DELETE` | `/api/relays/:id` | ✅ | Remove relay |
-| `POST` | `/api/relays/:id/check` | ✅ | Run health check |
-| `GET` | `/api/relays/:id/history` | — | Health check history |
 | `GET` | `/api/relays/:id/nip11` | — | NIP-11 snapshot history |
 | `GET` | `/api/relays/:id/discoveries` | — | NIP-66 monitor observations |
-| `POST` | `/api/relays/:id/discoveries` | ✅ | Upsert discovery from monitor |
-| `GET` | `/api/relays/:id/popularity` | — | NIP-65 read/write relay counts |
+| `POST` | `/api/relays/:id/discoveries` | ✅ | Upsert discovery |
+| `GET` | `/api/relays/:id/popularity` | — | NIP-65 read/write counts |
 | `POST` | `/api/relays/:id/popularity` | ✅ | Upsert relay list entry |
 | `GET` | `/api/directory` | — | Browse directory with filters |
 | `GET` | `/api/directory/countries` | — | List available countries |
-| `GET` | `/api/directory/compare/:id1/:id2` | — | Compare two relays side by side |
+| `GET` | `/api/directory/compare/:id1/:id2` | — | Compare two relays |
 
 **Auth**: `Authorization: Bearer <API_KEY>` header required on mutating endpoints.
+
+</details>
 
 ---
 
 ## 📋 Development Phases
 
-| Phase | Feature | Status |
-|-------|---------|--------|
-| 1 | NIP-11 Viewer | ✅ Complete |
-| 2 | Live Event Stream | ✅ Complete |
-| 3 | Event Verifier | ✅ Complete |
-| 4 | Auth & Health Dashboard | ✅ Complete |
-| 5 | Relay Directory | ✅ Complete |
-| 6 | Security Hardening | ✅ Complete |
-| 7 | NIP Compliance | ✅ Complete |
-| 8 | Developer Toolkit Expansion | ✅ Complete |
-| 9 | WCAG 2.2 AA Accessibility | ✅ Complete |
-| 10 | Infrastructure Hardening | ✅ Complete |
+<table>
+  <tr>
+    <td align="center" width="8%">✅</td>
+    <td><strong>Phase 1</strong> — NIP-11 Viewer (MVP)</td>
+    <td align="center" width="8%">✅</td>
+    <td><strong>Phase 7</strong> — NIP Compliance</td>
+  </tr>
+  <tr>
+    <td align="center">✅</td>
+    <td><strong>Phase 2</strong> — Live Event Stream</td>
+    <td align="center">✅</td>
+    <td><strong>Phase 8</strong> — Developer Toolkit</td>
+  </tr>
+  <tr>
+    <td align="center">✅</td>
+    <td><strong>Phase 3</strong> — Event Verifier</td>
+    <td align="center">✅</td>
+    <td><strong>Phase 9</strong> — WCAG 2.2 AA Accessibility</td>
+  </tr>
+  <tr>
+    <td align="center">✅</td>
+    <td><strong>Phase 4</strong> — Auth & Health</td>
+    <td align="center">✅</td>
+    <td><strong>Phase 10</strong> — Infrastructure Hardening</td>
+  </tr>
+  <tr>
+    <td align="center">✅</td>
+    <td><strong>Phase 5</strong> — Relay Directory</td>
+    <td align="center">📋</td>
+    <td><strong>Phase 11</strong> — Production Deployment</td>
+  </tr>
+  <tr>
+    <td align="center">✅</td>
+    <td><strong>Phase 6</strong> — Security Hardening</td>
+    <td align="center">📋</td>
+    <td><strong>Phase 12</strong> — NIP-66 Passive Monitoring</td>
+  </tr>
+</table>
 
 ---
 
 ## 🔒 Security
 
-- **API key auth** on all mutating endpoints
-- **SSRF protection** — internal/private URLs blocked
-- **Rate limiting** — 20 writes/min, 200 reads/min per IP
-- **Zod validation** — strict input schemas on all endpoints
-- **Mass assignment prevention** — PUT only allows safe fields
-- **Security headers** — CSP, Referrer-Policy, X-Content-Type-Options, Permissions-Policy
-- **Pagination cap** — max limit of 100 regardless of request
-- **Docker network isolation** — PostgreSQL binds to `127.0.0.1` only
-
----
-
-## 🧪 Testing
-
-All tools are client-side and work directly in the browser:
-
-1. **Key Converter** — Paste any npub, nsec, or hex key → see all formats
-2. **NIP-05 Checker** — Enter `user@domain.com` → verify identity resolution
-3. **QR Code** — Paste content → generate/download QR code
-4. **Event Publisher** — Compose event → sign with NIP-07 → publish to relay
-5. **Event Deleter** — Enter event IDs → send NIP-09 deletion request
-6. **Backup** — Enter pubkey + relay → download event backup as JSON
-7. **Accessibility** — Tab through all elements → verify focus ring, 44px targets, screen reader announcements
+| Layer | Protection |
+|-------|-----------|
+| 🔑 Authentication | API key auth on all mutating endpoints |
+| 🛡️ SSRF | Internal/private/cloud metadata URLs blocked |
+| ⏱️ Rate Limiting | 20 writes/min, 200 reads/min per IP |
+| ✅ Validation | Zod schemas on all inputs |
+| 🔒 Headers | CSP, Referrer-Policy, HSTS, Permissions-Policy |
+| 🐳 Docker | PostgreSQL binds to `127.0.0.1` only |
 
 ---
 
 ## 📄 Documentation
 
-- [Architecture Overview](docs/architecture/overview.md)
-- [Style Guide](docs/development/style-guide.md)
-- [Phase Specs](docs/features/) — Detailed feature specifications for each phase
-- [NIP Reference](docs/features/nip-reference.md) — Nostr Implementation Possibilities reference
-- [Prompt Guidelines](docs/prompts/best-practices.md)
+| Doc | Description |
+|-----|-------------|
+| [Architecture Overview](docs/architecture/overview.md) | System design with Mermaid diagrams |
+| [Database Schema](docs/architecture/database.md) | Schema reference with ER diagrams |
+| [API Endpoints](docs/api/endpoints.md) | Full endpoint reference with examples |
+| [Style Guide](docs/development/style-guide.md) | Code style conventions |
+| [NIP Reference](docs/features/nip-reference.md) | Nostr Implementation Possibilities |
+| [Feature Specs](docs/features/) | Detailed specs for each phase |
+| [Changelog](docs/changelog.md) | Release history |
 
 ---
 
@@ -286,3 +396,7 @@ All tools are client-side and work directly in the browser:
 ## 📜 License
 
 MIT
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/SaadTayyab">Saad Tayyab</a>
+</p>

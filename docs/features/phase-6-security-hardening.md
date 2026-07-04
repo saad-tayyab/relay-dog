@@ -1,4 +1,19 @@
+---
+title: "🔒 Phase 6: Security Hardening"
+version: "0.10.0"
+status: "complete"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 🔒 Phase 6: Security Hardening
+
+> **v0.10.0** · **Complete** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Status
 
@@ -440,5 +455,3 @@ bun audit
 *Previous: [Phase 5 — Relay Directory & Comparison](phase-5-directory.md) | Next: [Phase 7 — NIP Compliance & Modernization](phase-7-nip-compliance.md)*
 
 ---
-
-*Last updated: v0.6.0 — 2026-06-30*

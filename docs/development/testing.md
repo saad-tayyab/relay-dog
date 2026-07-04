@@ -1,4 +1,19 @@
+---
+title: "🧪 Testing Strategy"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 🧪 Testing Strategy
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Current State
 
@@ -151,5 +166,3 @@ jobs:
 - [ ] Mobile responsive → layout adapts
 
 ---
-
-*Last updated: v0.1.0 — 2026-06-30*

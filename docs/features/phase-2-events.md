@@ -1,4 +1,19 @@
+---
+title: "📡 Phase 2: Live Event Stream"
+version: "0.10.0"
+status: "complete"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 📡 Phase 2: Live Event Stream
+
+> **v0.10.0** · **Complete** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Status
 
@@ -108,5 +123,3 @@ const WS_MESSAGES = {
 *Previous: [Phase 1 — NIP-11 Viewer](phase-1-nip11.md) | Next: [Phase 3 — Event Verifier](phase-3-verifier.md)*
 
 ---
-
-*Last updated: v0.2.0 — 2026-06-30*

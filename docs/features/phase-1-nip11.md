@@ -1,4 +1,19 @@
-# 🔍 Phase 1: NIP-11 Viewer (MVP)
+---
+title: "🔍 Phase 1: NIP-11 Viewer"
+version: "0.10.0"
+status: "complete"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 🔍 Phase 1: NIP-11 Viewer
+
+> **v0.10.0** · **Complete** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Status
 
@@ -117,5 +132,3 @@ The MVP can work **without** the API server — all NIP-11 fetching and connecti
 *Next: [Phase 2 — Live Event Stream](phase-2-events.md)*
 
 ---
-
-*Last updated: v0.1.0 — 2026-06-30*

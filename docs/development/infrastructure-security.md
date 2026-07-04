@@ -1,4 +1,19 @@
-# 🛡️ Infrastructure Security Best Practices
+---
+title: "🛡️ Infrastructure Security"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 🛡️ Infrastructure Security
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Overview
 
@@ -367,5 +382,3 @@ app.get('/api/health', (c) => {
 | Database backup integrity | Weekly | Restore test to verify |
 
 ---
-
-*Last updated: v0.9.0 — 2026-07-01*

@@ -1,4 +1,19 @@
-# 📏 Code Style Guide
+---
+title: "🎨 Style Guide"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 🎨 Style Guide
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## TypeScript
 
@@ -429,5 +444,3 @@ feat(web): add live event stream viewer
 ```
 
 ---
-
-*Last updated: v0.9.0 — 2026-07-01*

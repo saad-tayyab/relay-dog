@@ -1,27 +1,17 @@
 import { getServerEnv } from '@relayscope/env/server';
-import { eq, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { rateLimiter } from 'hono-rate-limiter';
 import { db } from './db';
-import { relays } from './db/schema';
 import { startNip66Ingestor } from './jobs/nip66Ingestor';
+import { log } from './lib/log';
 import directoryRoutes from './routes/directory';
 import discoverRoutes from './routes/discover';
 import popularityRoutes from './routes/popularity';
 import relayRoutes from './routes/relays';
-
-// ─── Structured Logging ───
-
-function log(entry: { level: 'info' | 'warn' | 'error'; msg: string; [key: string]: unknown }) {
-  const entryWithTimestamp = {
-    ...entry,
-    timestamp: new Date().toISOString(),
-  };
-  process.stderr.write(`${JSON.stringify(entryWithTimestamp)}\n`);
-}
 
 // ─── Validate environment at startup (single source of truth) ───
 const env = getServerEnv();
@@ -137,27 +127,6 @@ app.get('/api/health', async (c) => {
     },
     statusCode,
   );
-});
-
-// ─── Relay Lookup by URL ───
-app.get('/api/relays/lookup', async (c) => {
-  const url = c.req.query('url');
-  if (!url) {
-    return c.json({ success: false, error: 'url query parameter is required' }, 400);
-  }
-  // Normalize: strip trailing slashes and whitespace
-  const normalized = url.trim().replace(/\/+$/, '');
-  const [relay] = await db.select().from(relays).where(eq(relays.url, normalized)).limit(1);
-  if (!relay) {
-    // Fallback: try with trailing slash (some DBs store normalized URLs)
-    const withSlash = `${normalized}/`;
-    const [relayAlt] = await db.select().from(relays).where(eq(relays.url, withSlash)).limit(1);
-    if (relayAlt) {
-      return c.json({ success: true, data: { id: relayAlt.id, url: relayAlt.url } });
-    }
-    return c.json({ success: false, data: null });
-  }
-  return c.json({ success: true, data: { id: relay.id, url: relay.url } });
 });
 
 app.route('/api/relays', relayRoutes);

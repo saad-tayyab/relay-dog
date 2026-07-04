@@ -1,7 +1,6 @@
-import { eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
-import { db } from '../db';
-import { relayDiscovered, relays } from '../db/schema';
+import { getDiscoveriesByUrl, getRelayById } from '../db/queries';
+import type { RelayDiscovery } from '../db/schema';
 
 const discoverRoutes = new Hono();
 
@@ -9,25 +8,23 @@ const discoverRoutes = new Hono();
 discoverRoutes.get('/:id/discoveries', async (c) => {
   const relayId = c.req.param('id');
 
-  const [relay] = await db.select().from(relays).where(eq(relays.id, relayId)).limit(1);
+  const [relay] = await getRelayById.execute({ id: relayId });
   if (!relay) {
     return c.json({ success: false, error: 'Relay not found' }, 404);
   }
 
-  const discoveries = await db
-    .select()
-    .from(relayDiscovered)
-    .where(eq(relayDiscovered.relayUrl, relay.url))
-    .orderBy(sql`${relayDiscovered.discoveredAt} DESC`)
-    .limit(50);
+  const discoveries = await getDiscoveriesByUrl.execute({ relayUrl: relay.url });
 
-  const monitorCount = new Set(discoveries.map((d) => d.monitorPubkey)).size;
+  const monitorCount = new Set(discoveries.map((d: RelayDiscovery) => d.monitorPubkey)).size;
   const avgRttOpen =
-    discoveries.reduce((sum, d) => sum + (d.rttOpen || 0), 0) / discoveries.length || null;
+    discoveries.reduce((sum: number, d: RelayDiscovery) => sum + (d.rttOpen || 0), 0) /
+      discoveries.length || null;
   const avgRttRead =
-    discoveries.reduce((sum, d) => sum + (d.rttRead || 0), 0) / discoveries.length || null;
+    discoveries.reduce((sum: number, d: RelayDiscovery) => sum + (d.rttRead || 0), 0) /
+      discoveries.length || null;
   const avgRttWrite =
-    discoveries.reduce((sum, d) => sum + (d.rttWrite || 0), 0) / discoveries.length || null;
+    discoveries.reduce((sum: number, d: RelayDiscovery) => sum + (d.rttWrite || 0), 0) /
+      discoveries.length || null;
 
   return c.json({
     success: true,

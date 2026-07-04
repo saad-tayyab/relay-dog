@@ -2,52 +2,33 @@ import { zValidator } from '@hono/zod-validator';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { db } from '../db';
+import { getLatestInfo, getNip11History, getRelayById, getRelayByUrl } from '../db/queries';
 import { relayDiscovered, relayInfoSnapshots, relays } from '../db/schema';
 import { categorizeError } from '../lib/errors';
 import { createRelaySchema, updateRelaySchema } from '../lib/schemas';
-import { assertSafeUrl, assertSafeUrlResolved } from '../lib/ssrf';
+import { normalizeRelayUrl, parsePageLimit, toHttpUrl, toWsUrl } from '../lib/utils';
 import { requireApiKey } from '../middleware/auth';
 
 const relayRoutes = new Hono();
 
-const MAX_PAGE_LIMIT = 100;
-
-function parsePageLimit(rawPage: string | undefined, rawLimit: string | undefined) {
-  const page = Math.max(1, parseInt(rawPage || '1', 10) || 1);
-  const limit = Math.min(Math.max(1, parseInt(rawLimit || '20', 10) || 20), MAX_PAGE_LIMIT);
-  return { page, limit };
-}
-
-function normalizeRelayUrl(raw: string): string {
-  let url = raw.trim();
-  if (
-    !url.startsWith('wss://') &&
-    !url.startsWith('ws://') &&
-    !url.startsWith('https://') &&
-    !url.startsWith('http://')
-  ) {
-    url = `wss://${url}`;
+// ─── GET /api/relays/lookup — Find relay by URL ───
+relayRoutes.get('/lookup', async (c) => {
+  const url = c.req.query('url');
+  if (!url) {
+    return c.json({ success: false, error: 'url query parameter is required' }, 400);
   }
-  assertSafeUrl(url);
-  return url;
-}
-
-async function toHttpUrl(url: string): Promise<string> {
-  const httpUrl = url
-    .replace(/^wss:\/\//, 'https://')
-    .replace(/^ws:\/\//, 'http://')
-    .replace(/\/$/, '');
-  await assertSafeUrlResolved(httpUrl);
-  return httpUrl;
-}
-
-function toWsUrl(url: string): string {
-  const wsUrl = url.startsWith('http')
-    ? url.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://')
-    : url;
-  assertSafeUrl(wsUrl);
-  return wsUrl;
-}
+  const normalized = url.trim().replace(/\/+$/, '');
+  const [relay] = await getRelayByUrl.execute({ url: normalized });
+  if (!relay) {
+    const withSlash = `${normalized}/`;
+    const [relayAlt] = await getRelayByUrl.execute({ url: withSlash });
+    if (relayAlt) {
+      return c.json({ success: true, data: { id: relayAlt.id, url: relayAlt.url } });
+    }
+    return c.json({ success: false, data: null });
+  }
+  return c.json({ success: true, data: { id: relay.id, url: relay.url } });
+});
 
 // ─── GET /api/relays — List all relays with optional filters ───
 relayRoutes.get('/', async (c) => {
@@ -127,18 +108,13 @@ relayRoutes.get('/', async (c) => {
 relayRoutes.get('/:id', async (c) => {
   const id = c.req.param('id');
 
-  const [relay] = await db.select().from(relays).where(eq(relays.id, id)).limit(1);
+  const [relay] = await getRelayById.execute({ id });
 
   if (!relay) {
     return c.json({ success: false, error: 'Relay not found' }, 404);
   }
 
-  const [latestInfo] = await db
-    .select()
-    .from(relayInfoSnapshots)
-    .where(eq(relayInfoSnapshots.relayId, id))
-    .orderBy(desc(relayInfoSnapshots.fetchedAt))
-    .limit(1);
+  const [latestInfo] = await getLatestInfo.execute({ relayId: id });
 
   return c.json({
     success: true,
@@ -160,7 +136,7 @@ relayRoutes.post('/', requireApiKey, zValidator('json', createRelaySchema), asyn
     return c.json({ success: false, error: 'Invalid or disallowed relay URL' }, 400);
   }
 
-  const [existing] = await db.select().from(relays).where(eq(relays.url, url)).limit(1);
+  const [existing] = await getRelayByUrl.execute({ url });
   if (existing) {
     return c.json({ success: false, error: 'Relay already exists', data: existing }, 409);
   }
@@ -179,28 +155,32 @@ relayRoutes.post('/', requireApiKey, zValidator('json', createRelaySchema), asyn
     // NIP-11 fetch failed — relay might be down, still add it
   }
 
-  const [newRelay] = await db
-    .insert(relays)
-    .values({
-      url,
-      name: (nip11Data.name as string) || body.name || null,
-      description: (nip11Data.description as string) || null,
-      icon: (nip11Data.icon as string) || null,
-      software: (nip11Data.software as string) || null,
-      version: (nip11Data.version as string) || null,
-      supportedNips: (nip11Data.supported_nips as number[]) || [],
-      limitations: (nip11Data.limitation as Record<string, unknown>) || null,
-      isPublic: body.isPublic ?? true,
-    })
-    .returning();
+  const newRelay = await db.transaction(async (tx) => {
+    const [relay] = await tx
+      .insert(relays)
+      .values({
+        url,
+        name: (nip11Data.name as string) || body.name || null,
+        description: (nip11Data.description as string) || null,
+        icon: (nip11Data.icon as string) || null,
+        software: (nip11Data.software as string) || null,
+        version: (nip11Data.version as string) || null,
+        supportedNips: (nip11Data.supported_nips as number[]) || [],
+        limitations: (nip11Data.limitation as Record<string, unknown>) || null,
+        isPublic: body.isPublic ?? true,
+      })
+      .returning();
 
-  if (Object.keys(nip11Data).length > 0) {
-    await db.insert(relayInfoSnapshots).values({
-      relayId: newRelay.id,
-      nip11: nip11Data,
-      rawJson: nip11Data,
-    });
-  }
+    if (Object.keys(nip11Data).length > 0) {
+      await tx.insert(relayInfoSnapshots).values({
+        relayId: relay.id,
+        nip11: nip11Data,
+        rawJson: nip11Data,
+      });
+    }
+
+    return relay;
+  });
 
   return c.json({ success: true, data: newRelay }, 201);
 });
@@ -210,14 +190,13 @@ relayRoutes.put('/:id', requireApiKey, zValidator('json', updateRelaySchema), as
   const id = c.req.param('id');
   const body = c.req.valid('json');
 
-  const fields = Object.fromEntries(
-    Object.entries(body).filter(([, value]) => value !== undefined),
-  );
-
   const [updated] = await db
     .update(relays)
     .set({
-      ...fields,
+      ...(body.name !== undefined && { name: body.name }),
+      ...(body.description !== undefined && { description: body.description }),
+      ...(body.isPublic !== undefined && { isPublic: body.isPublic }),
+      ...(body.country !== undefined && { country: body.country }),
       updatedAt: new Date(),
     })
     .where(eq(relays.id, id))
@@ -247,7 +226,7 @@ relayRoutes.delete('/:id', requireApiKey, async (c) => {
 relayRoutes.post('/:id/check', requireApiKey, async (c) => {
   const id = c.req.param('id');
 
-  const [relay] = await db.select().from(relays).where(eq(relays.id, id)).limit(1);
+  const [relay] = await getRelayById.execute({ id });
   if (!relay) {
     return c.json({ success: false, error: 'Relay not found' }, 404);
   }
@@ -339,12 +318,7 @@ relayRoutes.get('/:id/nip11', async (c) => {
   const id = c.req.param('id');
   const { limit } = parsePageLimit('1', c.req.query('limit') || '20');
 
-  const snapshots = await db
-    .select()
-    .from(relayInfoSnapshots)
-    .where(eq(relayInfoSnapshots.relayId, id))
-    .orderBy(desc(relayInfoSnapshots.fetchedAt))
-    .limit(limit);
+  const snapshots = await getNip11History.execute({ relayId: id, limit });
 
   return c.json({ success: true, data: snapshots });
 });

@@ -1,7 +1,5 @@
 import type { RelayDiscovery } from '@relayscope/shared';
-import { apiUrl } from '../../utils/api';
-
-const API_BASE = apiUrl('/api/relays');
+import { apiFetch } from '../../utils/api';
 
 export function useRelayDiscovery() {
   let discoveries = $state<RelayDiscovery[]>([]);
@@ -19,7 +17,7 @@ export function useRelayDiscovery() {
     error = null;
 
     try {
-      const res = await fetch(`${API_BASE}/${relayId}/discoveries`, {
+      const res = await apiFetch(`/api/relays/${relayId}/discoveries`, {
         signal: AbortSignal.timeout(10_000),
       });
 

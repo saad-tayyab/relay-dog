@@ -2,7 +2,7 @@
 import type { ComparisonDiff, DirectoryRelay } from "@relayscope/shared";
 import { LoadingSpinner, SectionCard } from "@relayscope/ui";
 import { useDirectory } from "../../lib/composables/useDirectory.svelte";
-import { apiUrl } from "../../utils/api";
+import { apiFetch } from "../../utils/api";
 import FilterBar from "../filter/FilterBar.svelte";
 import AddRelay from "./AddRelay.svelte";
 import ComparisonView from "./ComparisonView.svelte";
@@ -52,8 +52,8 @@ async function handleCompare() {
 	comparisonDiff = null;
 
 	try {
-		const res = await fetch(
-			apiUrl(`/api/directory/compare/${ids[0]}/${ids[1]}`),
+		const res = await apiFetch(
+			`/api/directory/compare/${ids[0]}/${ids[1]}`,
 			{
 				signal: AbortSignal.timeout(15_000),
 			},

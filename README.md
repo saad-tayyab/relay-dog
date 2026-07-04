@@ -137,6 +137,8 @@ graph TB
     WEB -.->|"WebSocket"| RELAY
 ```
 
+> **Frontend-only mode**: The web app connects directly to Nostr relays from the browser — no backend required. Set `VITE_API_URL` to enable directory features (browse, register, compare, NIP-66 data). See [Deployment](#-deployment).
+
 ### Package Structure
 
 ```mermaid
@@ -245,6 +247,39 @@ bun run dev
 |---------|-----|
 | 🌐 Web App | http://localhost:5173 |
 | ⚡ API Server | http://localhost:3001 |
+
+---
+
+## ☁️ Deployment
+
+The web app works in two modes — **frontend-only** (no backend) or **full stack** (with API + database).
+
+### Frontend-only (Vercel)
+
+Deploy just the SPA to Vercel. All relay inspection, WebSocket streaming, event publishing, key conversion, and verification features work out of the box — they connect directly to Nostr relays from the browser.
+
+| Environment Variable | Required | Description |
+|---------------------|----------|-------------|
+| `VITE_API_URL` | No | Set to your API URL to enable directory features. Leave empty for frontend-only. |
+
+Features **available without a backend**: relay inspection (NIP-11), connection checks, latency measurement, write tests, WebSocket streaming, event publishing, event verification, NIP-05 checks, key conversion, QR codes, backup/restore.
+
+Features **requiring `VITE_API_URL`**: relay directory browse/search, relay registration, relay comparison, NIP-66 discovery data, popularity metrics.
+
+> All backend API calls go through `apiFetch()` — a middleware wrapper that returns a graceful 503 when no backend is configured. No code changes needed to toggle modes.
+
+### Full stack (self-hosted)
+
+Run the API server + PostgreSQL alongside the web app:
+
+```bash
+# Set these in .env
+DATABASE_URL=postgresql://user:pass@localhost:5432/relayscope
+API_KEY=your-secret-key
+CORS_ORIGINS=https://your-vercel-app.vercel.app
+```
+
+The API server (Hono + Bun) runs separately from the frontend. Add the API's `CORS_ORIGINS` to include your Vercel deployment URL.
 
 ---
 

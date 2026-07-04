@@ -1,4 +1,5 @@
 <script lang="ts">
+import { hasBackend } from "../../utils/api";
 import type { Section } from "../../utils/router";
 
 let {
@@ -14,7 +15,7 @@ const sections: { id: Section; label: string; icon: string }[] = [
 	{ id: "verifier", label: "Verifier", icon: "🔐" },
 	{ id: "publisher", label: "Publisher", icon: "✍️" },
 	{ id: "tools", label: "Tools", icon: "🧰" },
-	{ id: "directory", label: "Directory", icon: "📂" },
+	...(hasBackend ? [{ id: "directory" as Section, label: "Directory", icon: "📂" }] : []),
 ];
 </script>
 

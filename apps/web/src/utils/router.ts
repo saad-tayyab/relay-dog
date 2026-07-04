@@ -1,10 +1,12 @@
+import { hasBackend } from './api';
+
 export type Section = 'inspector' | 'verifier' | 'publisher' | 'tools' | 'directory';
 
 export function getHashSection(): Section {
   const hash = window.location.hash.replace('#', '').split('?')[0] as Section;
-  return ['inspector', 'verifier', 'publisher', 'tools', 'directory'].includes(hash)
-    ? hash
-    : 'inspector';
+  if (['inspector', 'verifier', 'publisher', 'tools'].includes(hash)) return hash;
+  if (hash === 'directory' && hasBackend) return 'directory';
+  return 'inspector';
 }
 
 export function setHashSection(section: Section): void {

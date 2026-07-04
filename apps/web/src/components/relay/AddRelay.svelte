@@ -1,6 +1,6 @@
 <script lang="ts">
 import { SectionCard } from "@relayscope/ui";
-import { apiUrl } from "../../utils/api";
+import { apiFetch } from "../../utils/api";
 
 let { onAdded }: { onAdded?: () => void } = $props();
 
@@ -35,7 +35,7 @@ async function handleSubmit() {
 			localStorage.setItem("relayscope_api_key", apiKey.trim());
 		}
 
-		const res = await fetch(apiUrl("/api/relays"), {
+		const res = await apiFetch("/api/relays", {
 			method: "POST",
 			headers,
 			body: JSON.stringify({

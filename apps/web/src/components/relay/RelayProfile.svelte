@@ -2,7 +2,7 @@
 import type { RelayPopularity } from "@relayscope/shared";
 import { SectionCard } from "@relayscope/ui";
 import { useRelayDiscovery } from "../../lib/composables/useRelayDiscovery.svelte";
-import { apiUrl } from "../../utils/api";
+import { apiFetch } from "../../utils/api";
 import type { RelayInfo } from "../../utils/relay";
 import { safeHttpsIconUrl } from "../../utils/relay";
 import MonitorDataPanel from "../monitoring/MonitorDataPanel.svelte";
@@ -44,7 +44,7 @@ $effect(() => {
 	const controller = new AbortController();
 	discovery.fetchDiscoveries(relayId);
 
-	fetch(apiUrl(`/api/relays/${relayId}/popularity`), {
+	apiFetch(`/api/relays/${relayId}/popularity`, {
 		signal: controller.signal,
 	})
 		.then((res) => res.json())

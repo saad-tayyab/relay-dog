@@ -59,11 +59,9 @@ function isSoftwareUrl(raw: string): boolean {
 }
 </script>
 
-<div
+<button
+  type="button"
   onclick={() => onSelect(relay.id)}
-  onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(relay.id); } }}
-  role="button"
-  tabindex="0"
   class="group w-full text-left transition-all relative cursor-pointer outline-none {selected
     ? 'ring-2 ring-accent border-accent-border'
     : 'hover:border-accent-border/50'}"
@@ -190,4 +188,4 @@ function isSoftwareUrl(raw: string): boolean {
       </div>
     </div>
   </SectionCard>
-</div>
+</button>

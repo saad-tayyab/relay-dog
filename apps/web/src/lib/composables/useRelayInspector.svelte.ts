@@ -1,4 +1,4 @@
-import { apiUrl } from '../../utils/api';
+import { apiFetch } from '../../utils/api';
 import type { ConnectionStatus, RelayInfo } from '../../utils/relay';
 import { checkConnections, fetchNip11, normalizeUrl } from '../../utils/relay';
 import { relaySocket } from '../stores/relaySocket.svelte';
@@ -63,8 +63,8 @@ export function useRelayInspector() {
       dbRelayId = null;
       inDirectory = false;
       try {
-        const lookupRes = await fetch(
-          apiUrl(`/api/relays/lookup?url=${encodeURIComponent(normalized)}`),
+        const lookupRes = await apiFetch(
+          `/api/relays/lookup?url=${encodeURIComponent(normalized)}`,
         );
         const lookupJson = await lookupRes.json();
         if (lookupJson.success && lookupJson.data) {
@@ -72,7 +72,7 @@ export function useRelayInspector() {
           inDirectory = true;
         }
       } catch {
-        // Not in DB
+        // Not in DB or no backend
       }
     } catch (e: unknown) {
       error = e instanceof Error ? e.message : 'Unknown error occurred';
@@ -104,7 +104,7 @@ export function useRelayInspector() {
           if (savedKey) {
             headers.Authorization = `Bearer ${savedKey}`;
           }
-          fetch(apiUrl(`/api/relays/${relayId}`), {
+          apiFetch(`/api/relays/${relayId}`, {
             method: 'DELETE',
             headers,
             signal: AbortSignal.timeout(10_000),

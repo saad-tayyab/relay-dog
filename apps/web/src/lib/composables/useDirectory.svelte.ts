@@ -1,7 +1,5 @@
 import type { DirectoryFilters, DirectoryRelay, DirectoryResponse } from '@relayscope/shared';
-import { apiUrl } from '../../utils/api';
-
-const API_BASE = apiUrl('/api/directory');
+import { apiFetch } from '../../utils/api';
 
 export function useDirectory() {
   // API responses are only reassigned, never mutated → $state.raw avoids proxy overhead
@@ -48,7 +46,7 @@ export function useDirectory() {
       params.set('page', String(filters.page));
       params.set('limit', String(filters.limit));
 
-      const res = await fetch(`${API_BASE}?${params.toString()}`, {
+      const res = await apiFetch(`/api/directory?${params.toString()}`, {
         signal: AbortSignal.timeout(15_000),
       });
 

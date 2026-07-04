@@ -8,7 +8,7 @@
  *   addRelay.reset();
  */
 
-import { apiUrl } from '../../utils/api';
+import { apiFetch } from '../../utils/api';
 
 export function useAddRelay() {
   let submitting = $state(false);
@@ -35,7 +35,7 @@ export function useAddRelay() {
         headers.Authorization = `Bearer ${savedKey}`;
       }
 
-      const res = await fetch(apiUrl('/api/relays'), {
+      const res = await apiFetch('/api/relays', {
         method: 'POST',
         headers,
         body: JSON.stringify({

@@ -1,6 +1,7 @@
 import type { RelayDiscovery } from '@relayscope/shared';
+import { apiUrl } from '../../utils/api';
 
-const API_BASE = '/api/relays';
+const API_BASE = apiUrl('/api/relays');
 
 export function useRelayDiscovery() {
   let discoveries = $state<RelayDiscovery[]>([]);

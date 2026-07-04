@@ -1,6 +1,7 @@
 import type { DirectoryFilters, DirectoryRelay, DirectoryResponse } from '@relayscope/shared';
+import { apiUrl } from '../../utils/api';
 
-const API_BASE = '/api/directory';
+const API_BASE = apiUrl('/api/directory');
 
 export function useDirectory() {
   // API responses are only reassigned, never mutated → $state.raw avoids proxy overhead

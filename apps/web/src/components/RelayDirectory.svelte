@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { ComparisonDiff, DirectoryRelay } from '@relayscope/shared';
 import { useDirectory } from '../lib/composables/useDirectory.svelte';
+import { apiUrl } from '../utils/api';
 import AddRelay from './AddRelay.svelte';
 import ComparisonView from './ComparisonView.svelte';
 import FilterBar from './FilterBar.svelte';
@@ -52,7 +53,7 @@ async function handleCompare() {
   comparisonDiff = null;
 
   try {
-    const res = await fetch(`/api/directory/compare/${ids[0]}/${ids[1]}`, {
+    const res = await fetch(apiUrl(`/api/directory/compare/${ids[0]}/${ids[1]}`), {
       signal: AbortSignal.timeout(15_000),
     });
     const json = await res.json();

@@ -1,5 +1,6 @@
 <script lang="ts">
 import { relaySocket } from './lib/stores/relaySocket.svelte';
+import { apiUrl } from './utils/api';
 import type { ConnectionStatus, RelayInfo } from './utils/relay';
 import { checkConnections, fetchNip11, normalizeUrl } from './utils/relay';
 import { getHashSection, type Section, setHashSection } from './utils/router';
@@ -91,7 +92,7 @@ function handleInDirectoryChange(inDir: boolean, relayId?: string, relayUrl?: st
         if (savedKey) {
           headers.Authorization = `Bearer ${savedKey}`;
         }
-        fetch(`/api/relays/${relayId}`, {
+        fetch(apiUrl(`/api/relays/${relayId}`), {
           method: 'DELETE',
           headers,
           signal: AbortSignal.timeout(10_000),
@@ -149,7 +150,7 @@ async function handleFetch(targetUrl?: string) {
     dbRelayId = null;
     inDirectory = false;
     try {
-      const lookupRes = await fetch(`/api/relays/lookup?url=${encodeURIComponent(normalized)}`);
+      const lookupRes = await fetch(apiUrl(`/api/relays/lookup?url=${encodeURIComponent(normalized)}`));
       const lookupJson = await lookupRes.json();
       if (lookupJson.success && lookupJson.data) {
         dbRelayId = lookupJson.data.id;

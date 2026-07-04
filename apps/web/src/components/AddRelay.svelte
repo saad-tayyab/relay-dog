@@ -1,4 +1,5 @@
 <script lang="ts">
+import { apiUrl } from '../utils/api';
 import SectionCard from './SectionCard.svelte';
 
 let { onAdded }: { onAdded?: () => void } = $props();
@@ -34,7 +35,7 @@ async function handleSubmit() {
       localStorage.setItem('relayscope_api_key', apiKey.trim());
     }
 
-    const res = await fetch('/api/relays', {
+    const res = await fetch(apiUrl('/api/relays'), {
       method: 'POST',
       headers,
       body: JSON.stringify({

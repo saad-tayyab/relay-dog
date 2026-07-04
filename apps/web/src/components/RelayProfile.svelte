@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { RelayPopularity } from '@relayscope/shared';
 import { useRelayDiscovery } from '../lib/composables/useRelayDiscovery.svelte';
+import { apiUrl } from '../utils/api';
 import type { RelayInfo } from '../utils/relay';
 import { safeHttpsIconUrl } from '../utils/relay';
 import FeeDisplay from './FeeDisplay.svelte';
@@ -43,7 +44,7 @@ $effect(() => {
   const controller = new AbortController();
   discovery.fetchDiscoveries(relayId);
 
-  fetch(`/api/relays/${relayId}/popularity`, {
+  fetch(apiUrl(`/api/relays/${relayId}/popularity`), {
     signal: controller.signal,
   })
     .then((res) => res.json())

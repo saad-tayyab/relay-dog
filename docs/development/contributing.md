@@ -1,4 +1,19 @@
-# 🤝 Contributing Guide
+---
+title: "🤝 Contributing"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 🤝 Contributing
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Workflow
 
@@ -176,5 +191,3 @@ bun run db:generate
 - **Sanitize** error messages — don't leak internal details to the client
 
 ---
-
-*Last updated: v0.1.0 — 2026-06-30*

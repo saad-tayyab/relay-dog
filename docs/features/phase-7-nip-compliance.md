@@ -1,4 +1,19 @@
-# 🔄 Phase 7: NIP Compliance & Protocol Modernization
+---
+title: "🔄 Phase 7: NIP Compliance"
+version: "0.10.0"
+status: "complete"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 🔄 Phase 7: NIP Compliance
+
+> **v0.10.0** · **Complete** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Status
 
@@ -279,5 +294,3 @@ No changes to existing mutating relay routes — auth and rate limits from Phase
 *Previous: [Phase 6 — Security Hardening](phase-6-security-hardening.md) | Next: [Phase 8 — Developer Toolkit](phase-8-developer-toolkit.md)*
 
 ---
-
-*Last updated: v0.9.0 — 2026-07-01*

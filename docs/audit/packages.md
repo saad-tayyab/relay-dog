@@ -1,4 +1,19 @@
+---
+title: "🔒 Package Audit"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 🔒 Package Audit
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 Version tracking for declared dependencies. Updated each time package manifests are modified.
 

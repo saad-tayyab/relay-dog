@@ -1,4 +1,19 @@
+---
+title: "🗺️ Roadmap"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 🗺️ Roadmap
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](changelog.md) · [📖 Docs Hub](README.md)
+
+---
+
 
 Relay Dog is built in phases, each delivering standalone value while building toward a complete Nostr developer toolkit.
 
@@ -291,5 +306,3 @@ Comprehensive accessibility audit and fix to achieve WCAG 2.2 Level AA complianc
 **Feature doc**: [phase-9-accessibility.md](features/phase-9-accessibility.md)
 
 ---
-
-*Last updated: v0.9.0 — 2026-07-01*

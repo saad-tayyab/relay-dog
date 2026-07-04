@@ -1,4 +1,19 @@
-# ⚡ API Reference
+---
+title: "⚡ API Endpoints"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# ⚡ API Endpoints
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 The Relay Scope API is a REST server built with **Hono** running on **Bun**.
 
@@ -623,5 +638,3 @@ Side-by-side comparison of two relays with difference analysis.
 All request bodies are capped at **100 KB**.
 
 ---
-
-*Last updated: v0.9.0 — 2026-07-01*

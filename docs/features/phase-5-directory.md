@@ -1,4 +1,19 @@
-# 📂 Phase 5: Relay Directory & Comparison
+---
+title: "📂 Phase 5: Relay Directory"
+version: "0.10.0"
+status: "complete"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 📂 Phase 5: Relay Directory
+
+> **v0.10.0** · **Complete** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Status
 
@@ -103,5 +118,3 @@ Already shipped in Phase 1/7:
 *Previous: [Phase 4 — Auth & Health Dashboard](phase-4-auth.md) | Next: [Phase 6 — Security Hardening](phase-6-security-hardening.md)*
 
 ---
-
-*Last updated: v0.9.0 — 2026-07-01*

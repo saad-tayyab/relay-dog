@@ -1,4 +1,19 @@
+---
+title: "📝 Phase Template"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 📝 Phase Template
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 > Copy this template for new phase docs. Delete unused optional sections.
 > File naming: `phase-{N}-{kebab-case-name}.md`
@@ -111,5 +126,3 @@ TEMPLATE CHECKLIST — remove this section before publishing:
 -->
 
 ---
-
-*Last updated: v0.1.0 — 2026-06-30*

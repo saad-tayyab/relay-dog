@@ -1,4 +1,19 @@
+---
+title: "🏗️ System Architecture"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 🏗️ System Architecture
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 ## Overview
 
@@ -188,5 +203,3 @@ sequenceDiagram
 *See [Database Schema](database.md) for table details and [ADR-001](decisions/001-monorepo.md) for the monorepo decision.*
 
 ---
-
-*Last updated: v0.10.0 — 2026-07-04*

@@ -1,4 +1,19 @@
-# ADR-002: Drizzle ORM over Prisma
+---
+title: "📐 ADR-002: Drizzle ORM over Prisma"
+version: "0.10.0"
+status: "accepted"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 📐 ADR-002: Drizzle ORM over Prisma
+
+> **v0.10.0** · **Accepted** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../../changelog.md) · [📖 Docs Hub](../../README.md)
+
+---
+
 
 ## Status
 
@@ -49,5 +64,3 @@ We use **Drizzle ORM** with **postgres.js** as the PostgreSQL driver.
 - [postgres.js](https://github.com/porsager/postgres)
 
 ---
-
-*Last updated: v0.1.0 — 2026-06-30*

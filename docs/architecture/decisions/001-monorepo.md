@@ -1,4 +1,19 @@
-# ADR-001: Monorepo with Turborepo + Bun
+---
+title: "📐 ADR-001: Monorepo with Turborepo + Bun"
+version: "0.10.0"
+status: "accepted"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 📐 ADR-001: Monorepo with Turborepo + Bun
+
+> **v0.10.0** · **Accepted** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../../changelog.md) · [📖 Docs Hub](../../README.md)
+
+---
+
 
 ## Status
 
@@ -63,5 +78,3 @@ relayscope/
 - [When to use monorepos](https://turbo.build/repo/docs/getting-started/create-monorepo)
 
 ---
-
-*Last updated: v0.1.0 — 2026-06-30*

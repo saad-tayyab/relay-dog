@@ -1,4 +1,19 @@
-# 📡 NIP Reference
+---
+title: "📖 NIP Reference"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
+# 📖 NIP Reference
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 Nostr Implementation Possessions (NIPs) are protocol specifications that extend the core Nostr protocol. This doc tracks which NIPs we implement and why.
 
@@ -223,5 +238,3 @@ Relays SHOULD include `67` in `supported_nips` if implemented.
 | NIP-67 | https://nips.nostr.com/67 |
 
 ---
-
-*Last updated: v0.7.0 — 2026-06-30*

@@ -1,4 +1,19 @@
+---
+title: "🔐 Environment Variables"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 🔐 Environment Variables
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 All configuration via environment variables. No secrets in code.
 
@@ -66,5 +81,3 @@ MONITOR_INTERVAL_MS=300000
 - **Set `POSTGRES_PASSWORD`** — Docker compose requires it; never use default `postgres`
 
 ---
-
-*Last updated: v0.9.0 — 2026-07-01*

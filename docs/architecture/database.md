@@ -1,4 +1,19 @@
+---
+title: "🗄️ Database Schema"
+version: "0.10.0"
+status: "current"
+last_updated: "2026-07-04"
+author: "Saad Tayyab"
+---
+
 # 🗄️ Database Schema
+
+> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+>
+> [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
+
+---
+
 
 Relay Scope uses **PostgreSQL** with **Drizzle ORM** and the **bun-sql** driver (Bun's native SQL client). The schema defines 5 managed tables for tracking relays, their info, events, NIP-66 discoveries, and NIP-65 relay lists.
 
@@ -252,5 +267,3 @@ The API uses `drizzle-orm/bun-sql` — Bun's native SQL client. This provides:
 The previous `postgres-js` driver (`drizzle-orm/postgres-js`) was replaced with `bun-sql` in v0.9.0.
 
 ---
-
-*Last updated: v0.9.0 — 2026-07-04*

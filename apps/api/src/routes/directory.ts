@@ -71,10 +71,11 @@ directoryRoutes.get('/', async (c) => {
       orderByClause = filters.sortOrder === 'desc' ? desc(relays.name) : relays.name;
   }
 
-  const [{ count }] = await db
+  const [countRow] = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(relays)
     .where(whereClause);
+  const count = countRow?.count ?? 0;
 
   const fetchedRelays = isLatencySort
     ? await db.select().from(relays).where(whereClause)

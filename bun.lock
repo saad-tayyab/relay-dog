@@ -27,7 +27,6 @@
       "devDependencies": {
         "@relayscope/tsconfig": "workspace:*",
         "@types/bun": "^1.3.14",
-        "drizzle-kit": "1.0.0-rc.4",
         "typescript": "^6.0.3",
       },
     },
@@ -93,7 +92,6 @@
         "@relayscope/env": "workspace:*",
         "@relayscope/shared": "workspace:*",
         "drizzle-orm": "1.0.0-rc.4",
-        "postgres": "^3.4.9",
       },
       "devDependencies": {
         "@relayscope/tsconfig": "workspace:*",

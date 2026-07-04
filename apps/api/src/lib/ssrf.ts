@@ -15,7 +15,7 @@ function isPrivateIpv4(host: string): boolean {
     return false;
   }
 
-  const [a, b] = parts;
+  const [a, b] = parts as [number, number];
   if (a === 10) return true;
   if (a === 127) return true;
   if (a === 0) return true;

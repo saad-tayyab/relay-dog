@@ -53,7 +53,7 @@ Read only what is relevant to the task:
 - `apps/api/`: Bun/Hono REST API.
 - `apps/api/src/routes/`: API route modules (aggregated by domain in `relay/`).
 - `apps/api/src/lib/`: API utilities, validation helpers, SSRF protection, errors.
-- `packages/database/`: Drizzle schema, prepared queries, DB connection (`@relayscope/database`).
+- `packages/database/`: Drizzle schema, relations, prepared queries, DB connection, and migrations (`@relayscope/database`).
 - `packages/auth/`: API key auth middleware (`@relayscope/auth`).
 - `packages/ui/`: Shared Svelte components — SectionCard, Toast, etc. (`@relayscope/ui`).
 - `packages/shared/`: Shared TypeScript types and Zod schemas (split by domain: `nip11`, `relay`, `event`, `directory`, `auth`, `api`).
@@ -81,6 +81,12 @@ bun run db:generate
 bun run db:migrate
 bun run db:push
 bun run db:studio
+```
+
+Testing:
+
+```bash
+bun run test
 ```
 
 Targeted package checks:
@@ -129,6 +135,8 @@ bun run build
 - Keep route handlers in `apps/api/src/routes/` (grouped by domain).
 - Keep database schema in `packages/database/src/schema.ts`.
 - Keep database queries in `packages/database/src/queries.ts`.
+- Keep database relations in `packages/database/src/relations.ts`.
+- Keep drizzle config in `packages/database/drizzle.config.ts`.
 - Keep auth middleware in `packages/auth/src/index.ts`.
 - Generate migrations with Drizzle after schema changes.
 - Keep API response and request contracts aligned with `docs/api/endpoints.md`.

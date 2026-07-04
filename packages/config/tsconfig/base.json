@@ -6,14 +6,17 @@
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
     "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "noUncheckedIndexedAccess": true,
+    "moduleDetection": "force",
+    "noUncheckedSideEffectImports": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "esModuleInterop": true,
-    "allowImportingTsExtensions": false
+    "sourceMap": true
   }
 }

@@ -6,14 +6,16 @@
   },
   "global": {
     "inputs": ["tsconfig.json", ".env"],
-    "env": ["NODE_ENV"]
+    "env": ["NODE_ENV"],
+    "passThroughEnv": ["DATABASE_URL", "API_KEY", "CI", "GITHUB_TOKEN"],
+    "envMode": "strict"
   },
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
       "inputs": ["src/**", "package.json", "tsconfig.json"],
-      "env": ["NODE_ENV", "VITE_API_URL"]
+      "env": ["VITE_API_URL"]
     },
     "dev": {
       "cache": false,
@@ -26,6 +28,10 @@
     "type-check": {
       "dependsOn": ["^type-check"],
       "inputs": ["src/**", "tsconfig.json"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "env": ["NODE_ENV", "DATABASE_URL", "API_KEY"]
     },
     "preview": {
       "cache": false,

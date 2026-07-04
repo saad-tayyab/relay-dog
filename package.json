@@ -16,10 +16,11 @@
     "lint:fix": "biome check --write .",
     "format": "biome check --write .",
     "type-check": "turbo run type-check",
-    "db:generate": "bun run --filter @relayscope/api db:generate",
-    "db:migrate": "bun run --filter @relayscope/api db:migrate",
-    "db:push": "bun run --filter @relayscope/api db:push",
-    "db:studio": "bun run --filter @relayscope/api db:studio",
+    "db:generate": "bun run --filter @relayscope/database db:generate",
+    "db:migrate": "bun run --filter @relayscope/database db:migrate",
+    "db:push": "bun run --filter @relayscope/database db:push",
+    "db:studio": "bun run --filter @relayscope/database db:studio",
+    "test": "turbo run test",
     "lint:root": "biome check biome.json turbo.json docs .github CONTRIBUTING.md README.md package.json"
   },
   "devDependencies": {

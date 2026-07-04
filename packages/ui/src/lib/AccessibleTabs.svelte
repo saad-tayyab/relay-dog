@@ -34,7 +34,9 @@ function handleKeydown(e: KeyboardEvent) {
   }
 
   e.preventDefault();
-  onTabChange(tabs[nextIndex].id);
+  const nextTab = tabs[nextIndex];
+  if (!nextTab) return;
+  onTabChange(nextTab.id);
   // Move focus to the new tab button after DOM update
   requestAnimationFrame(() => {
     const buttons = tablistEl?.querySelectorAll('[role="tab"]');

@@ -137,7 +137,7 @@ export function useNip42Auth() {
     if (!challengeTag || challengeTag[1] !== challenge) return false;
 
     const relayTag = event.tags.find(([k]) => k === 'relay');
-    if (!relayTag) return false;
+    if (!relayTag?.[1]) return false;
 
     try {
       const eventDomain = new URL(relayTag[1]).hostname;

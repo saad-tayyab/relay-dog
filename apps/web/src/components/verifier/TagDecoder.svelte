@@ -14,9 +14,10 @@ const TAG_BADGE_COLORS: Record<string, string> = {
   alt: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
   unknown: 'bg-gray-500/15 text-gray-400 border-gray-500/30',
 };
+const TAG_BADGE_DEFAULT = 'bg-gray-500/15 text-gray-400 border-gray-500/30';
 
 function getBadgeColor(type: string): string {
-  return TAG_BADGE_COLORS[type] ?? TAG_BADGE_COLORS.unknown;
+  return TAG_BADGE_COLORS[type] ?? TAG_BADGE_DEFAULT;
 }
 </script>
 

@@ -9,4 +9,4 @@ if (!env.DATABASE_URL && env.NODE_ENV === 'production') {
 
 const DATABASE_URL = env.DATABASE_URL || 'postgresql://localhost:5432/relayscope';
 
-export const db = drizzle(DATABASE_URL, { jit: true });
+export const db = drizzle({ connection: { url: DATABASE_URL } });

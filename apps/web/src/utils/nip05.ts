@@ -21,7 +21,7 @@ export async function verifyNip05(
   if (!identifier.includes('@') || !identifier.trim()) {
     throw new Error('NIP-05 identifier must be in the format user@domain.com');
   }
-  const [local, domain] = identifier.split('@');
+  const [local, domain] = identifier.split('@') as [string, string];
   const start = performance.now();
 
   try {

@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'bun:test';
-import { NostrEventSchema, PaginationSchema, RelayNip11Schema } from '../schemas';
+import {
+  AuthEventSchema,
+  NostrEventSchema,
+  PaginationSchema,
+  RelayDiscoverySchema,
+  RelayFeesSchema,
+  RelayListEventSchema,
+  RelayNip11Schema,
+} from '../schemas';
 
 describe('RelayNip11Schema', () => {
   it('accepts valid minimal NIP-11 object', () => {
@@ -99,6 +107,100 @@ describe('PaginationSchema', () => {
 
   it('rejects page < 1', () => {
     const result = PaginationSchema.safeParse({ page: 0 });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('RelayFeesSchema', () => {
+  it('accepts valid fee structure', () => {
+    const result = RelayFeesSchema.safeParse({
+      admission: [{ amount: 1000, unit: 'sats' }],
+      subscription: [{ kinds: [1], amount: 500, unit: 'msats' }],
+      publication: [],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts empty fees object', () => {
+    const result = RelayFeesSchema.safeParse({});
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects negative amount', () => {
+    const result = RelayFeesSchema.safeParse({
+      admission: [{ amount: -1, unit: 'sats' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects invalid unit', () => {
+    const result = RelayFeesSchema.safeParse({
+      admission: [{ amount: 100, unit: 'btc' }],
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('RelayDiscoverySchema', () => {
+  const validDiscovery = {
+    kind: 30166,
+    tags: [['relay', 'wss://relay.example.com']],
+    content: '',
+    pubkey: 'a'.repeat(64),
+    created_at: 1700000000,
+  };
+
+  it('accepts valid discovery event', () => {
+    const result = RelayDiscoverySchema.safeParse(validDiscovery);
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects wrong kind', () => {
+    const result = RelayDiscoverySchema.safeParse({ ...validDiscovery, kind: 1 });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('RelayListEventSchema', () => {
+  const validList = {
+    kind: 10002,
+    tags: [['r', 'wss://relay.example.com', 'read']],
+    content: '',
+    pubkey: 'a'.repeat(64),
+    created_at: 1700000000,
+  };
+
+  it('accepts valid relay list event', () => {
+    const result = RelayListEventSchema.safeParse(validList);
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects wrong kind', () => {
+    const result = RelayListEventSchema.safeParse({ ...validList, kind: 10001 });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('AuthEventSchema', () => {
+  const validAuth = {
+    kind: 22242,
+    content: '',
+    tags: [['relay', 'wss://relay.example.com']],
+    created_at: 1700000000,
+  };
+
+  it('accepts valid auth event', () => {
+    const result = AuthEventSchema.safeParse(validAuth);
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects non-empty content', () => {
+    const result = AuthEventSchema.safeParse({ ...validAuth, content: 'not empty' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects wrong kind', () => {
+    const result = AuthEventSchema.safeParse({ ...validAuth, kind: 22243 });
     expect(result.success).toBe(false);
   });
 });

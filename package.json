@@ -4,7 +4,10 @@
   "workspaces": [
     "apps/*",
     "packages/config/*",
-    "packages/shared"
+    "packages/shared",
+    "packages/database",
+    "packages/auth",
+    "packages/ui"
   ],
   "scripts": {
     "dev": "turbo run dev",

@@ -1,8 +1,13 @@
+import { db } from '@relayscope/database';
+import {
+  relayDiscovered,
+  relayEvents,
+  relayInfoSnapshots,
+  relays,
+} from '@relayscope/database/schema';
 import { getServerEnv } from '@relayscope/env/server';
 import { RelayDiscoverySchema } from '@relayscope/shared/schemas';
 import { eq, lt } from 'drizzle-orm';
-import { db } from '../db';
-import { relayDiscovered, relayEvents, relayInfoSnapshots, relays } from '../db/schema';
 import { log } from '../lib/log';
 import { assertSafeUrl } from '../lib/ssrf';
 

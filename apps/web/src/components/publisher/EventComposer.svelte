@@ -1,6 +1,6 @@
 <script lang="ts">
 import { useEventComposer } from '../../lib/composables/useEventComposer.svelte';
-import SectionCard from '../SectionCard.svelte';
+import SectionCard from '../ui/SectionCard.svelte';
 import TagEditor from './TagEditor.svelte';
 
 let {

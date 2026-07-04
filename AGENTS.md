@@ -46,16 +46,17 @@ Read only what is relevant to the task:
 ## Repository Map
 
 - `apps/web/`: Svelte 5 web app.
-- `apps/web/src/components/`: UI components, grouped by feature where useful.
-- `apps/web/src/lib/composables/`: Svelte 5 composables.
+- `apps/web/src/components/`: UI components, grouped by feature domain.
+- `apps/web/src/lib/composables/`: Svelte 5 composables (e.g., `useRelayInspector`).
 - `apps/web/src/lib/stores/`: reactive `.svelte.ts` stores.
 - `apps/web/src/utils/`: browser-side utility code.
 - `apps/api/`: Bun/Hono REST API.
-- `apps/api/src/routes/`: API route modules.
-- `apps/api/src/db/`: Drizzle database connection and schema.
+- `apps/api/src/routes/`: API route modules (aggregated by domain in `relay/`).
 - `apps/api/src/lib/`: API utilities, validation helpers, SSRF protection, errors.
-- `apps/api/src/middleware/`: API middleware such as auth.
-- `packages/shared/`: shared TypeScript types and Zod schemas.
+- `packages/database/`: Drizzle schema, prepared queries, DB connection (`@relayscope/database`).
+- `packages/auth/`: API key auth middleware (`@relayscope/auth`).
+- `packages/ui/`: Shared Svelte components — SectionCard, Toast, etc. (`@relayscope/ui`).
+- `packages/shared/`: Shared TypeScript types and Zod schemas (split by domain: `nip11`, `relay`, `event`, `directory`, `auth`, `api`).
 - `packages/config/env/`: environment parsing and validation.
 - `packages/config/tsconfig/`: shared TypeScript configs.
 - `docs/`: architecture, API, feature, development, and prompt documentation.
@@ -125,8 +126,10 @@ bun run build
 
 ## API And Data Rules
 
-- Keep route handlers in `apps/api/src/routes`.
-- Keep database schema changes in `apps/api/src/db/schema.ts`.
+- Keep route handlers in `apps/api/src/routes/` (grouped by domain).
+- Keep database schema in `packages/database/src/schema.ts`.
+- Keep database queries in `packages/database/src/queries.ts`.
+- Keep auth middleware in `packages/auth/src/index.ts`.
 - Generate migrations with Drizzle after schema changes.
 - Keep API response and request contracts aligned with `docs/api/endpoints.md`.
 - Mutating endpoints should remain protected by API key auth unless a spec explicitly changes that.

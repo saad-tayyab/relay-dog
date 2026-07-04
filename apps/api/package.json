@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.8.0",
+    "@relayscope/auth": "workspace:*",
+    "@relayscope/database": "workspace:*",
     "@relayscope/env": "workspace:*",
     "@relayscope/shared": "workspace:*",
     "drizzle-orm": "1.0.0-rc.4",

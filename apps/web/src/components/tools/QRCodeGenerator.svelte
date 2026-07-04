@@ -1,7 +1,7 @@
 <script lang="ts">
 import QRCode from 'qrcode';
 import { detectKeyFormat } from '../../utils/keys';
-import SectionCard from '../SectionCard.svelte';
+import SectionCard from '../ui/SectionCard.svelte';
 
 let input = $state('');
 let qrDataUrl = $state<string | null>(null);

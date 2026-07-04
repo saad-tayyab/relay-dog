@@ -1,6 +1,6 @@
 <script lang="ts">
 import { decodeTag } from '../../utils/nostrVerify';
-import SectionCard from '../SectionCard.svelte';
+import SectionCard from '../ui/SectionCard.svelte';
 
 let { tags }: { tags: string[][] } = $props();
 

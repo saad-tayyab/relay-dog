@@ -2,23 +2,22 @@
 // 1. Internal packages (stores, utils)
 import type { relaySocket } from '../../lib/stores/relaySocket.svelte';
 import type { ConnectionStatus, RelayInfo } from '../../utils/relay';
-
+import AuthStatusBadge from '../auth/AuthStatusBadge.svelte';
+import ConnectionPanel from '../connection/ConnectionPanel.svelte';
+import ConnectionStatusPanel from '../connection/ConnectionStatusPanel.svelte';
+import LatencyPanel from '../connection/LatencyPanel.svelte';
+import WriteTestPanel from '../connection/WriteTestPanel.svelte';
+import EventFeed from '../event/EventFeed.svelte';
+import FilterBuilder from '../filter/FilterBuilder.svelte';
+import FeeDisplay from '../nip11/FeeDisplay.svelte';
+import LimitationsPanel from '../nip11/LimitationsPanel.svelte';
+import NipBadgeGrid from '../nip11/NipBadgeGrid.svelte';
 // 2. Relative component imports
-import AddToDirectory from '../AddToDirectory.svelte';
-import AuthStatusBadge from '../AuthStatusBadge.svelte';
-import ConnectionPanel from '../ConnectionPanel.svelte';
-import ConnectionStatusPanel from '../ConnectionStatusPanel.svelte';
-import ErrorMessage from '../ErrorMessage.svelte';
-import EventFeed from '../EventFeed.svelte';
-import FeeDisplay from '../FeeDisplay.svelte';
-import FilterBuilder from '../FilterBuilder.svelte';
-import LatencyPanel from '../LatencyPanel.svelte';
-import LimitationsPanel from '../LimitationsPanel.svelte';
-import LoadingSpinner from '../LoadingSpinner.svelte';
-import NipBadgeGrid from '../NipBadgeGrid.svelte';
-import RelayProfile from '../RelayProfile.svelte';
+import AddToDirectory from '../relay/AddToDirectory.svelte';
+import RelayProfile from '../relay/RelayProfile.svelte';
 import AccessibleTabs from '../shared/AccessibleTabs.svelte';
-import WriteTestPanel from '../WriteTestPanel.svelte';
+import ErrorMessage from '../ui/ErrorMessage.svelte';
+import LoadingSpinner from '../ui/LoadingSpinner.svelte';
 
 type SocketStore = ReturnType<typeof relaySocket>;
 

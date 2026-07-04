@@ -70,67 +70,83 @@ function healthStatus(relay: DirectoryRelay): string {
     </div>
   </div>
 
-  <!-- Comparison Rows -->
-  <div class="space-y-2">
-    <!-- Health -->
-    <div class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
-      <span class="text-xs text-center {winnerClass(diff.healthWinner, 'A')}">
-        {healthStatus(relayA)}
-      </span>
-      <span class="text-xs text-text-muted self-center">Health</span>
-      <span class="text-xs text-center {winnerClass(diff.healthWinner, 'B')}">
-        {healthStatus(relayB)}
-      </span>
-    </div>
+  <!-- Comparison Table -->
+  <table class="w-full border-separate border-spacing-y-2" aria-label="Comparison results">
+    <caption class="sr-only">Comparison between {relayA.name || 'Relay A'} and {relayB.name || 'Relay B'}</caption>
+    <thead class="sr-only">
+      <tr>
+        <th scope="col">{relayA.name || 'Relay A'}</th>
+        <th scope="col">Metric</th>
+        <th scope="col">{relayB.name || 'Relay B'}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Health -->
+      <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
+        <td class="text-xs text-center {winnerClass(diff.healthWinner, 'A')}">
+          {healthStatus(relayA)}
+        </td>
+        <th scope="row" class="text-xs text-text-muted text-center font-normal">Health</th>
+        <td class="text-xs text-center {winnerClass(diff.healthWinner, 'B')}">
+          {healthStatus(relayB)}
+        </td>
+      </tr>
 
-    <!-- Latency -->
-    <div class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
-      <span class="text-xs text-center font-mono {winnerClass(diff.latencyWinner, 'A')}">
-        {latencyDisplay(relayA)}
-      </span>
-      <span class="text-xs text-text-muted self-center">Latency</span>
-      <span class="text-xs text-center font-mono {winnerClass(diff.latencyWinner, 'B')}">
-        {latencyDisplay(relayB)}
-      </span>
-    </div>
+      <!-- Latency -->
+      <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
+        <td class="text-xs text-center font-mono {winnerClass(diff.latencyWinner, 'A')}">
+          {latencyDisplay(relayA)}
+        </td>
+        <th scope="row" class="text-xs text-text-muted text-center font-normal">Latency</th>
+        <td class="text-xs text-center font-mono {winnerClass(diff.latencyWinner, 'B')}">
+          {latencyDisplay(relayB)}
+        </td>
+      </tr>
 
-    <!-- NIP Count -->
-    <div class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
-      <span class="text-xs text-center font-mono text-text-primary">
-        {relayA.supportedNips.length}
-      </span>
-      <span class="text-xs text-text-muted self-center">NIPs</span>
-      <span class="text-xs text-center font-mono text-text-primary">
-        {relayB.supportedNips.length}
-      </span>
-    </div>
+      <!-- NIP Count -->
+      <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
+        <td class="text-xs text-center font-mono text-text-primary">
+          {relayA.supportedNips.length}
+        </td>
+        <th scope="row" class="text-xs text-text-muted text-center font-normal">NIPs</th>
+        <td class="text-xs text-center font-mono text-text-primary">
+          {relayB.supportedNips.length}
+        </td>
+      </tr>
 
-    <!-- Shared NIPs -->
-    <div class="py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
-      <p class="text-xs text-text-muted text-center mb-1">Shared NIPs</p>
-      <p class="text-xs text-text-secondary text-center font-mono">
-        {diff.sharedNips.length > 0 ? diff.sharedNips.join(', ') : 'None'}
-      </p>
-    </div>
+      <!-- Shared NIPs -->
+      <tr>
+        <td colspan="3" class="py-2 px-3 rounded-lg bg-dark-surface border border-dark-border block text-center">
+          <span class="text-xs text-text-muted block mb-1">Shared NIPs</span>
+          <span class="text-xs text-text-secondary font-mono">
+            {diff.sharedNips.length > 0 ? diff.sharedNips.join(', ') : 'None'}
+          </span>
+        </td>
+      </tr>
 
-    <!-- NIPs only in A -->
-    {#if diff.nipsOnlyInA.length > 0}
-      <div class="py-2 px-3 rounded-lg bg-success-dim border border-success/20">
-        <p class="text-xs text-success text-center mb-1">Only in {relayA.name || 'A'}</p>
-        <p class="text-xs text-success font-mono text-center">
-          {diff.nipsOnlyInA.join(', ')}
-        </p>
-      </div>
-    {/if}
+      <!-- NIPs only in A -->
+      {#if diff.nipsOnlyInA.length > 0}
+        <tr>
+          <td colspan="3" class="py-2 px-3 rounded-lg bg-accent-dim border border-accent-border block text-center">
+            <span class="text-xs text-accent block mb-1">Only in {relayA.name || 'A'}</span>
+            <span class="text-xs text-accent font-mono">
+              {diff.nipsOnlyInA.join(', ')}
+            </span>
+          </td>
+        </tr>
+      {/if}
 
-    <!-- NIPs only in B -->
-    {#if diff.nipsOnlyInB.length > 0}
-      <div class="py-2 px-3 rounded-lg bg-success-dim border border-success/20">
-        <p class="text-xs text-success text-center mb-1">Only in {relayB.name || 'B'}</p>
-        <p class="text-xs text-success font-mono text-center">
-          {diff.nipsOnlyInB.join(', ')}
-        </p>
-      </div>
-    {/if}
-  </div>
+      <!-- NIPs only in B -->
+      {#if diff.nipsOnlyInB.length > 0}
+        <tr>
+          <td colspan="3" class="py-2 px-3 rounded-lg bg-accent-dim border border-accent-border block text-center">
+            <span class="text-xs text-accent block mb-1">Only in {relayB.name || 'B'}</span>
+            <span class="text-xs text-accent font-mono">
+              {diff.nipsOnlyInB.join(', ')}
+            </span>
+          </td>
+        </tr>
+      {/if}
+    </tbody>
+  </table>
 </SectionCard>

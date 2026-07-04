@@ -140,7 +140,7 @@ function handleCountryChange() {
     type="button"
     onclick={() => onSort(sortLocal, sortDirection === 'asc' ? 'desc' : 'asc')}
     aria-label="Toggle sort order (currently {sortDirection === 'asc' ? 'ascending' : 'descending'})"
-    class="p-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary transition-all"
+    class="min-h-[44px] min-w-[44px] p-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary transition-all"
   >
     {sortDirection === 'asc' ? '↑' : '↓'}
   </button>

@@ -126,7 +126,7 @@ const importedKindsBreakdown = $derived.by(() => {
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">Event Backup & Restore</h3>
-      <span class="text-[10px] text-text-muted">NIP-01</span>
+      <span class="text-xs text-text-muted">NIP-01</span>
     </div>
 
     <!-- Error/Success Feedback -->
@@ -294,10 +294,10 @@ const importedKindsBreakdown = $derived.by(() => {
               <div
                 role="status"
                 class="px-3 py-2 rounded-lg text-xs {restoreResult.errors.length === 0
-                  ? 'bg-success/10 border border-success/20 text-success'
+                  ? 'bg-success-dim border border-success/20 text-success'
                   : 'bg-warning-dim border border-warning/20 text-warning'}"
               >
-                ✅ Restored {restoreResult.restored} / {restoreResult.total} events
+                <span aria-hidden="true">✓</span> Restored {restoreResult.restored} / {restoreResult.total} events
                 {#if restoreResult.skipped > 0}
                   ({restoreResult.skipped} skipped)
                 {/if}

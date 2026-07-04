@@ -164,7 +164,7 @@ $effect(() => {
     rows={8}
     aria-invalid={!!error}
     aria-describedby="event-input-feedback"
-    class="w-full px-4 py-3 rounded-xl bg-dark-surface border text-sm text-text-primary placeholder:text-text-muted font-mono leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-accent/50 transition-colors {error
+    class="w-full px-4 py-3 rounded-xl bg-dark-surface border text-sm text-text-primary placeholder:text-text-muted font-mono leading-relaxed resize-none focus:outline-none transition-colors {error
       ? 'border-error/50 focus:border-error'
       : isValid
         ? 'border-success/50 focus:border-success'

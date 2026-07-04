@@ -27,12 +27,12 @@ const sections: { id: Section; label: string; icon: string }[] = [
       aria-current={activeSection === section.id ? 'page' : undefined}
       onclick={() => onNavigate(section.id)}
       class="flex-1 min-h-[44px] py-2 px-4 rounded-lg text-sm font-medium transition-all {activeSection === section.id
-        ? 'bg-dark-card border border-dark-border text-text-primary'
-        : 'text-text-muted hover:text-text-secondary'}"
+        ? 'bg-accent-dim text-accent border border-accent-border'
+        : 'text-text-muted hover:text-text-secondary hover:bg-dark-card'}"
     >
       <span aria-hidden="true">{section.icon}</span> {section.label}
       {#if section.id === 'inspector' && eventCount > 0}
-        <span class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent">
+        <span class="ml-2 text-xs font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent">
           {eventCount.toLocaleString()}
         </span>
       {/if}

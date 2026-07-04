@@ -59,19 +59,23 @@ function isSoftwareUrl(raw: string): boolean {
 }
 </script>
 
-<button
-  type="button"
+<div
   onclick={() => onSelect(relay.id)}
-  class="group w-full text-left transition-all relative {selected
+  onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(relay.id); } }}
+  role="button"
+  tabindex="0"
+  class="group w-full text-left transition-all relative cursor-pointer outline-none {selected
     ? 'ring-2 ring-accent border-accent-border'
     : 'hover:border-accent-border/50'}"
 >
-  <SectionCard className="cursor-pointer">
+  <SectionCard>
     <div class="flex items-start gap-3">
       {#if iconUrl}
         <img
           src={iconUrl}
           alt=""
+          loading="lazy"
+          decoding="async"
           class="w-10 h-10 rounded-lg border border-dark-border object-cover shrink-0"
           referrerpolicy="no-referrer"
           onerror={handleImageError}
@@ -124,7 +128,7 @@ function isSoftwareUrl(raw: string): boolean {
           <p class="text-xs text-text-secondary line-clamp-2 mb-2">{relay.description}</p>
         {/if}
 
-        <div class="flex items-center gap-3 text-[10px] text-text-muted">
+        <div class="flex items-center gap-3 text-xs text-text-muted">
           <span>{nipCount} NIPs</span>
           <span>·</span>
           <span>{latencyDisplay}</span>
@@ -150,8 +154,8 @@ function isSoftwareUrl(raw: string): boolean {
         <button
           type="button"
           onclick={handleInspect}
+          aria-label="Inspect relay"
           class="sm:opacity-0 sm:group-hover:opacity-100 transition-all p-2 rounded-lg hover:bg-accent-dim hover:text-accent text-text-muted"
-          title="Inspect relay"
         >
           <svg
             aria-hidden="true"
@@ -186,4 +190,4 @@ function isSoftwareUrl(raw: string): boolean {
       </div>
     </div>
   </SectionCard>
-</button>
+</div>

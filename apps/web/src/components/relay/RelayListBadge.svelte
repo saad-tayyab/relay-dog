@@ -8,7 +8,7 @@ let {
 } = $props();
 </script>
 
-<div class="flex items-center gap-3 text-[10px] text-text-muted">
+<div class="flex items-center gap-3 text-xs text-text-muted">
   {#if readCount > 0}
     <span class="flex items-center gap-1">
       <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>

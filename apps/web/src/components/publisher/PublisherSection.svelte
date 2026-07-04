@@ -5,16 +5,23 @@ import EventDeleter from "./EventDeleter.svelte";
 
 let {
 	targetRelay,
-	prefilledEvent: _prefilledEvent,
+	prefilledEvent,
 }: {
 	targetRelay: string;
 	prefilledEvent?: unknown;
 } = $props();
 
 let activeTab = $state("compose");
+
+// When a prefilled event arrives from the Verifier section, switch to compose tab
+$effect(() => {
+	if (prefilledEvent) {
+		activeTab = "compose";
+	}
+});
 </script>
 
-<div class="space-y-4">
+<div class="space-y-7">
   <AccessibleTabs
     ariaLabel="Publisher tools"
     tabs={[
@@ -25,7 +32,7 @@ let activeTab = $state("compose");
     onTabChange={(id) => (activeTab = id)}
   >
     {#if activeTab === 'compose'}
-      <EventComposer {targetRelay} />
+      <EventComposer {targetRelay} {prefilledEvent} />
     {:else}
       <EventDeleter {targetRelay} />
     {/if}

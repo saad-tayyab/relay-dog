@@ -10,6 +10,6 @@ let {
 } = $props();
 </script>
 
-<div class="bg-dark-card border border-dark-border rounded-xl p-6 {className}">
+<div class="bg-dark-card border border-dark-border rounded-xl shadow-sm shadow-black/20 p-6 lg:p-8 transition-shadow hover:shadow-md {className}">
   {@render children()}
 </div>

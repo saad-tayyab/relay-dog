@@ -81,7 +81,7 @@ function closeComparison() {
 }
 </script>
 
-<div class="space-y-4">
+<div class="space-y-7">
   <!-- Filter Bar -->
   <FilterBar
     filters={directory.filters}
@@ -105,7 +105,7 @@ function closeComparison() {
   {/if}
 
   {#if comparisonError}
-    <div role="alert" class="px-4 py-3 rounded-xl bg-error-dim border border-error/20 text-sm text-error">
+    <div role="alert" class="px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-sm text-error">
       ⚠ {comparisonError}
     </div>
   {/if}
@@ -113,7 +113,7 @@ function closeComparison() {
   <!-- Selection Actions -->
   {#if selectedIds.size === 2}
     <div
-      class="flex items-center justify-between px-4 py-3 rounded-xl bg-accent-dim border border-accent-border"
+      class="flex items-center justify-between px-3 py-2 rounded-lg bg-accent-dim border border-accent-border"
     >
       <span class="text-xs text-accent">
         {selectedIds.size} relays selected — ready to compare
@@ -122,7 +122,7 @@ function closeComparison() {
         type="button"
         onclick={handleCompare}
         disabled={comparisonLoading}
-        class="text-xs px-3 py-1 rounded-lg bg-accent text-white hover:opacity-90 disabled:opacity-50 transition-all"
+        class="min-h-[44px] text-xs px-3 py-2 rounded-lg bg-accent text-white hover:opacity-90 disabled:opacity-50 transition-all"
       >
         {comparisonLoading ? 'Comparing…' : 'Compare →'}
       </button>
@@ -153,7 +153,7 @@ function closeComparison() {
 
   <!-- Relay List -->
   {#if !directory.loading && !directory.error}
-    <div class="space-y-2">
+    <div class="space-y-4">
       {#each directory.relays as relay (relay.id)}
         <RelayCard
           {relay}
@@ -180,7 +180,7 @@ function closeComparison() {
         type="button"
         onclick={() => directory.setPage(directory.page - 1)}
         disabled={directory.page <= 1}
-        class="px-3 py-1.5 rounded-lg text-xs bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary disabled:opacity-40 transition-all"
+        class="min-h-[44px] px-3 py-2 rounded-lg text-xs bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary disabled:opacity-40 transition-all"
       >
         ← Prev
       </button>
@@ -191,7 +191,7 @@ function closeComparison() {
         type="button"
         onclick={() => directory.setPage(directory.page + 1)}
         disabled={directory.page >= directory.totalPages}
-        class="px-3 py-1.5 rounded-lg text-xs bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary disabled:opacity-40 transition-all"
+        class="min-h-[44px] px-3 py-2 rounded-lg text-xs bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary disabled:opacity-40 transition-all"
       >
         Next →
       </button>
@@ -200,7 +200,7 @@ function closeComparison() {
 
   <!-- Total Count -->
   {#if directory.total > 0}
-    <p class="text-center text-[10px] text-text-muted">
+    <p class="text-center text-xs text-text-muted">
       {directory.total.toLocaleString()} relays in directory
     </p>
   {/if}

@@ -68,17 +68,17 @@ const contentPreview = $derived(truncateContent(event.content));
 const expirationInfo = $derived(parseExpiration(event.tags));
 </script>
 
-<div class="border-b border-dark-border last:border-b-0 py-3 px-1">
+<article class="border-b border-dark-border last:border-b-0 py-3 px-2">
   <!-- Header row -->
   <div class="flex items-center gap-2 mb-1.5">
-    <span class="text-[10px] font-medium px-1.5 py-0.5 rounded border {kindColor}">
+    <span class="text-xs font-medium px-1.5 py-0.5 rounded border {kindColor}">
       {kindLabel}
     </span>
     <ExpiredBadge expirationInfo={expirationInfo} />
-    <span class="text-[10px] font-mono text-text-muted" title={event.pubkey}>
+    <span class="text-xs font-mono text-text-muted" title={event.pubkey}>
       {truncatePubkey(event.pubkey)}
     </span>
-    <span class="text-[10px] text-text-muted ml-auto shrink-0">{timestamp}</span>
+    <time class="text-xs text-text-muted ml-auto shrink-0" datetime={new Date(event.created_at * 1000).toISOString()}>{timestamp}</time>
   </div>
 
   <!-- Content preview -->
@@ -98,7 +98,7 @@ const expirationInfo = $derived(parseExpiration(event.tags));
     <button
       type="button"
       onclick={() => (expanded = !expanded)}
-      class="text-[10px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+      class="text-xs text-text-muted hover:text-accent transition-colors flex items-center gap-1"
     >
       <svg
         aria-hidden="true"
@@ -115,7 +115,7 @@ const expirationInfo = $derived(parseExpiration(event.tags));
     <button
       type="button"
       onclick={handleCopy}
-      class="text-[10px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+      class="text-xs text-text-muted hover:text-accent transition-colors flex items-center gap-1"
     >
       {#if copied}
         <svg
@@ -152,10 +152,10 @@ const expirationInfo = $derived(parseExpiration(event.tags));
   <!-- Expanded JSON -->
   {#if expanded}
     <pre
-      class="mt-2 p-3 rounded-lg bg-dark-surface border border-dark-border text-[10px] text-text-secondary overflow-x-auto font-mono leading-relaxed max-h-64 overflow-y-auto">{JSON.stringify(
+      class="mt-2 p-4 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed max-h-64 overflow-y-auto">{JSON.stringify(
         event,
         null,
         2,
       )}</pre>
   {/if}
-</div>
+</article>

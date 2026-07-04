@@ -1,5 +1,6 @@
 <script lang="ts">
 import { SectionCard } from "@relayscope/ui";
+import { useClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
 import { convertKey, detectKeyFormat } from "../../utils/keys";
 
 let input = $state("");
@@ -29,9 +30,8 @@ function handleConvert() {
 	}
 }
 
-import { createClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
-
-const clipboard = createClipboard();
+// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
+const clipboard = useClipboard();
 
 const detectedFormat = $derived(detectKeyFormat(input.trim()));
 </script>
@@ -78,82 +78,88 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
 
     <!-- Results -->
     {#if result}
-      <!-- npub -->
-      <div class="space-y-1">
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-text-muted">npub</span>
-          <button
-            type="button"
-            aria-label="Copy npub to clipboard"
-            onclick={() => { if (result) clipboard.copy(result.npub); }}
-            class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
-          >
-            {clipboard.copied ? '✓ Copied' : 'Copy'}
-          </button>
-        </div>
-        <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
-          {result.npub}
-        </div>
-      </div>
-
-      <!-- nsec (with safety warning) -->
-      {#if result.nsec}
+      <dl class="space-y-3">
+        <!-- npub -->
         <div class="space-y-1">
           <div class="flex items-center justify-between">
-            <span class="text-xs text-text-muted">nsec</span>
-            <div class="flex items-center gap-2">
+            <dt class="text-xs text-text-muted">npub</dt>
+            <dd>
               <button
                 type="button"
-                aria-expanded={showNsec}
-                onclick={() => (showNsec = !showNsec)}
-                class="min-h-[44px] text-xs px-2 py-1 text-text-muted hover:text-text-primary"
+                aria-label="Copy npub to clipboard"
+                onclick={() => { if (result) clipboard.copy(result.npub); }}
+                class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
               >
-                {showNsec ? 'Hide' : 'Show'}
+                {clipboard.copied ? '✓ Copied' : 'Copy'}
               </button>
-              {#if showNsec}
+            </dd>
+          </div>
+          <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
+            {result.npub}
+          </div>
+        </div>
+
+        <!-- nsec (with safety warning) -->
+        {#if result.nsec}
+          <div class="space-y-1">
+            <div class="flex items-center justify-between">
+              <dt class="text-xs text-text-muted">nsec</dt>
+              <dd class="flex items-center gap-2">
                 <button
                   type="button"
-                  aria-label="Copy nsec to clipboard"
-                  onclick={() => { if (result) clipboard.copy(result.nsec ?? ''); }}
-                  class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
+                  aria-expanded={showNsec}
+                  onclick={() => (showNsec = !showNsec)}
+                  class="min-h-[44px] text-xs px-2 py-1 text-text-muted hover:text-text-primary"
                 >
-                  {clipboard.copied ? '✓ Copied' : 'Copy'}
+                  {showNsec ? 'Hide' : 'Show'}
                 </button>
-              {/if}
+                {#if showNsec}
+                  <button
+                    type="button"
+                    aria-label="Copy nsec to clipboard"
+                    onclick={() => { if (result) clipboard.copy(result.nsec ?? ''); }}
+                    class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
+                  >
+                    {clipboard.copied ? '✓ Copied' : 'Copy'}
+                  </button>
+                {/if}
+              </dd>
             </div>
+            {#if showNsec}
+              <div class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs font-mono text-warning break-all">
+                <span aria-hidden="true">⚠</span> {result.nsec}
+              </div>
+              <p class="text-xs text-warning" role="alert">
+                <span aria-hidden="true">⚠</span> Never share your nsec with anyone!
+              </p>
+            {:else}
+              <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-muted">
+                ••••••••••••••••••••••••••••••••
+              </div>
+            {/if}
           </div>
-          {#if showNsec}
-            <div class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs font-mono text-warning break-all">
-              <span aria-hidden="true">⚠</span> {result.nsec}
-            </div>
-            <p class="text-xs text-warning" role="alert">
-              <span aria-hidden="true">⚠</span> Never share your nsec with anyone!
-            </p>
-          {:else}
-            <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-muted">
-              ••••••••••••••••••••••••••••••••
-            </div>
-          {/if}
-        </div>
-      {/if}
+        {/if}
 
-      <!-- hex -->
-      <div class="space-y-1">
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-text-muted">hex</span>
-          <button
-            type="button"
-            aria-label="Copy hex key to clipboard"
-            onclick={() => { if (result) clipboard.copy(result.hex); }}
-            class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
-          >
-            {clipboard.copied ? '✓ Copied' : 'Copy'}
-          </button>
+        <!-- hex -->
+        <div class="space-y-1">
+          <div class="flex items-center justify-between">
+            <dt class="text-xs text-text-muted">hex</dt>
+            <dd>
+              <button
+                type="button"
+                aria-label="Copy hex key to clipboard"
+                onclick={() => { if (result) clipboard.copy(result.hex); }}
+                class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
+              >
+                {clipboard.copied ? '✓ Copied' : 'Copy'}
+              </button>
+            </dd>
+          </div>
+          <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
+            {result.hex}
+          </div>
         </div>
-        <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
-          {result.hex}
-        </div>
-      </div>
+      </dl>
     {/if}
   </div>
 </SectionCard>

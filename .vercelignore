@@ -1,7 +1,14 @@
 # Vercel only deploys the web app — exclude everything else
-docs/
+
+# Exclude API app (needs Bun runtime, not available on Vercel)
 apps/api/
-packages/
+
+# Exclude packages the web app does NOT need
+packages/database/
+packages/auth/
+
+# Exclude non-essential files
+docs/
 infra/
 drizzle/
 .github/
@@ -13,3 +20,9 @@ AGENTS.md
 turbo.json
 bun.lock
 bun.lockb
+
+# Keep these (web app workspace dependencies):
+# packages/shared/       — types + schemas imported by web
+# packages/ui/           — shared Svelte components (SectionCard, etc.)
+# packages/config/env/   — environment parsing
+# packages/config/tsconfig/ — shared TypeScript configs

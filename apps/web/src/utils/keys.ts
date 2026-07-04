@@ -4,7 +4,7 @@ const HEX_CHARS = '0123456789abcdef';
 
 function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes)
-    .map((b) => HEX_CHARS[b >> 4] + HEX_CHARS[b & 0x0f])
+    .map((b) => HEX_CHARS.charAt(b >> 4) + HEX_CHARS.charAt(b & 0x0f))
     .join('');
 }
 

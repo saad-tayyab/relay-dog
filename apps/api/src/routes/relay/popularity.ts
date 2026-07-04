@@ -29,15 +29,17 @@ popularityRoutes.get('/:id/popularity', async (c) => {
 
   const urlCondition = relayUrlIs(relay.url);
 
-  const [{ readCount }] = await db
+  const [readRow] = await db
     .select({ readCount: sql<number>`count(*)::int` })
     .from(relayListEntries)
     .where(sql`${urlCondition} AND ${markerIs('read')}`);
+  const readCount = readRow?.readCount ?? 0;
 
-  const [{ writeCount }] = await db
+  const [writeRow] = await db
     .select({ writeCount: sql<number>`count(*)::int` })
     .from(relayListEntries)
     .where(sql`${urlCondition} AND ${markerIs('write')}`);
+  const writeCount = writeRow?.writeCount ?? 0;
 
   const readers = await db
     .select({ authorPubkey: relayListEntries.authorPubkey })

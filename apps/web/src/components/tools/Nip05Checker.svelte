@@ -14,6 +14,7 @@ async function handleCheck() {
   checking = true;
   result = null;
 
+  const [local, domain] = identifier.split('@') as [string, string];
   try {
     result = await verifyNip05(identifier.trim(), expectedPubkey.trim() || undefined);
 
@@ -22,8 +23,8 @@ async function handleCheck() {
   } catch (e) {
     result = {
       identifier: identifier.trim(),
-      local: identifier.split('@')[0],
-      domain: identifier.split('@')[1],
+      local,
+      domain,
       verified: false,
       resolvedPubkey: null,
       expectedPubkey: expectedPubkey.trim() || null,

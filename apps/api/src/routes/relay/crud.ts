@@ -46,10 +46,11 @@ crudRoutes.get('/', async (c) => {
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const [{ count }] = await db
+  const [countRow] = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(relays)
     .where(whereClause);
+  const count = countRow?.count ?? 0;
 
   const paginatedRelays = await db
     .select()
@@ -150,6 +151,8 @@ crudRoutes.post('/', requireApiKey, zValidator('json', createRelaySchema), async
         isPublic: body.isPublic ?? true,
       })
       .returning();
+
+    if (!relay) throw new Error('Failed to create relay');
 
     if (Object.keys(nip11Data).length > 0) {
       await tx.insert(relayInfoSnapshots).values({

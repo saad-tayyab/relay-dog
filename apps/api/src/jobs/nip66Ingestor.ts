@@ -54,7 +54,7 @@ function parseTags(tags: string[][]): ParsedDiscovery | null {
 
   for (const tag of tags) {
     if (tag.length < 2) continue;
-    const [key, value] = tag;
+    const [key, value] = tag as [string, string];
 
     switch (key) {
       case 'd':

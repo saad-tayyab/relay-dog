@@ -14,7 +14,7 @@ export function setHashSection(section: Section): void {
 export function getToolTab(): string | null {
   const hash = window.location.hash;
   const match = hash.match(/#tools\?(.+)/);
-  return match ? match[1] : null;
+  return match?.[1] ?? null;
 }
 
 export function setToolTab(tool: string): void {

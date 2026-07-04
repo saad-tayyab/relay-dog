@@ -15,17 +15,24 @@
     "./queries": {
       "types": "./src/queries.ts",
       "default": "./src/queries.ts"
+    },
+    "./relations": {
+      "types": "./src/relations.ts",
+      "default": "./src/relations.ts"
     }
   },
   "scripts": {
     "type-check": "tsc --noEmit",
-    "lint": "biome check ."
+    "lint": "biome check .",
+    "db:generate": "bun --bun run drizzle-kit generate",
+    "db:migrate": "bun --bun run drizzle-kit migrate",
+    "db:studio": "bun --bun run drizzle-kit studio",
+    "db:push": "bun --bun run drizzle-kit push"
   },
   "dependencies": {
     "@relayscope/env": "workspace:*",
     "@relayscope/shared": "workspace:*",
-    "drizzle-orm": "1.0.0-rc.4",
-    "postgres": "^3.4.9"
+    "drizzle-orm": "1.0.0-rc.4"
   },
   "devDependencies": {
     "@relayscope/tsconfig": "workspace:*",

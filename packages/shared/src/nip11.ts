@@ -15,14 +15,6 @@ export interface RelayNip11 {
   limitation?: RelayLimitation;
   payments_url?: string;
   fees?: RelayFees;
-  /** @deprecated Not a real NIP-11 field. Will be removed. */ posting_limit?: Record<
-    string,
-    unknown
-  >;
-  /** @deprecated Not a real NIP-11 field. Will be removed. */ relay_limitation?: Record<
-    string,
-    unknown
-  >;
   tags?: string[][];
   [key: string]: unknown;
 }

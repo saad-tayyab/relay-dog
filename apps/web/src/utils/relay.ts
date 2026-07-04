@@ -58,8 +58,6 @@ export interface RelayInfo {
   supported_nips?: number[];
   limitation?: Record<string, unknown>;
   fees?: RelayFees;
-  posting_limit?: Record<string, unknown>;
-  relay_limitation?: Record<string, unknown>;
   tags?: string[][];
   [key: string]: unknown;
 }

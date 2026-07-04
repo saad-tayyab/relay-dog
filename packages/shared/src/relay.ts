@@ -65,17 +65,6 @@ export interface LatencyMetrics {
   eoseEventCount: number;
 }
 
-/**
- * @deprecated Use `RelayFees` with `RelayFeeEntry` instead. Not a real NIP-11 field.
- * Kept for backwards compatibility — will be removed in a future version.
- */
-export interface FeeInfo {
-  admission: number | null;
-  subscription: number | null;
-  perEvent: number | null;
-  currency: string; // 'sats' or 'usd'
-}
-
 // ─── Write Test ───
 
 export type WriteTestStatus = 'idle' | 'testing' | 'success' | 'failed';

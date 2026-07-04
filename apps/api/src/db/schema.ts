@@ -35,10 +35,7 @@ export const relays = pgTable(
     paymentsUrl: text('payments_url'),
     fees: jsonb('fees'),
   },
-  (table) => [
-    index('relays_url_idx').on(table.url),
-    index('relays_nips_idx').on(table.supportedNips),
-  ],
+  (table) => [index('relays_nips_idx').using('gin', table.supportedNips)],
 );
 
 // ─── Relay Info Snapshots (NIP-11 history) ───

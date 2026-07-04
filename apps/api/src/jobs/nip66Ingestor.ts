@@ -1,19 +1,14 @@
 import { getServerEnv } from '@relayscope/env/server';
 import { RelayDiscoverySchema } from '@relayscope/shared/schemas';
-import { eq, sql } from 'drizzle-orm';
+import { eq, lt } from 'drizzle-orm';
 import { db } from '../db';
-import { relayDiscovered, relays } from '../db/schema';
+import { relayDiscovered, relayEvents, relayInfoSnapshots, relays } from '../db/schema';
+import { log } from '../lib/log';
 import { assertSafeUrl } from '../lib/ssrf';
 
 // ─── Known NIP-66 Monitor Relays ───
 
 const DEFAULT_MONITOR_RELAYS = ['wss://relay-monitor.migalmoreno.com'];
-
-// ─── Structured Logging ───
-
-function log(entry: { level: 'info' | 'warn' | 'error'; msg: string; [key: string]: unknown }) {
-  process.stderr.write(`${JSON.stringify({ ...entry, timestamp: new Date().toISOString() })}\n`);
-}
 
 // ─── Tag Parsing ───
 
@@ -225,13 +220,13 @@ async function runRetentionCleanup(): Promise<void> {
   }
 
   try {
-    await db.execute(
-      sql`DELETE FROM relay_info_snapshots WHERE fetched_at < NOW() - INTERVAL '180 days'`,
-    );
-    await db.execute(
-      sql`DELETE FROM relay_discoveries WHERE discovered_at < NOW() - INTERVAL '180 days'`,
-    );
-    await db.execute(sql`DELETE FROM relay_events WHERE received_at < NOW() - INTERVAL '30 days'`);
+    const now = new Date();
+    const days180 = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+    const days30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    await db.delete(relayInfoSnapshots).where(lt(relayInfoSnapshots.fetchedAt, days180));
+    await db.delete(relayDiscovered).where(lt(relayDiscovered.discoveredAt, days180));
+    await db.delete(relayEvents).where(lt(relayEvents.receivedAt, days30));
 
     lastRetentionRun = new Date();
     log({ level: 'info', msg: 'Retention cleanup completed' });

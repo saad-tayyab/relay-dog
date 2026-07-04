@@ -1,0 +1,15 @@
+# Vercel only deploys the web app — exclude everything else
+docs/
+apps/api/
+packages/
+infra/
+drizzle/
+.github/
+*.md
+docker-compose.yml
+biome.json
+CONTRIBUTING.md
+AGENTS.md
+turbo.json
+bun.lock
+bun.lockb

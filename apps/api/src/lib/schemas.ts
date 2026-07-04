@@ -16,19 +16,6 @@ export const updateRelaySchema = z.object({
   country: z.string().trim().max(100).optional(),
 });
 
-export const createDiscoverySchema = z.object({
-  monitorPubkey: hex64Schema,
-  rttOpen: z.number().int().min(0).max(120_000).nullable().optional(),
-  rttRead: z.number().int().min(0).max(120_000).nullable().optional(),
-  rttWrite: z.number().int().min(0).max(120_000).nullable().optional(),
-  networkType: z.string().max(50).nullable().optional(),
-  relayType: z.string().max(50).nullable().optional(),
-  supportedNips: z.array(z.number().int().min(1).max(65535)).max(100).optional(),
-  requirements: z.array(z.string().max(100)).max(50).optional(),
-  topics: z.array(z.string().max(100)).max(50).optional(),
-  geohash: z.string().max(12).nullable().optional(),
-});
-
 export const createPopularitySchema = z.object({
   authorPubkey: hex64Schema,
   marker: z.enum(['read', 'write']).nullable().optional(),
@@ -36,5 +23,4 @@ export const createPopularitySchema = z.object({
 
 export type CreateRelayInput = z.infer<typeof createRelaySchema>;
 export type UpdateRelayInput = z.infer<typeof updateRelaySchema>;
-export type CreateDiscoveryInput = z.infer<typeof createDiscoverySchema>;
 export type CreatePopularityInput = z.infer<typeof createPopularitySchema>;

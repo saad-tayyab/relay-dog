@@ -27,14 +27,17 @@ function winnerClass(winner: 'A' | 'B' | 'tie', side: 'A' | 'B'): string {
 }
 
 function latencyDisplay(relay: DirectoryRelay): string {
-  return relay.lastHealthCheck?.latencyMs != null ? `${relay.lastHealthCheck.latencyMs}ms` : '—';
+  return relay.lastDiscovery?.rttOpen != null ? `${relay.lastDiscovery.rttOpen}ms` : '—';
 }
 
 function healthStatus(relay: DirectoryRelay): string {
-  if (relay.lastHealthCheck?.httpReachable && relay.lastHealthCheck?.websocketConnectable) {
+  if (
+    relay.lastDiscovery != null &&
+    (Date.now() - new Date(relay.lastDiscovery.discoveredAt).getTime()) < 24 * 60 * 60 * 1000
+  ) {
     return 'Online';
   }
-  return 'Offline';
+  return 'Unknown';
 }
 </script>
 

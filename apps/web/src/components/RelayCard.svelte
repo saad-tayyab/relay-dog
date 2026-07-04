@@ -35,11 +35,12 @@ function handleInspect(e: MouseEvent) {
 }
 
 const isOnline = $derived(
-  relay.lastHealthCheck?.httpReachable && relay.lastHealthCheck?.websocketConnectable,
+  relay.lastDiscovery != null &&
+  (Date.now() - new Date(relay.lastDiscovery.discoveredAt).getTime()) < 24 * 60 * 60 * 1000,
 );
 
 const latencyDisplay = $derived(
-  relay.lastHealthCheck?.latencyMs != null ? `${relay.lastHealthCheck.latencyMs}ms` : '—',
+  relay.lastDiscovery?.rttOpen != null ? `${relay.lastDiscovery.rttOpen}ms` : '—',
 );
 
 const nipCount = $derived(relay.supportedNips.length);

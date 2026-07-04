@@ -2,14 +2,14 @@ import type { DirectoryFilters, DirectoryRelay, RelayLimitation } from '@relaysc
 import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { db } from '../db';
-import { healthChecks, relays } from '../db/schema';
+import { relayDiscovered, relays } from '../db/schema';
 
 const directoryRoutes = new Hono();
 
 // ─── Helper: map DB relay row to DirectoryRelay ───
 function toDirectoryRelay(
   row: typeof relays.$inferSelect,
-  hc: typeof healthChecks.$inferSelect | null,
+  discovery: typeof relayDiscovered.$inferSelect | null,
 ): DirectoryRelay {
   return {
     id: row.id,
@@ -25,13 +25,13 @@ function toDirectoryRelay(
     isPublic: row.isPublic ?? true,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
-    lastHealthCheck: hc
+    lastDiscovery: discovery
       ? {
-          httpReachable: hc.httpReachable,
-          corsConfigured: hc.corsConfigured,
-          websocketConnectable: hc.websocketConnectable,
-          latencyMs: hc.latencyMs,
-          checkedAt: hc.checkedAt,
+          rttOpen: discovery.rttOpen,
+          rttRead: discovery.rttRead,
+          rttWrite: discovery.rttWrite,
+          networkType: discovery.networkType,
+          discoveredAt: discovery.discoveredAt,
         }
       : null,
   };
@@ -96,7 +96,7 @@ directoryRoutes.get('/', async (c) => {
       orderByClause = filters.sortOrder === 'desc' ? desc(relays.url) : relays.url;
       break;
     case 'latency':
-      // For latency sort, fall back to name since we fetch HC separately
+      // For latency sort, fall back to name since we fetch discoveries separately
       orderByClause = filters.sortOrder === 'desc' ? desc(relays.name) : relays.name;
       break;
     case 'lastChecked':
@@ -106,13 +106,13 @@ directoryRoutes.get('/', async (c) => {
       orderByClause = filters.sortOrder === 'desc' ? desc(relays.name) : relays.name;
   }
 
-  // Step 1: Get total count of unique relays (no JOIN, no inflation)
+  // Step 1: Get total count of unique relays
   const [{ count }] = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(relays)
     .where(whereClause);
 
-  // Step 2: Get paginated relay IDs only (no JOIN, LIMIT applies to unique relays)
+  // Step 2: Get paginated relays
   const paginatedRelays = await db
     .select()
     .from(relays)
@@ -133,26 +133,40 @@ directoryRoutes.get('/', async (c) => {
     });
   }
 
-  // Step 3: Fetch health checks for relays in this page, pick latest in JS
-  const relayIds = paginatedRelays.map((r) => r.id);
-  const allHC = await db
+  // Step 3: Fetch latest NIP-66 discovery for each relay
+  const relayUrls = paginatedRelays.map((r) => r.url);
+  const allDiscoveries = await db
     .select()
-    .from(healthChecks)
-    .where(inArray(healthChecks.relayId, relayIds))
-    .orderBy(desc(healthChecks.checkedAt));
+    .from(relayDiscovered)
+    .where(inArray(relayDiscovered.relayUrl, relayUrls))
+    .orderBy(desc(relayDiscovered.discoveredAt));
 
-  // Build a lookup map: relayId → latest health check
-  const hcMap = new Map<string, typeof healthChecks.$inferSelect>();
-  for (const hc of allHC) {
-    if (!hcMap.has(hc.relayId)) {
-      hcMap.set(hc.relayId, hc);
+  // Build lookup: relayUrl → latest discovery
+  const discoveryMap = new Map<string, typeof relayDiscovered.$inferSelect>();
+  for (const d of allDiscoveries) {
+    if (!discoveryMap.has(d.relayUrl)) {
+      discoveryMap.set(d.relayUrl, d);
     }
   }
 
   // Step 4: Assemble final results
-  const resultRelays: DirectoryRelay[] = paginatedRelays.map((relay) =>
-    toDirectoryRelay(relay, hcMap.get(relay.id) ?? null),
-  );
+  let resultRelays: DirectoryRelay[];
+
+  if (filters.sortBy === 'latency') {
+    // Sort by rtt_open from latest discovery (nulls last)
+    const sorted = [...paginatedRelays].sort((a, b) => {
+      const dA = discoveryMap.get(a.url);
+      const dB = discoveryMap.get(b.url);
+      const rttA = dA?.rttOpen ?? Number.MAX_SAFE_INTEGER;
+      const rttB = dB?.rttOpen ?? Number.MAX_SAFE_INTEGER;
+      return filters.sortOrder === 'desc' ? rttB - rttA : rttA - rttB;
+    });
+    resultRelays = sorted.map((r) => toDirectoryRelay(r, discoveryMap.get(r.url) ?? null));
+  } else {
+    resultRelays = paginatedRelays.map((relay) =>
+      toDirectoryRelay(relay, discoveryMap.get(relay.url) ?? null),
+    );
+  }
 
   return c.json({
     success: true,
@@ -184,27 +198,33 @@ directoryRoutes.get('/compare/:id1/:id2', async (c) => {
   const id1 = c.req.param('id1');
   const id2 = c.req.param('id2');
 
-  const [result1, result2] = await Promise.all([
-    db
-      .select({ relay: relays, hc: healthChecks })
-      .from(relays)
-      .leftJoin(healthChecks, eq(relays.id, healthChecks.relayId))
-      .where(eq(relays.id, id1))
-      .limit(1),
-    db
-      .select({ relay: relays, hc: healthChecks })
-      .from(relays)
-      .leftJoin(healthChecks, eq(relays.id, healthChecks.relayId))
-      .where(eq(relays.id, id2))
-      .limit(1),
+  const [relay1, relay2] = await Promise.all([
+    db.select().from(relays).where(eq(relays.id, id1)).limit(1),
+    db.select().from(relays).where(eq(relays.id, id2)).limit(1),
   ]);
 
-  if (result1.length === 0 || result2.length === 0) {
+  if (relay1.length === 0 || relay2.length === 0) {
     return c.json({ success: false, error: 'One or both relays not found' }, 404);
   }
 
-  const relayA = toDirectoryRelay(result1[0].relay, result1[0].hc);
-  const relayB = toDirectoryRelay(result2[0].relay, result2[0].hc);
+  // Fetch latest discovery for each
+  const [disc1, disc2] = await Promise.all([
+    db
+      .select()
+      .from(relayDiscovered)
+      .where(eq(relayDiscovered.relayUrl, relay1[0].url))
+      .orderBy(desc(relayDiscovered.discoveredAt))
+      .limit(1),
+    db
+      .select()
+      .from(relayDiscovered)
+      .where(eq(relayDiscovered.relayUrl, relay2[0].url))
+      .orderBy(desc(relayDiscovered.discoveredAt))
+      .limit(1),
+  ]);
+
+  const relayA = toDirectoryRelay(relay1[0], disc1[0] ?? null);
+  const relayB = toDirectoryRelay(relay2[0], disc2[0] ?? null);
 
   const nipsA = new Set(relayA.supportedNips || []);
   const nipsB = new Set(relayB.supportedNips || []);
@@ -215,8 +235,8 @@ directoryRoutes.get('/compare/:id1/:id2', async (c) => {
 
   // Latency comparison
   let latencyWinner: 'A' | 'B' | 'tie' = 'tie';
-  const latA = relayA.lastHealthCheck?.latencyMs;
-  const latB = relayB.lastHealthCheck?.latencyMs;
+  const latA = relayA.lastDiscovery?.rttOpen;
+  const latB = relayB.lastDiscovery?.rttOpen;
   if (latA != null && latB != null) {
     if (latA < latB) latencyWinner = 'A';
     else if (latB < latA) latencyWinner = 'B';
@@ -226,16 +246,18 @@ directoryRoutes.get('/compare/:id1/:id2', async (c) => {
     latencyWinner = 'B';
   }
 
-  // Health comparison
+  // Health comparison — "online" if discovered within last 24h
   let healthWinner: 'A' | 'B' | 'tie' = 'tie';
-  const scoreA =
-    (relayA.lastHealthCheck?.httpReachable ? 1 : 0) +
-    (relayA.lastHealthCheck?.websocketConnectable ? 1 : 0);
-  const scoreB =
-    (relayB.lastHealthCheck?.httpReachable ? 1 : 0) +
-    (relayB.lastHealthCheck?.websocketConnectable ? 1 : 0);
-  if (scoreA > scoreB) healthWinner = 'A';
-  else if (scoreB > scoreA) healthWinner = 'B';
+  const now = Date.now();
+  const dayMs = 24 * 60 * 60 * 1000;
+  const isOnlineA =
+    relayA.lastDiscovery != null &&
+    now - new Date(relayA.lastDiscovery.discoveredAt).getTime() < dayMs;
+  const isOnlineB =
+    relayB.lastDiscovery != null &&
+    now - new Date(relayB.lastDiscovery.discoveredAt).getTime() < dayMs;
+  if (isOnlineA && !isOnlineB) healthWinner = 'A';
+  else if (isOnlineB && !isOnlineA) healthWinner = 'B';
 
   return c.json({
     success: true,

@@ -341,7 +341,7 @@ DELETE /api/relays/:id
 }
 ```
 
-**Cascading deletes**: Removing a relay also removes all its health checks, events, snapshots, monitoring jobs, discoveries, and relay list entries.
+**Cascading deletes**: Removing a relay also removes all its events, snapshots, discoveries, and relay list entries. Legacy tables (`health_checks`, `monitoring_jobs`) also cascade-delete via database FK constraints.
 
 ---
 

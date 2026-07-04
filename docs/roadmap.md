@@ -16,6 +16,7 @@ Phase 8  ████████████████████  Developer
 Phase 9  ████████████████████  WCAG 2.2 AA Accessibility          ✅ Done
 Phase 10 ████████████████████  Infrastructure Hardening             ✅ Done
 Phase 11 ░░░░░░░░░░░░░░░░░░░░  Production Deployment (Fly.io)      📋 Planned
+Phase 12 ░░░░░░░░░░░░░░░░░░░░  NIP-66 Passive Monitoring           📋 Planned
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅

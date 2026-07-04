@@ -1,23 +1,23 @@
 <script lang="ts">
-import { decodeTag } from '../../utils/nostrVerify';
-import SectionCard from '../ui/SectionCard.svelte';
+import { SectionCard } from "@relayscope/ui";
+import { decodeTag } from "../../utils/nostrVerify";
 
 let { tags }: { tags: string[][] } = $props();
 
 const TAG_BADGE_COLORS: Record<string, string> = {
-  e: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-  p: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
-  t: 'bg-green-500/15 text-green-400 border-green-500/30',
-  d: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
-  expiration: 'bg-red-500/15 text-red-400 border-red-500/30',
-  relay: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
-  alt: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
-  unknown: 'bg-gray-500/15 text-gray-400 border-gray-500/30',
+	e: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+	p: "bg-purple-500/15 text-purple-400 border-purple-500/30",
+	t: "bg-green-500/15 text-green-400 border-green-500/30",
+	d: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
+	expiration: "bg-red-500/15 text-red-400 border-red-500/30",
+	relay: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+	alt: "bg-indigo-500/15 text-indigo-400 border-indigo-500/30",
+	unknown: "bg-gray-500/15 text-gray-400 border-gray-500/30",
 };
-const TAG_BADGE_DEFAULT = 'bg-gray-500/15 text-gray-400 border-gray-500/30';
+const TAG_BADGE_DEFAULT = "bg-gray-500/15 text-gray-400 border-gray-500/30";
 
 function getBadgeColor(type: string): string {
-  return TAG_BADGE_COLORS[type] ?? TAG_BADGE_DEFAULT;
+	return TAG_BADGE_COLORS[type] ?? TAG_BADGE_DEFAULT;
 }
 </script>
 

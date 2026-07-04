@@ -1,43 +1,46 @@
 <script lang="ts">
-import type { DirectoryRelay } from '@relayscope/shared';
-import SectionCard from '../ui/SectionCard.svelte';
+import type { DirectoryRelay } from "@relayscope/shared";
+import { SectionCard } from "@relayscope/ui";
 
 let {
-  relayA,
-  relayB,
-  diff,
-  onClose,
+	relayA,
+	relayB,
+	diff,
+	onClose,
 }: {
-  relayA: DirectoryRelay;
-  relayB: DirectoryRelay;
-  diff: {
-    nipsOnlyInA: number[];
-    nipsOnlyInB: number[];
-    sharedNips: number[];
-    latencyWinner: 'A' | 'B' | 'tie';
-    healthWinner: 'A' | 'B' | 'tie';
-  };
-  onClose: () => void;
+	relayA: DirectoryRelay;
+	relayB: DirectoryRelay;
+	diff: {
+		nipsOnlyInA: number[];
+		nipsOnlyInB: number[];
+		sharedNips: number[];
+		latencyWinner: "A" | "B" | "tie";
+		healthWinner: "A" | "B" | "tie";
+	};
+	onClose: () => void;
 } = $props();
 
-function winnerClass(winner: 'A' | 'B' | 'tie', side: 'A' | 'B'): string {
-  if (winner === 'tie') return '';
-  if (winner === side) return 'text-success';
-  return 'text-error';
+function winnerClass(winner: "A" | "B" | "tie", side: "A" | "B"): string {
+	if (winner === "tie") return "";
+	if (winner === side) return "text-success";
+	return "text-error";
 }
 
 function latencyDisplay(relay: DirectoryRelay): string {
-  return relay.lastDiscovery?.rttOpen != null ? `${relay.lastDiscovery.rttOpen}ms` : '—';
+	return relay.lastDiscovery?.rttOpen != null
+		? `${relay.lastDiscovery.rttOpen}ms`
+		: "—";
 }
 
 function healthStatus(relay: DirectoryRelay): string {
-  if (
-    relay.lastDiscovery != null &&
-    (Date.now() - new Date(relay.lastDiscovery.discoveredAt).getTime()) < 24 * 60 * 60 * 1000
-  ) {
-    return 'Online';
-  }
-  return 'Unknown';
+	if (
+		relay.lastDiscovery != null &&
+		Date.now() - new Date(relay.lastDiscovery.discoveredAt).getTime() <
+			24 * 60 * 60 * 1000
+	) {
+		return "Online";
+	}
+	return "Unknown";
 }
 </script>
 

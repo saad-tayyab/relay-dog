@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { NostrEvent } from '@relayscope/shared';
-import SectionCard from '../ui/SectionCard.svelte';
-import EventCard from './EventCard.svelte';
+import type { NostrEvent } from "@relayscope/shared";
+import { SectionCard } from "@relayscope/ui";
+import EventCard from "./EventCard.svelte";
 
 let { events }: { events: NostrEvent[] } = $props();
 
@@ -10,20 +10,21 @@ let shouldAutoScroll = $state(true);
 let prevLength = $state(0);
 
 function handleScroll() {
-  const el = scrollEl;
-  if (!el) return;
-  const threshold = 50;
-  const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
-  shouldAutoScroll = isNearBottom;
+	const el = scrollEl;
+	if (!el) return;
+	const threshold = 50;
+	const isNearBottom =
+		el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+	shouldAutoScroll = isNearBottom;
 }
 
 // Auto-scroll when new events arrive
 $effect(() => {
-  const len = events.length;
-  if (len > prevLength && shouldAutoScroll && scrollEl) {
-    scrollEl.scrollTop = scrollEl.scrollHeight;
-  }
-  prevLength = len;
+	const len = events.length;
+	if (len > prevLength && shouldAutoScroll && scrollEl) {
+		scrollEl.scrollTop = scrollEl.scrollHeight;
+	}
+	prevLength = len;
 });
 </script>
 

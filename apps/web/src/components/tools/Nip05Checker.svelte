@@ -1,45 +1,51 @@
 <script lang="ts">
-import { type Nip05Result, verifyNip05 } from '../../utils/nip05';
-import SectionCard from '../ui/SectionCard.svelte';
+import { SectionCard } from "@relayscope/ui";
+import { type Nip05Result, verifyNip05 } from "../../utils/nip05";
 
-let identifier = $state('');
-let expectedPubkey = $state('');
+let identifier = $state("");
+let expectedPubkey = $state("");
 let checking = $state(false);
 let result = $state<Nip05Result | null>(null);
 let history = $state<Nip05Result[]>([]);
 
 async function handleCheck() {
-  if (!identifier.includes('@')) return;
+	if (!identifier.includes("@")) return;
 
-  checking = true;
-  result = null;
+	checking = true;
+	result = null;
 
-  const [local, domain] = identifier.split('@') as [string, string];
-  try {
-    result = await verifyNip05(identifier.trim(), expectedPubkey.trim() || undefined);
+	const [local, domain] = identifier.split("@") as [string, string];
+	try {
+		result = await verifyNip05(
+			identifier.trim(),
+			expectedPubkey.trim() || undefined,
+		);
 
-    // Add to history (keep last 5)
-    history = [result, ...history.filter((h) => h.identifier !== result?.identifier)].slice(0, 5);
-  } catch (e) {
-    result = {
-      identifier: identifier.trim(),
-      local,
-      domain,
-      verified: false,
-      resolvedPubkey: null,
-      expectedPubkey: expectedPubkey.trim() || null,
-      npub: null,
-      httpStatus: null,
-      responseTimeMs: 0,
-      rawResponse: null,
-      error: e instanceof Error ? e.message : 'Check failed',
-    };
-  } finally {
-    checking = false;
-  }
+		// Add to history (keep last 5)
+		history = [
+			result,
+			...history.filter((h) => h.identifier !== result?.identifier),
+		].slice(0, 5);
+	} catch (e) {
+		result = {
+			identifier: identifier.trim(),
+			local,
+			domain,
+			verified: false,
+			resolvedPubkey: null,
+			expectedPubkey: expectedPubkey.trim() || null,
+			npub: null,
+			httpStatus: null,
+			responseTimeMs: 0,
+			rawResponse: null,
+			error: e instanceof Error ? e.message : "Check failed",
+		};
+	} finally {
+		checking = false;
+	}
 }
 
-import { createClipboard } from '../../lib/composables/useCopyToClipboard.svelte';
+import { createClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
 
 const clipboard = createClipboard();
 </script>

@@ -1,10 +1,10 @@
 <script lang="ts">
 let {
-  readCount,
-  writeCount,
+	readCount,
+	writeCount,
 }: {
-  readCount: number;
-  writeCount: number;
+	readCount: number;
+	writeCount: number;
 } = $props();
 </script>
 

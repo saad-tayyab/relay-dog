@@ -1,35 +1,35 @@
 <script lang="ts">
-import { convertKey, detectKeyFormat } from '../../utils/keys';
-import SectionCard from '../ui/SectionCard.svelte';
+import { SectionCard } from "@relayscope/ui";
+import { convertKey, detectKeyFormat } from "../../utils/keys";
 
-let input = $state('');
+let input = $state("");
 let result = $state<{
-  npub: string;
-  nsec: string | null;
-  hex: string;
-  format: string;
+	npub: string;
+	nsec: string | null;
+	hex: string;
+	format: string;
 } | null>(null);
 let error = $state<string | null>(null);
 let showNsec = $state(false);
 
 function handleConvert() {
-  if (!input.trim()) {
-    result = null;
-    error = null;
-    return;
-  }
+	if (!input.trim()) {
+		result = null;
+		error = null;
+		return;
+	}
 
-  try {
-    result = convertKey(input.trim());
-    error = null;
-    showNsec = false;
-  } catch (e) {
-    result = null;
-    error = e instanceof Error ? e.message : 'Invalid key format';
-  }
+	try {
+		result = convertKey(input.trim());
+		error = null;
+		showNsec = false;
+	} catch (e) {
+		result = null;
+		error = e instanceof Error ? e.message : "Invalid key format";
+	}
 }
 
-import { createClipboard } from '../../lib/composables/useCopyToClipboard.svelte';
+import { createClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
 
 const clipboard = createClipboard();
 

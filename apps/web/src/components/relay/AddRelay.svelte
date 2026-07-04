@@ -1,77 +1,77 @@
 <script lang="ts">
-import { apiUrl } from '../../utils/api';
-import SectionCard from '../ui/SectionCard.svelte';
+import { SectionCard } from "@relayscope/ui";
+import { apiUrl } from "../../utils/api";
 
 let { onAdded }: { onAdded?: () => void } = $props();
 
 let showForm = $state(false);
-let url = $state('');
-let name = $state('');
-let apiKey = $state('');
+let url = $state("");
+let name = $state("");
+let apiKey = $state("");
 let submitting = $state(false);
 let error = $state<string | null>(null);
 let success = $state<string | null>(null);
 
 // Load saved API key from localStorage
 $effect(() => {
-  const saved = localStorage.getItem('relayscope_api_key');
-  if (saved) apiKey = saved;
+	const saved = localStorage.getItem("relayscope_api_key");
+	if (saved) apiKey = saved;
 });
 
 async function handleSubmit() {
-  if (!url.trim() || submitting) return;
+	if (!url.trim() || submitting) return;
 
-  submitting = true;
-  error = null;
-  success = null;
+	submitting = true;
+	error = null;
+	success = null;
 
-  try {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    if (apiKey.trim()) {
-      headers.Authorization = `Bearer ${apiKey.trim()}`;
-      // Save for future use
-      localStorage.setItem('relayscope_api_key', apiKey.trim());
-    }
+	try {
+		const headers: Record<string, string> = {
+			"Content-Type": "application/json",
+		};
+		if (apiKey.trim()) {
+			headers.Authorization = `Bearer ${apiKey.trim()}`;
+			// Save for future use
+			localStorage.setItem("relayscope_api_key", apiKey.trim());
+		}
 
-    const res = await fetch(apiUrl('/api/relays'), {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        url: url.trim(),
-        name: name.trim() || undefined,
-        isPublic: true,
-      }),
-      signal: AbortSignal.timeout(15_000),
-    });
+		const res = await fetch(apiUrl("/api/relays"), {
+			method: "POST",
+			headers,
+			body: JSON.stringify({
+				url: url.trim(),
+				name: name.trim() || undefined,
+				isPublic: true,
+			}),
+			signal: AbortSignal.timeout(15_000),
+		});
 
-    const json = await res.json();
+		const json = await res.json();
 
-    if (json.success) {
-      success = `Added "${json.data.name || json.data.url}" successfully`;
-      url = '';
-      name = '';
-      showForm = false;
-      onAdded?.();
-    } else if (res.status === 409) {
-      error = 'This relay is already in the directory';
-    } else if (res.status === 401) {
-      error = 'Unauthorized — check your API key';
-    } else {
-      error = json.error || 'Failed to add relay';
-    }
-  } catch (e: unknown) {
-    error = e instanceof Error ? e.message : 'Failed to add relay';
-  } finally {
-    submitting = false;
-  }
+		if (json.success) {
+			success = `Added "${json.data.name || json.data.url}" successfully`;
+			url = "";
+			name = "";
+			showForm = false;
+			onAdded?.();
+		} else if (res.status === 409) {
+			error = "This relay is already in the directory";
+		} else if (res.status === 401) {
+			error = "Unauthorized — check your API key";
+		} else {
+			error = json.error || "Failed to add relay";
+		}
+	} catch (e: unknown) {
+		error = e instanceof Error ? e.message : "Failed to add relay";
+	} finally {
+		submitting = false;
+	}
 }
 
 function cancel() {
-  showForm = false;
-  error = null;
-  success = null;
+	showForm = false;
+	error = null;
+	success = null;
 }
 </script>
 

@@ -1,43 +1,43 @@
 <script lang="ts">
-import { useEventDeleter } from '../../lib/composables/useEventDeleter.svelte';
-import SectionCard from '../ui/SectionCard.svelte';
+import { SectionCard } from "@relayscope/ui";
+import { useEventDeleter } from "../../lib/composables/useEventDeleter.svelte";
 
 let { targetRelay }: { targetRelay: string } = $props();
 
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const deleter = useEventDeleter();
 
-let localRelay = $state('');
+let localRelay = $state("");
 
 // Sync from prop → local state → composable
 $effect(() => {
-  localRelay = targetRelay;
-  deleter.setTargetRelay(targetRelay);
+	localRelay = targetRelay;
+	deleter.setTargetRelay(targetRelay);
 });
 
-let inputIds = $state('');
+let inputIds = $state("");
 
 function handleAddIds() {
-  const ids = inputIds
-    .split(/[,\n]/)
-    .map((id) => id.trim())
-    .filter((id) => id.length > 0);
+	const ids = inputIds
+		.split(/[,\n]/)
+		.map((id) => id.trim())
+		.filter((id) => id.length > 0);
 
-  for (const id of ids) {
-    deleter.addEventId(id);
-  }
-  inputIds = '';
+	for (const id of ids) {
+		deleter.addEventId(id);
+	}
+	inputIds = "";
 }
 
 let confirmDelete = $state(false);
 
 async function handleDelete() {
-  if (!confirmDelete) {
-    confirmDelete = true;
-    return;
-  }
-  await deleter.deleteEvents();
-  confirmDelete = false;
+	if (!confirmDelete) {
+		confirmDelete = true;
+		return;
+	}
+	await deleter.deleteEvents();
+	confirmDelete = false;
 }
 </script>
 

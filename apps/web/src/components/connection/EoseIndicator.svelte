@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { EoseResult } from '@relayscope/shared';
+import type { EoseResult } from "@relayscope/shared";
 
 let { eoseResult }: { eoseResult: EoseResult | null } = $props();
 </script>

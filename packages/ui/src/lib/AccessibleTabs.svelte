@@ -1,47 +1,52 @@
 <script lang="ts">
-import type { Snippet } from 'svelte';
+import type { Snippet } from "svelte";
 
 type Props = {
-  tabs: Array<{ id: string; label: string; icon?: string; badge?: string | null }>;
-  activeTab: string;
-  onTabChange: (tabId: string) => void;
-  ariaLabel: string;
-  children: Snippet;
+	tabs: Array<{
+		id: string;
+		label: string;
+		icon?: string;
+		badge?: string | null;
+	}>;
+	activeTab: string;
+	onTabChange: (tabId: string) => void;
+	ariaLabel: string;
+	children: Snippet;
 };
 
 let { tabs, activeTab, onTabChange, ariaLabel, children }: Props = $props();
 let tablistEl: HTMLElement | undefined = $state();
 
 function handleKeydown(e: KeyboardEvent) {
-  const currentIndex = tabs.findIndex((t) => t.id === activeTab);
-  let nextIndex = currentIndex;
+	const currentIndex = tabs.findIndex((t) => t.id === activeTab);
+	let nextIndex = currentIndex;
 
-  switch (e.key) {
-    case 'ArrowRight':
-      nextIndex = (currentIndex + 1) % tabs.length;
-      break;
-    case 'ArrowLeft':
-      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-      break;
-    case 'Home':
-      nextIndex = 0;
-      break;
-    case 'End':
-      nextIndex = tabs.length - 1;
-      break;
-    default:
-      return;
-  }
+	switch (e.key) {
+		case "ArrowRight":
+			nextIndex = (currentIndex + 1) % tabs.length;
+			break;
+		case "ArrowLeft":
+			nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+			break;
+		case "Home":
+			nextIndex = 0;
+			break;
+		case "End":
+			nextIndex = tabs.length - 1;
+			break;
+		default:
+			return;
+	}
 
-  e.preventDefault();
-  const nextTab = tabs[nextIndex];
-  if (!nextTab) return;
-  onTabChange(nextTab.id);
-  // Move focus to the new tab button after DOM update
-  requestAnimationFrame(() => {
-    const buttons = tablistEl?.querySelectorAll('[role="tab"]');
-    (buttons?.[nextIndex] as HTMLElement)?.focus();
-  });
+	e.preventDefault();
+	const nextTab = tabs[nextIndex];
+	if (!nextTab) return;
+	onTabChange(nextTab.id);
+	// Move focus to the new tab button after DOM update
+	requestAnimationFrame(() => {
+		const buttons = tablistEl?.querySelectorAll('[role="tab"]');
+		(buttons?.[nextIndex] as HTMLElement)?.focus();
+	});
 }
 </script>
 

@@ -85,7 +85,9 @@ describe('Relays — Auth Guards', () => {
   });
 
   it('DELETE /api/relays/:id without auth returns 401', async () => {
-    const res = await app.request('/api/relays/relay-001', { method: 'DELETE' });
+    const res = await app.request('/api/relays/relay-001', {
+      method: 'DELETE',
+    });
     expect(res.status).toBe(401);
   });
 

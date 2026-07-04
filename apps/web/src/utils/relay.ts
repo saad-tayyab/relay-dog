@@ -87,7 +87,11 @@ export interface ConnectionStatus {
 }
 
 export async function checkConnections(relayUrl: string): Promise<ConnectionStatus> {
-  const status: ConnectionStatus = { http: 'pending', cors: 'pending', websocket: 'pending' };
+  const status: ConnectionStatus = {
+    http: 'pending',
+    cors: 'pending',
+    websocket: 'pending',
+  };
   const httpUrl = wsToHttp(relayUrl);
 
   // HTTP check

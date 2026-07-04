@@ -1,56 +1,61 @@
 <script lang="ts">
-import type { DirectoryRelay } from '@relayscope/shared';
-import { safeHttpsIconUrl } from '../../utils/relay';
-import SectionCard from '../ui/SectionCard.svelte';
+import type { DirectoryRelay } from "@relayscope/shared";
+import { SectionCard } from "@relayscope/ui";
+import { safeHttpsIconUrl } from "../../utils/relay";
 
 let {
-  relay,
-  onSelect,
-  onInspect,
-  selected,
+	relay,
+	onSelect,
+	onInspect,
+	selected,
 }: {
-  relay: DirectoryRelay;
-  onSelect: (id: string) => void;
-  onInspect: (url: string) => void;
-  selected: boolean;
+	relay: DirectoryRelay;
+	onSelect: (id: string) => void;
+	onInspect: (url: string) => void;
+	selected: boolean;
 } = $props();
 
 const iconUrl = $derived(safeHttpsIconUrl(relay.icon));
 
 function handleImageError(e: Event) {
-  const img = e.target as HTMLImageElement;
-  img.style.display = 'none';
+	const img = e.target as HTMLImageElement;
+	img.style.display = "none";
 }
 
 function handleUrlClick(e: MouseEvent) {
-  e.stopPropagation();
-  // Convert wss:// to https:// for browser-friendly link
-  const httpUrl = relay.url.replace(/^wss:\/\//i, 'https://').replace(/^ws:\/\//i, 'http://');
-  window.open(httpUrl, '_blank', 'noopener,noreferrer');
+	e.stopPropagation();
+	// Convert wss:// to https:// for browser-friendly link
+	const httpUrl = relay.url
+		.replace(/^wss:\/\//i, "https://")
+		.replace(/^ws:\/\//i, "http://");
+	window.open(httpUrl, "_blank", "noopener,noreferrer");
 }
 
 function handleInspect(e: MouseEvent) {
-  e.stopPropagation();
-  onInspect(relay.url);
+	e.stopPropagation();
+	onInspect(relay.url);
 }
 
 const isOnline = $derived(
-  relay.lastDiscovery != null &&
-  (Date.now() - new Date(relay.lastDiscovery.discoveredAt).getTime()) < 24 * 60 * 60 * 1000,
+	relay.lastDiscovery != null &&
+		Date.now() - new Date(relay.lastDiscovery.discoveredAt).getTime() <
+			24 * 60 * 60 * 1000,
 );
 
 const latencyDisplay = $derived(
-  relay.lastDiscovery?.rttOpen != null ? `${relay.lastDiscovery.rttOpen}ms` : '—',
+	relay.lastDiscovery?.rttOpen != null
+		? `${relay.lastDiscovery.rttOpen}ms`
+		: "—",
 );
 
 const nipCount = $derived(relay.supportedNips.length);
 
 function softwareHref(raw: string): string {
-  return raw.replace(/^git\+/, '');
+	return raw.replace(/^git\+/, "");
 }
 
 function isSoftwareUrl(raw: string): boolean {
-  return /^git\+https?:\/\//.test(raw) || /^https?:\/\//.test(raw);
+	return /^git\+https?:\/\//.test(raw) || /^https?:\/\//.test(raw);
 }
 </script>
 

@@ -1,27 +1,27 @@
 <script lang="ts">
-import type { LatencyMetrics } from '@relayscope/shared';
-import SectionCard from '../ui/SectionCard.svelte';
+import type { LatencyMetrics } from "@relayscope/shared";
+import { SectionCard } from "@relayscope/ui";
 
 let {
-  metrics,
-  measuring,
-  onMeasure,
+	metrics,
+	measuring,
+	onMeasure,
 }: {
-  metrics: LatencyMetrics;
-  measuring: boolean;
-  onMeasure?: () => void;
+	metrics: LatencyMetrics;
+	measuring: boolean;
+	onMeasure?: () => void;
 } = $props();
 
 function latencyColor(ms: number | null): string {
-  if (ms === null) return 'text-text-muted';
-  if (ms < 100) return 'text-success';
-  if (ms < 500) return 'text-warning';
-  return 'text-error';
+	if (ms === null) return "text-text-muted";
+	if (ms < 100) return "text-success";
+	if (ms < 500) return "text-warning";
+	return "text-error";
 }
 
 function formatMs(ms: number | null): string {
-  if (ms === null) return '—';
-  return `${ms}ms`;
+	if (ms === null) return "—";
+	return `${ms}ms`;
 }
 </script>
 

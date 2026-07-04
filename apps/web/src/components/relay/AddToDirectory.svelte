@@ -1,19 +1,19 @@
 <script lang="ts">
-import { useAddRelay } from '../../lib/composables/useAddRelay.svelte';
-import SectionCard from '../ui/SectionCard.svelte';
+import { SectionCard } from "@relayscope/ui";
+import { useAddRelay } from "../../lib/composables/useAddRelay.svelte";
 
 let {
-  relayUrl,
-  relayName,
-  inDirectory,
-  onAdded,
-  onInDirectoryChange,
+	relayUrl,
+	relayName,
+	inDirectory,
+	onAdded,
+	onInDirectoryChange,
 }: {
-  relayUrl: string;
-  relayName?: string;
-  inDirectory: boolean;
-  onAdded?: (relayId: string) => void;
-  onInDirectoryChange?: (inDir: boolean) => void;
+	relayUrl: string;
+	relayName?: string;
+	inDirectory: boolean;
+	onAdded?: (relayId: string) => void;
+	onInDirectoryChange?: (inDir: boolean) => void;
 } = $props();
 
 let showForm = $state(false);
@@ -22,20 +22,20 @@ let showForm = $state(false);
 const addRelayState = useAddRelay();
 
 async function handleAdd() {
-  const result = await addRelayState.add(relayUrl, relayName);
+	const result = await addRelayState.add(relayUrl, relayName);
 
-  if (addRelayState.success) {
-    showForm = false;
-    onInDirectoryChange?.(true);
-    if (result?.id) {
-      onAdded?.(result.id);
-    }
-  }
+	if (addRelayState.success) {
+		showForm = false;
+		onInDirectoryChange?.(true);
+		if (result?.id) {
+			onAdded?.(result.id);
+		}
+	}
 }
 
 function cancel() {
-  showForm = false;
-  addRelayState.dismissError();
+	showForm = false;
+	addRelayState.dismissError();
 }
 </script>
 

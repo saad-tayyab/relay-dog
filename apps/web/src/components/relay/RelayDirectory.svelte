@@ -1,13 +1,12 @@
 <script lang="ts">
-import type { ComparisonDiff, DirectoryRelay } from '@relayscope/shared';
-import { useDirectory } from '../../lib/composables/useDirectory.svelte';
-import { apiUrl } from '../../utils/api';
-import FilterBar from '../filter/FilterBar.svelte';
-import LoadingSpinner from '../ui/LoadingSpinner.svelte';
-import SectionCard from '../ui/SectionCard.svelte';
-import AddRelay from './AddRelay.svelte';
-import ComparisonView from './ComparisonView.svelte';
-import RelayCard from './RelayCard.svelte';
+import type { ComparisonDiff, DirectoryRelay } from "@relayscope/shared";
+import { LoadingSpinner, SectionCard } from "@relayscope/ui";
+import { useDirectory } from "../../lib/composables/useDirectory.svelte";
+import { apiUrl } from "../../utils/api";
+import FilterBar from "../filter/FilterBar.svelte";
+import AddRelay from "./AddRelay.svelte";
+import ComparisonView from "./ComparisonView.svelte";
+import RelayCard from "./RelayCard.svelte";
 
 let { onSelectRelay }: { onSelectRelay: (url: string) => void } = $props();
 
@@ -24,57 +23,61 @@ let comparisonError = $state<string | null>(null);
 
 // Load initial relays
 $effect(() => {
-  directory.fetchRelays();
+	directory.fetchRelays();
 });
 
 function handleSelect(id: string) {
-  const newSet = new Set(selectedIds);
-  if (newSet.has(id)) {
-    newSet.delete(id);
-  } else {
-    if (newSet.size >= 2) {
-      // Replace oldest selection
-      const first = newSet.values().next().value;
-      if (first) newSet.delete(first);
-    }
-    newSet.add(id);
-  }
-  selectedIds = newSet;
+	const newSet = new Set(selectedIds);
+	if (newSet.has(id)) {
+		newSet.delete(id);
+	} else {
+		if (newSet.size >= 2) {
+			// Replace oldest selection
+			const first = newSet.values().next().value;
+			if (first) newSet.delete(first);
+		}
+		newSet.add(id);
+	}
+	selectedIds = newSet;
 }
 
 async function handleCompare() {
-  const ids = Array.from(selectedIds);
-  if (ids.length !== 2) return;
+	const ids = Array.from(selectedIds);
+	if (ids.length !== 2) return;
 
-  comparisonLoading = true;
-  comparisonError = null;
-  comparisonRelayA = null;
-  comparisonRelayB = null;
-  comparisonDiff = null;
+	comparisonLoading = true;
+	comparisonError = null;
+	comparisonRelayA = null;
+	comparisonRelayB = null;
+	comparisonDiff = null;
 
-  try {
-    const res = await fetch(apiUrl(`/api/directory/compare/${ids[0]}/${ids[1]}`), {
-      signal: AbortSignal.timeout(15_000),
-    });
-    const json = await res.json();
-    if (!json.success) {
-      throw new Error(json.error || 'Failed to compare relays');
-    }
-    comparisonRelayA = json.data.relayA;
-    comparisonRelayB = json.data.relayB;
-    comparisonDiff = json.data.diff;
-  } catch (e: unknown) {
-    comparisonError = e instanceof Error ? e.message : 'Failed to compare relays';
-  } finally {
-    comparisonLoading = false;
-  }
+	try {
+		const res = await fetch(
+			apiUrl(`/api/directory/compare/${ids[0]}/${ids[1]}`),
+			{
+				signal: AbortSignal.timeout(15_000),
+			},
+		);
+		const json = await res.json();
+		if (!json.success) {
+			throw new Error(json.error || "Failed to compare relays");
+		}
+		comparisonRelayA = json.data.relayA;
+		comparisonRelayB = json.data.relayB;
+		comparisonDiff = json.data.diff;
+	} catch (e: unknown) {
+		comparisonError =
+			e instanceof Error ? e.message : "Failed to compare relays";
+	} finally {
+		comparisonLoading = false;
+	}
 }
 
 function closeComparison() {
-  comparisonRelayA = null;
-  comparisonRelayB = null;
-  comparisonDiff = null;
-  comparisonError = null;
+	comparisonRelayA = null;
+	comparisonRelayB = null;
+	comparisonDiff = null;
+	comparisonError = null;
 }
 </script>
 

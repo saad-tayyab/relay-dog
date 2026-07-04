@@ -102,7 +102,12 @@ export function useLatencyMeasurement() {
   }
 
   function reset() {
-    metrics = { wsRoundTripMs: null, httpLatencyMs: null, eoseTimeMs: null, eoseEventCount: 0 };
+    metrics = {
+      wsRoundTripMs: null,
+      httpLatencyMs: null,
+      eoseTimeMs: null,
+      eoseEventCount: 0,
+    };
     measuring = false;
   }
 

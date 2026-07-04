@@ -1,17 +1,17 @@
 <script lang="ts">
-import type { RelayDiscovery } from '@relayscope/shared';
+import type { RelayDiscovery } from "@relayscope/shared";
 
 let {
-  discoveries,
-  stats,
+	discoveries,
+	stats,
 }: {
-  discoveries: RelayDiscovery[];
-  stats: {
-    monitorCount: number;
-    avgRttOpen: number | null;
-    avgRttRead: number | null;
-    avgRttWrite: number | null;
-  };
+	discoveries: RelayDiscovery[];
+	stats: {
+		monitorCount: number;
+		avgRttOpen: number | null;
+		avgRttRead: number | null;
+		avgRttWrite: number | null;
+	};
 } = $props();
 </script>
 

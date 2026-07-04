@@ -6,6 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
+    "ignoreUnknown": true,
     "includes": [
       "**",
       "!!**/dist",
@@ -13,8 +14,7 @@
       "!!**/.turbo",
       "!!**/.hermit",
       "!!**/.vite"
-    ],
-    "ignoreUnknown": true
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -65,6 +65,10 @@
           "a11y": {
             "useValidAriaValues": "off",
             "noNoninteractiveTabindex": "off"
+          },
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off"
           }
         }
       }

@@ -1,52 +1,52 @@
 <script lang="ts">
-import type { WriteTestStatus } from '@relayscope/shared';
-import SectionCard from '../ui/SectionCard.svelte';
+import type { WriteTestStatus } from "@relayscope/shared";
+import { SectionCard } from "@relayscope/ui";
 
 let {
-  status,
-  latencyMs,
-  error,
-  eventId,
-  onRunTest,
+	status,
+	latencyMs,
+	error,
+	eventId,
+	onRunTest,
 }: {
-  status: WriteTestStatus;
-  latencyMs: number | null;
-  error: string | null;
-  eventId: string | null;
-  onRunTest?: () => void;
+	status: WriteTestStatus;
+	latencyMs: number | null;
+	error: string | null;
+	eventId: string | null;
+	onRunTest?: () => void;
 } = $props();
 
 const statusDisplay = $derived.by(() => {
-  switch (status) {
-    case 'success':
-      return {
-        label: 'Write OK',
-        color: 'text-success',
-        bg: 'bg-success-dim',
-        border: 'border-success/20',
-      };
-    case 'failed':
-      return {
-        label: 'Write Failed',
-        color: 'text-error',
-        bg: 'bg-error-dim',
-        border: 'border-error/20',
-      };
-    case 'testing':
-      return {
-        label: 'Testing…',
-        color: 'text-accent',
-        bg: 'bg-accent-dim',
-        border: 'border-accent-border',
-      };
-    default:
-      return {
-        label: 'Not tested',
-        color: 'text-text-muted',
-        bg: 'bg-dark-surface',
-        border: 'border-dark-border',
-      };
-  }
+	switch (status) {
+		case "success":
+			return {
+				label: "Write OK",
+				color: "text-success",
+				bg: "bg-success-dim",
+				border: "border-success/20",
+			};
+		case "failed":
+			return {
+				label: "Write Failed",
+				color: "text-error",
+				bg: "bg-error-dim",
+				border: "border-error/20",
+			};
+		case "testing":
+			return {
+				label: "Testing…",
+				color: "text-accent",
+				bg: "bg-accent-dim",
+				border: "border-accent-border",
+			};
+		default:
+			return {
+				label: "Not tested",
+				color: "text-text-muted",
+				bg: "bg-dark-surface",
+				border: "border-dark-border",
+			};
+	}
 });
 </script>
 

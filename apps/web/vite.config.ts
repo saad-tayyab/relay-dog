@@ -1,6 +1,6 @@
+import { resolve } from 'node:path';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
-import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -27,9 +27,9 @@ export default defineConfig({
     target: 'es2022',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'svelte-vendor': ['svelte'],
-          'nostr-tools': ['nostr-tools'],
+        manualChunks(id) {
+          if (id.includes('node_modules/svelte')) return 'svelte-vendor';
+          if (id.includes('node_modules/nostr-tools')) return 'nostr-tools';
         },
       },
     },

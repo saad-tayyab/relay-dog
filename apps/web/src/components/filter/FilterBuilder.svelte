@@ -1,67 +1,67 @@
 <script lang="ts">
-import SectionCard from '../ui/SectionCard.svelte';
+import { SectionCard } from "@relayscope/ui";
 
 let {
-  connected,
-  onSend,
+	connected,
+	onSend,
 }: {
-  connected: boolean;
-  onSend: (message: string) => void;
+	connected: boolean;
+	onSend: (message: string) => void;
 } = $props();
 
-let kinds = $state('1');
-let authors = $state('');
+let kinds = $state("1");
+let authors = $state("");
 let limit = $state(50);
-let since = $state('');
-let until = $state('');
+let since = $state("");
+let until = $state("");
 let subId = $state<string | null>(null);
 
 function generateSubId(): string {
-  return `rs-${Math.random().toString(36).slice(2, 10)}`;
+	return `rs-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 function handleSubscribe() {
-  const filter: Record<string, unknown> = {};
+	const filter: Record<string, unknown> = {};
 
-  // Parse kinds
-  const kindList = kinds
-    .split(',')
-    .map((k) => Number.parseInt(k.trim(), 10))
-    .filter((k) => !Number.isNaN(k));
-  if (kindList.length > 0) filter.kinds = kindList;
+	// Parse kinds
+	const kindList = kinds
+		.split(",")
+		.map((k) => Number.parseInt(k.trim(), 10))
+		.filter((k) => !Number.isNaN(k));
+	if (kindList.length > 0) filter.kinds = kindList;
 
-  // Parse authors
-  const authorList = authors
-    .split(',')
-    .map((a) => a.trim())
-    .filter((a) => a.length > 0);
-  if (authorList.length > 0) filter.authors = authorList;
+	// Parse authors
+	const authorList = authors
+		.split(",")
+		.map((a) => a.trim())
+		.filter((a) => a.length > 0);
+	if (authorList.length > 0) filter.authors = authorList;
 
-  // Limit
-  if (limit > 0) filter.limit = limit;
+	// Limit
+	if (limit > 0) filter.limit = limit;
 
-  // Time range
-  if (since) {
-    const sinceTs = Math.floor(new Date(since).getTime() / 1000);
-    if (!Number.isNaN(sinceTs)) filter.since = sinceTs;
-  }
-  if (until) {
-    const untilTs = Math.floor(new Date(until).getTime() / 1000);
-    if (!Number.isNaN(untilTs)) filter.until = untilTs;
-  }
+	// Time range
+	if (since) {
+		const sinceTs = Math.floor(new Date(since).getTime() / 1000);
+		if (!Number.isNaN(sinceTs)) filter.since = sinceTs;
+	}
+	if (until) {
+		const untilTs = Math.floor(new Date(until).getTime() / 1000);
+		if (!Number.isNaN(untilTs)) filter.until = untilTs;
+	}
 
-  const id = generateSubId();
-  subId = id;
+	const id = generateSubId();
+	subId = id;
 
-  const req = JSON.stringify(['REQ', id, filter]);
-  onSend(req);
+	const req = JSON.stringify(["REQ", id, filter]);
+	onSend(req);
 }
 
 function handleUnsubscribe() {
-  if (!subId) return;
-  const close = JSON.stringify(['CLOSE', subId]);
-  onSend(close);
-  subId = null;
+	if (!subId) return;
+	const close = JSON.stringify(["CLOSE", subId]);
+	onSend(close);
+	subId = null;
 }
 </script>
 

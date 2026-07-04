@@ -1,20 +1,25 @@
 <script lang="ts">
-import type { NostrEvent } from '@relayscope/shared';
-import { eventIdMatches, toNpub, verifySignature } from '../../utils/nostrVerify';
-import SectionCard from '../ui/SectionCard.svelte';
+import type { NostrEvent } from "@relayscope/shared";
+import { SectionCard } from "@relayscope/ui";
+import {
+	eventIdMatches,
+	toNpub,
+	verifySignature,
+} from "../../utils/nostrVerify";
 
 let {
-  event,
-  onEditAndRepublish,
-}: { event: NostrEvent; onEditAndRepublish?: (event: NostrEvent) => void } = $props();
+	event,
+	onEditAndRepublish,
+}: { event: NostrEvent; onEditAndRepublish?: (event: NostrEvent) => void } =
+	$props();
 
 const sigResult = $derived(verifySignature(event));
 const idResult = $derived(eventIdMatches(event));
 const npub = $derived(toNpub(event.pubkey));
 
 function truncateHex(hex: string, chars = 8): string {
-  if (hex.length <= chars * 2) return hex;
-  return `${hex.slice(0, chars)}…${hex.slice(-chars)}`;
+	if (hex.length <= chars * 2) return hex;
+	return `${hex.slice(0, chars)}…${hex.slice(-chars)}`;
 }
 </script>
 

@@ -8,7 +8,13 @@ import {
 } from './schema';
 
 export const relations = defineRelations(
-  { relayDiscovered, relayEvents, relayInfoSnapshots, relayListEntries, relays },
+  {
+    relayDiscovered,
+    relayEvents,
+    relayInfoSnapshots,
+    relayListEntries,
+    relays,
+  },
   (r) => ({
     relays: {
       infoSnapshots: r.many.relayInfoSnapshots({

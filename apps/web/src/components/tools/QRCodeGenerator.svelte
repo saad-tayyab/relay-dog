@@ -1,64 +1,64 @@
 <script lang="ts">
-import QRCode from 'qrcode';
-import { detectKeyFormat } from '../../utils/keys';
-import SectionCard from '../ui/SectionCard.svelte';
+import { SectionCard } from "@relayscope/ui";
+import QRCode from "qrcode";
+import { detectKeyFormat } from "../../utils/keys";
 
-let input = $state('');
+let input = $state("");
 let qrDataUrl = $state<string | null>(null);
 let size = $state<200 | 300 | 500>(300);
-let detectedType = $state<string>('text');
+let detectedType = $state<string>("text");
 
 function generateQR() {
-  if (!input.trim()) {
-    qrDataUrl = null;
-    return;
-  }
+	if (!input.trim()) {
+		qrDataUrl = null;
+		return;
+	}
 
-  QRCode.toDataURL(input.trim(), {
-    width: size,
-    margin: 2,
-    color: {
-      dark: '#ffffff',
-      light: '#1a1a2e',
-    },
-  }).then((url) => {
-    qrDataUrl = url;
-  });
+	QRCode.toDataURL(input.trim(), {
+		width: size,
+		margin: 2,
+		color: {
+			dark: "#ffffff",
+			light: "#1a1a2e",
+		},
+	}).then((url) => {
+		qrDataUrl = url;
+	});
 }
 
 function detectType(value: string): string {
-  if (detectKeyFormat(value) === 'npub') return 'npub';
-  if (value.startsWith('wss://') || value.startsWith('ws://')) return 'relay';
-  try {
-    JSON.parse(value);
-    return 'event';
-  } catch {
-    return 'text';
-  }
+	if (detectKeyFormat(value) === "npub") return "npub";
+	if (value.startsWith("wss://") || value.startsWith("ws://")) return "relay";
+	try {
+		JSON.parse(value);
+		return "event";
+	} catch {
+		return "text";
+	}
 }
 
 function handleInput() {
-  detectedType = detectType(input);
-  generateQR();
+	detectedType = detectType(input);
+	generateQR();
 }
 
 function downloadQR() {
-  if (!qrDataUrl) return;
-  const a = document.createElement('a');
-  a.href = qrDataUrl;
-  a.download = `nostr-qr-${detectedType}.png`;
-  a.click();
+	if (!qrDataUrl) return;
+	const a = document.createElement("a");
+	a.href = qrDataUrl;
+	a.download = `nostr-qr-${detectedType}.png`;
+	a.click();
 }
 
 async function copyImage() {
-  if (!qrDataUrl) return;
-  try {
-    const res = await fetch(qrDataUrl);
-    const blob = await res.blob();
-    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-  } catch {
-    // Clipboard API not available or denied
-  }
+	if (!qrDataUrl) return;
+	try {
+		const res = await fetch(qrDataUrl);
+		const blob = await res.blob();
+		await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+	} catch {
+		// Clipboard API not available or denied
+	}
 }
 </script>
 

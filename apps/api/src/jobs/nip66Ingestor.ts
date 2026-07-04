@@ -195,7 +195,12 @@ function connectToMonitor(url: string): void {
     };
 
     ws.onerror = (err) => {
-      log({ level: 'warn', msg: 'Monitor relay error', url, error: String(err) });
+      log({
+        level: 'warn',
+        msg: 'Monitor relay error',
+        url,
+        error: String(err),
+      });
     };
 
     ws.onclose = () => {
@@ -250,7 +255,11 @@ export function startNip66Ingestor(): void {
         .filter(Boolean)
     : DEFAULT_MONITOR_RELAYS;
 
-  log({ level: 'info', msg: 'Starting NIP-66 ingestor', monitors: monitorUrls });
+  log({
+    level: 'info',
+    msg: 'Starting NIP-66 ingestor',
+    monitors: monitorUrls,
+  });
 
   for (const url of monitorUrls) {
     connectToMonitor(url);

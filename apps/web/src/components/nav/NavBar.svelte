@@ -1,22 +1,22 @@
 <script lang="ts">
-import type { Section } from '../../utils/router';
+import type { Section } from "../../utils/router";
 
 let {
-  activeSection,
-  onNavigate,
-  eventCount = 0,
+	activeSection,
+	onNavigate,
+	eventCount = 0,
 }: {
-  activeSection: Section;
-  onNavigate: (section: Section) => void;
-  eventCount?: number;
+	activeSection: Section;
+	onNavigate: (section: Section) => void;
+	eventCount?: number;
 } = $props();
 
 const sections: { id: Section; label: string; icon: string }[] = [
-  { id: 'inspector', label: 'Inspector', icon: '⚡' },
-  { id: 'verifier', label: 'Verifier', icon: '🔐' },
-  { id: 'publisher', label: 'Publisher', icon: '✍️' },
-  { id: 'tools', label: 'Tools', icon: '🧰' },
-  { id: 'directory', label: 'Directory', icon: '📂' },
+	{ id: "inspector", label: "Inspector", icon: "⚡" },
+	{ id: "verifier", label: "Verifier", icon: "🔐" },
+	{ id: "publisher", label: "Publisher", icon: "✍️" },
+	{ id: "tools", label: "Tools", icon: "🧰" },
+	{ id: "directory", label: "Directory", icon: "📂" },
 ];
 </script>
 

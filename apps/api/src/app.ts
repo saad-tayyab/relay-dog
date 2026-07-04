@@ -68,22 +68,25 @@ export function createApp() {
   // ─── Body Size Limit ───
   app.use('/api/*', bodyLimit({ maxSize: 100 * 1024 }));
 
-  // ─── Security Headers (Hono built-in + custom CSP) ───
+  // ─── Custom security headers (registered BEFORE secureHeaders so they win in response phase) ───
+  app.use('*', async (c, next) => {
+    await next();
+    c.header('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
+    c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  });
+
+  // ─── Security Headers (Hono built-in) ───
   app.use(
     '*',
     secureHeaders({
-      xFrameOptions: false,
+      xFrameOptions: 'DENY',
       strictTransportSecurity: isProduction
         ? 'max-age=63072000; includeSubDomains; preload'
         : false,
       xXssProtection: false,
+      referrerPolicy: 'strict-origin-when-cross-origin',
     }),
   );
-
-  app.use('*', async (c, next) => {
-    await next();
-    c.header('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
-  });
 
   // ─── Routes ───
   app.get('/', (c) => {

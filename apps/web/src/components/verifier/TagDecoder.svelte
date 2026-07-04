@@ -39,7 +39,7 @@ function getBadgeColor(type: string): string {
           class="flex items-start gap-2 p-2.5 rounded-lg bg-dark-surface border border-dark-border"
         >
           <span
-            class="shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded border {getBadgeColor(
+            class="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded border {getBadgeColor(
               decoded.type,
             )}"
           >

@@ -14,11 +14,11 @@ function formatAmount(amount: number, unit: string): string {
 
 {#if fees}
   <SectionCard>
-    <h3 class="text-sm font-semibold text-text-primary mb-3">💰 Fees</h3>
+    <h3 class="text-sm font-semibold text-text-primary mb-3">Fees</h3>
     <div class="space-y-2">
       {#if fees.admission && fees.admission.length > 0}
         <div>
-          <p class="text-[10px] text-text-muted mb-1">Admission Fee</p>
+          <p class="text-xs text-text-muted mb-1">Admission Fee</p>
           {#each fees.admission as entry (entry.amount)}
             <div
               class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-dark-surface border border-dark-border"
@@ -35,7 +35,7 @@ function formatAmount(amount: number, unit: string): string {
 
       {#if fees.subscription && fees.subscription.length > 0}
         <div>
-          <p class="text-[10px] text-text-muted mb-1">Subscription Fee</p>
+          <p class="text-xs text-text-muted mb-1">Subscription Fee</p>
           {#each fees.subscription as entry (entry.amount)}
             <div
               class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-dark-surface border border-dark-border"
@@ -52,7 +52,7 @@ function formatAmount(amount: number, unit: string): string {
 
       {#if fees.publication && fees.publication.length > 0}
         <div>
-          <p class="text-[10px] text-text-muted mb-1">Publication Fee</p>
+          <p class="text-xs text-text-muted mb-1">Publication Fee</p>
           {#each fees.publication as entry (entry.amount)}
             <div
               class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-dark-surface border border-dark-border"

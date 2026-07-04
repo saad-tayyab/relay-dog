@@ -90,7 +90,7 @@ function handleKeydown(e: KeyboardEvent) {
     id="tabpanel-{activeTab}"
     aria-labelledby="tab-{activeTab}"
     tabindex={0}
-    class="focus:outline-none"
+    class="pt-5 focus:outline-none"
   >
     {@render children()}
   </div>

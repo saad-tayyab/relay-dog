@@ -1,5 +1,6 @@
 <script lang="ts">
 import { SectionCard } from "@relayscope/ui";
+import { useClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
 import { type Nip05Result, verifyNip05 } from "../../utils/nip05";
 
 let identifier = $state("");
@@ -45,9 +46,8 @@ async function handleCheck() {
 	}
 }
 
-import { createClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
-
-const clipboard = createClipboard();
+// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
+const clipboard = useClipboard();
 </script>
 
 <SectionCard>
@@ -119,15 +119,15 @@ const clipboard = createClipboard();
         <!-- Status -->
         <div
           class="px-3 py-2 rounded-lg text-xs {result.verified
-            ? 'bg-success/10 border border-success/20 text-success'
-            : 'bg-error/10 border border-error/20 text-error'}"
+            ? 'bg-success-dim border border-success/20 text-success'
+            : 'bg-error-dim border border-error/20 text-error'}"
         >
           {#if result.verified}
-            ✅ Verified — pubkey matches
+            <span aria-hidden="true">✓</span> Verified — pubkey matches
           {:else if result.error}
-            ❌ Failed — {result.error}
+            <span aria-hidden="true">✕</span> Failed — {result.error}
           {:else}
-            ⚠️ Mismatch — pubkey doesn't match expected
+            <span aria-hidden="true">⚠</span> Mismatch — pubkey doesn't match expected
           {/if}
         </div>
 
@@ -194,7 +194,7 @@ const clipboard = createClipboard();
             >
               Raw JSON Response
             </summary>
-            <pre class="mt-2 p-3 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono">{JSON.stringify(
+             <pre class="mt-2 p-4 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono">{JSON.stringify(
                 result.rawResponse,
                 null,
                 2,
@@ -208,8 +208,9 @@ const clipboard = createClipboard();
     {#if history.length > 0}
       <div class="border-t border-dark-border pt-3">
         <p class="text-xs text-text-muted mb-2">Recent checks</p>
-        <div class="space-y-1">
-          {#each history as item (item.identifier)}
+      <ul class="space-y-1">
+        {#each history as item (item.identifier)}
+          <li>
             <button
               type="button"
               onclick={() => {
@@ -223,8 +224,9 @@ const clipboard = createClipboard();
                 {item.verified ? '✓' : '✗'}
               </span>
             </button>
-          {/each}
-        </div>
+          </li>
+        {/each}
+      </ul>
       </div>
     {/if}
   </div>

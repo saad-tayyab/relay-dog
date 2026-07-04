@@ -1,7 +1,7 @@
 <script lang="ts">
 let { message }: { message: string } = $props();
 
-const parsed = $derived(() => {
+const parsed = $derived.by(() => {
 	if (message.startsWith("OK")) {
 		const content = message.slice(2).trim();
 		return { type: "ok" as const, content };
@@ -23,14 +23,14 @@ const parsed = $derived(() => {
 </script>
 
 <span class="text-xs">
-  {#if parsed().type === 'ok'}
-    <span class="text-success">OK</span> {parsed().content}
-  {:else if parsed().type === 'closed'}
-    <span class="text-error">CLOSED</span> {parsed().content}
-  {:else if parsed().type === 'auth-required'}
-    <span class="text-warning">auth-required:</span> {parsed().content}
-  {:else if parsed().type === 'restricted'}
-    <span class="text-error">restricted:</span> {parsed().content}
+  {#if parsed.type === 'ok'}
+    <span class="text-success">OK</span> {parsed.content}
+  {:else if parsed.type === 'closed'}
+    <span class="text-error">CLOSED</span> {parsed.content}
+  {:else if parsed.type === 'auth-required'}
+    <span class="text-warning">auth-required:</span> {parsed.content}
+  {:else if parsed.type === 'restricted'}
+    <span class="text-error">restricted:</span> {parsed.content}
   {:else}
     {message}
   {/if}

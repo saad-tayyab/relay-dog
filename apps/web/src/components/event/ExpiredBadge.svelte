@@ -18,14 +18,14 @@ function formatRemaining(ms: number): string {
 
 {#if expirationInfo?.isExpired}
   <span
-    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-error/10 border border-error/20 text-error"
+    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-error-dim border border-error/20 text-error"
   >
     <span>⚠</span>
     <span>Expired</span>
   </span>
 {:else if expirationInfo?.expiresAt}
   <span
-    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-warning/10 border border-warning/20 text-warning"
+    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-warning-dim border border-warning/20 text-warning"
   >
     <span>⏰</span>
     <span>Expires in {formatRemaining(expirationInfo.remainingMs ?? 0)}</span>

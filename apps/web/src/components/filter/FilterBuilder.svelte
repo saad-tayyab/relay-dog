@@ -70,14 +70,16 @@ function handleUnsubscribe() {
     <h3 class="text-sm font-semibold text-text-primary">Subscription Filter</h3>
     {#if subId}
       <span
-        class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-dim border border-accent-border text-accent"
+        class="text-xs font-mono px-2 py-0.5 rounded-full bg-accent-dim border border-accent-border text-accent"
       >
         {subId}
       </span>
     {/if}
   </div>
 
-  <div class="grid grid-cols-2 gap-3 mb-4">
+  <fieldset class="grid grid-cols-2 gap-3 mb-4 border-0 p-0 m-0">
+    <legend class="sr-only">Filter parameters</legend>
+
     <!-- Kinds -->
     <div>
       <label for="filter-kinds" class="block text-xs text-text-muted mb-1">Kinds</label>
@@ -86,7 +88,7 @@ function handleUnsubscribe() {
         type="text"
         bind:value={kinds}
         placeholder="0, 1, 4, 42"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono placeholder:text-text-muted focus:outline-none focus:border-accent-border focus:ring-1 focus:ring-accent-border transition-all"
+        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
       />
     </div>
 
@@ -99,7 +101,7 @@ function handleUnsubscribe() {
         bind:value={limit}
         min="1"
         max="500"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono focus:outline-none focus:border-accent-border focus:ring-1 focus:ring-accent-border transition-all"
+        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono focus:outline-none focus:border-accent-border transition-all"
       />
     </div>
 
@@ -124,10 +126,11 @@ function handleUnsubscribe() {
         class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono focus:outline-none focus:border-accent-border focus:ring-1 focus:ring-accent-border transition-all [color-scheme:dark]"
       />
     </div>
-  </div>
+  </fieldset>
 
   <!-- Authors (full width) -->
-  <div class="mb-4">
+  <fieldset class="mb-4 border-0 p-0 m-0">
+    <legend class="sr-only">Authors filter</legend>
     <label for="filter-authors" class="block text-xs text-text-muted mb-1">
       Authors (hex pubkeys, comma-separated)
     </label>
@@ -136,9 +139,9 @@ function handleUnsubscribe() {
       type="text"
       bind:value={authors}
       placeholder="abc123..., def456..."
-      class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono placeholder:text-text-muted focus:outline-none focus:border-accent-border focus:ring-1 focus:ring-accent-border transition-all"
+      class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
     />
-  </div>
+  </fieldset>
 
   <!-- Actions -->
   <div class="flex items-center gap-2">
@@ -147,7 +150,7 @@ function handleUnsubscribe() {
         type="button"
         onclick={handleSubscribe}
         disabled={!connected}
-        class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        class="min-h-[44px] px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
       >
         Subscribe
       </button>
@@ -155,7 +158,7 @@ function handleUnsubscribe() {
       <button
         type="button"
         onclick={handleUnsubscribe}
-        class="px-4 py-2 rounded-lg bg-error/15 border border-error/30 text-error text-sm font-medium hover:bg-error/25 transition-all"
+        class="min-h-[44px] px-4 py-2 rounded-lg bg-error-dim border border-error/20 text-error text-sm font-medium hover:bg-error/25 transition-all"
       >
         Unsubscribe
       </button>

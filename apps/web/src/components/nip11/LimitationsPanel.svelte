@@ -32,35 +32,37 @@ const items = $derived(
 
 {#if limitation && items.length > 0}
   <SectionCard className="animate-fade-in">
-    <h3 class="text-sm font-semibold text-text-muted uppercase tracking-wider mb-4">
+    <h3 class="text-sm font-semibold text-text-primary mb-4">
       Limitations & Policies
     </h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {#each items as [key, val] (key)}
         {@const isBool = BOOLEAN_KEYS.includes(key)}
         {@const isTrue = val === true}
         <div
           class="flex items-center justify-between px-4 py-3 rounded-lg bg-dark-surface border border-dark-border"
         >
-          <span class="text-sm text-text-secondary">
+          <dt class="text-sm text-text-secondary">
             {LABELS[key] ||
               key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
-          </span>
+          </dt>
           {#if isBool}
-            <span
-              class="text-xs font-semibold px-2.5 py-1 rounded-full {isTrue
-                ? 'bg-error-dim text-error'
-                : 'bg-success-dim text-success'}"
-            >
-              {isTrue ? 'Yes' : 'No'}
-            </span>
+            <dd>
+              <span
+                class="text-xs font-semibold px-2.5 py-1 rounded-full {isTrue
+                  ? 'bg-error-dim text-error'
+                  : 'bg-success-dim text-success'}"
+              >
+                {isTrue ? 'Yes' : 'No'}
+              </span>
+            </dd>
           {:else}
-            <span class="text-sm font-mono font-medium text-text-primary">
+            <dd class="text-sm font-mono font-medium text-text-primary">
               {typeof val === 'number' ? val.toLocaleString() : String(val)}
-            </span>
+            </dd>
           {/if}
         </div>
       {/each}
-    </div>
+    </dl>
   </SectionCard>
 {/if}

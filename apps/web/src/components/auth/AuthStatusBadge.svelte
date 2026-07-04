@@ -64,7 +64,7 @@ const displayConfig = $derived.by(() => {
     <button
       type="button"
       onclick={onAuthenticate}
-      class="text-xs px-3 py-1 rounded-lg bg-accent text-white hover:opacity-90 transition-all"
+      class="min-h-[44px] text-xs px-3 py-2 rounded-lg bg-accent text-white hover:opacity-90 transition-all"
     >
       Authenticate
     </button>

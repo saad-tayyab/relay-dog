@@ -7,12 +7,16 @@ let input = $state("");
 let qrDataUrl = $state<string | null>(null);
 let size = $state<200 | 300 | 500>(300);
 let detectedType = $state<string>("text");
+let generating = $state(false);
 
 function generateQR() {
 	if (!input.trim()) {
 		qrDataUrl = null;
 		return;
 	}
+
+	generating = true;
+	qrDataUrl = null;
 
 	QRCode.toDataURL(input.trim(), {
 		width: size,
@@ -21,9 +25,13 @@ function generateQR() {
 			dark: "#ffffff",
 			light: "#1a1a2e",
 		},
-	}).then((url) => {
-		qrDataUrl = url;
-	});
+	})
+		.then((url) => {
+			qrDataUrl = url;
+		})
+		.finally(() => {
+			generating = false;
+		});
 }
 
 function detectType(value: string): string {
@@ -66,7 +74,7 @@ async function copyImage() {
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">QR Code Generator</h3>
-      <span class="text-[10px] text-text-muted">{detectedType}</span>
+      <span class="text-xs text-text-muted">{detectedType}</span>
     </div>
 
     <!-- Input -->
@@ -102,9 +110,16 @@ async function copyImage() {
     </div>
 
     <!-- QR Code Preview -->
-    {#if qrDataUrl}
+    {#if generating}
+      <div class="flex items-center justify-center py-12 text-text-muted text-xs">
+        <span class="flex items-center gap-2">
+          <span class="w-4 h-4 rounded-full border-2 border-text-muted/30 border-t-text-muted animate-spin"></span>
+          Generating QR code...
+        </span>
+      </div>
+    {:else if qrDataUrl}
       <div class="flex flex-col items-center gap-4">
-        <div class="p-4 rounded-xl bg-white">
+        <div class="p-4 rounded-xl bg-white shadow-lg">
           <img src={qrDataUrl} alt="QR code for: {input.slice(0, 50)}{input.length > 50 ? '...' : ''}" width={size} height={size} />
         </div>
 

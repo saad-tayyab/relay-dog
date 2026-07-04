@@ -40,7 +40,7 @@ const checks = $derived(
 
 {#if status}
   <SectionCard className="animate-fade-in">
-    <h3 class="text-sm font-semibold text-text-muted uppercase tracking-wider mb-4">
+    <h3 class="text-sm font-semibold text-text-primary mb-4">
       Connection Status
       {#if status.latencyMs !== undefined}
         <span class="ml-2 text-xs font-normal normal-case tracking-normal text-text-secondary">
@@ -48,9 +48,9 @@ const checks = $derived(
         </span>
       {/if}
     </h3>
-    <div class="space-y-2">
+    <ul class="space-y-2">
       {#each checks as { label, key, detail } (key)}
-        <div
+        <li
           class="flex items-center gap-3 px-4 py-3 rounded-lg bg-dark-surface border border-dark-border"
         >
           <StatusDot status={status[key]} />
@@ -65,8 +65,8 @@ const checks = $derived(
               {detail}
             </span>
           {/if}
-        </div>
+        </li>
       {/each}
-    </div>
+    </ul>
   </SectionCard>
 {/if}

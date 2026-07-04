@@ -33,7 +33,7 @@ function formatMs(ms: number | null): string {
         type="button"
         onclick={onMeasure}
         disabled={measuring}
-        class="text-xs px-3 py-1 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
+        class="min-h-[44px] text-xs px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
       >
         {#if measuring}
           <span class="animate-pulse">Measuring…</span>
@@ -44,31 +44,31 @@ function formatMs(ms: number | null): string {
     {/if}
   </div>
 
-  <div class="grid grid-cols-3 gap-3">
+  <dl class="grid grid-cols-3 gap-3">
     <!-- WebSocket Latency -->
     <div class="text-center p-3 rounded-lg bg-dark-surface border border-dark-border">
-      <div class="text-[10px] uppercase tracking-wider text-text-muted mb-1">WS Round-Trip</div>
-      <div class="text-lg font-mono font-bold {latencyColor(metrics.wsRoundTripMs)}">
+      <dt class="text-xs uppercase tracking-wider text-text-muted mb-1">WS Round-Trip</dt>
+      <dd class="text-lg font-mono font-bold {latencyColor(metrics.wsRoundTripMs)}">
         {formatMs(metrics.wsRoundTripMs)}
-      </div>
+      </dd>
     </div>
 
     <!-- HTTP Latency -->
     <div class="text-center p-3 rounded-lg bg-dark-surface border border-dark-border">
-      <div class="text-[10px] uppercase tracking-wider text-text-muted mb-1">HTTP (NIP-11)</div>
-      <div class="text-lg font-mono font-bold {latencyColor(metrics.httpLatencyMs)}">
+      <dt class="text-xs uppercase tracking-wider text-text-muted mb-1">HTTP (NIP-11)</dt>
+      <dd class="text-lg font-mono font-bold {latencyColor(metrics.httpLatencyMs)}">
         {formatMs(metrics.httpLatencyMs)}
-      </div>
+      </dd>
     </div>
 
     <!-- EOSE Timing -->
     <div class="text-center p-3 rounded-lg bg-dark-surface border border-dark-border">
-      <div class="text-[10px] uppercase tracking-wider text-text-muted mb-1">EOSE</div>
-      <div class="text-lg font-mono font-bold {latencyColor(metrics.eoseTimeMs)}">
+      <dt class="text-xs uppercase tracking-wider text-text-muted mb-1">EOSE</dt>
+      <dd class="text-lg font-mono font-bold {latencyColor(metrics.eoseTimeMs)}">
         {formatMs(metrics.eoseTimeMs)}
-      </div>
+      </dd>
     </div>
-  </div>
+  </dl>
 
   {#if metrics.eoseEventCount > 0}
     <p class="mt-2 text-xs text-text-muted text-center">

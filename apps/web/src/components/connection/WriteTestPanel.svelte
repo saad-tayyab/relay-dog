@@ -58,7 +58,7 @@ const statusDisplay = $derived.by(() => {
         type="button"
         onclick={onRunTest}
         disabled={status === 'testing'}
-        class="text-xs px-3 py-1 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
+        class="min-h-[44px] text-xs px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
       >
         {status === 'testing' ? 'Testing…' : 'Run Test'}
       </button>

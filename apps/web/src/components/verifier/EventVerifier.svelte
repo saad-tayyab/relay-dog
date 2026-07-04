@@ -16,11 +16,11 @@ function handleEvent(parsed: NostrEvent): void {
 }
 </script>
 
-<div class="space-y-6 animate-fade-in">
+<div class="space-y-7 animate-fade-in">
   <EventInput onEvent={handleEvent} />
 
   {#if event}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-1">
         <VerificationPanel {event} {onEditAndRepublish} />
       </div>

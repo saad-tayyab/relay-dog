@@ -84,7 +84,7 @@ const POPULAR_RELAYS = [
   </div>
 
   <!-- Quick pick relays -->
-  <div class="mt-3 flex flex-wrap gap-1.5">
+  <div class="mt-4 flex flex-wrap gap-2">
     <span class="text-xs text-text-muted mr-1 py-1">Try:</span>
     {#each POPULAR_RELAYS as relay (relay)}
       <button

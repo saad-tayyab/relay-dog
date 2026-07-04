@@ -49,7 +49,7 @@ function handleEditAndRepublish(event: unknown) {
 <div class="min-h-screen bg-dark-bg">
   <!-- Header -->
   <header class="border-b border-dark-border bg-dark-card/50 backdrop-blur-sm sticky top-0 z-10">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
+    <div class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 py-5 flex items-center gap-3">
       <div
         class="w-9 h-9 rounded-lg bg-accent-dim border border-accent-border flex items-center justify-center"
       >
@@ -68,16 +68,10 @@ function handleEditAndRepublish(event: unknown) {
         <h1 class="text-lg font-bold text-text-primary leading-tight">Relay Dog</h1>
         <p class="text-xs text-text-muted">Nostr relay inspector</p>
       </div>
-      <span
-        aria-hidden="true"
-        class="ml-auto text-xs font-mono px-2 py-1 rounded-full bg-dark-surface border border-dark-border text-text-muted"
-      >
-        Phase 8
-      </span>
     </div>
   </header>
 
-  <main id="main-content" class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
+  <main id="main-content" class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 lg:px-10 py-10 pb-24 sm:pb-10">
     <!-- URL Input -->
     <SearchBar
       bind:url={inspector.url}
@@ -146,10 +140,10 @@ function handleEditAndRepublish(event: unknown) {
   <!-- Footer -->
   <footer class="border-t border-dark-border mt-auto">
     <div
-      class="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between text-xs text-text-muted"
+      class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between text-xs text-text-muted"
     >
       <span>Relay Dog · Nostr Relay Inspector</span>
-      <span class="font-mono">v0.8.0</span>
+      <span class="font-mono">v0.10.0</span>
     </div>
   </footer>
 

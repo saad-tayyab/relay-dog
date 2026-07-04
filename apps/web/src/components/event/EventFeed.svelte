@@ -5,7 +5,7 @@ import EventCard from "./EventCard.svelte";
 
 let { events }: { events: NostrEvent[] } = $props();
 
-let scrollEl = $state<HTMLDivElement | null>(null);
+let scrollEl = $state<HTMLOListElement | null>(null);
 let shouldAutoScroll = $state(true);
 let prevLength = $state(0);
 
@@ -43,14 +43,14 @@ $effect(() => {
       No events yet. Subscribe with a filter to start receiving events.
     </div>
   {:else}
-    <div
+    <ol
       bind:this={scrollEl}
       onscroll={handleScroll}
-      class="max-h-[480px] overflow-y-auto overflow-x-hidden"
+      class="max-h-96 overflow-y-auto overflow-x-hidden"
     >
       {#each events as event (event.id)}
-        <EventCard {event} />
+        <li><EventCard {event} /></li>
       {/each}
-    </div>
+    </ol>
   {/if}
 </SectionCard>

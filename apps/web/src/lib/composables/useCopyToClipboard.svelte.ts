@@ -1,7 +1,7 @@
 // Clipboard composable with feedback for Svelte 5 runes
 // Handles clipboard API errors gracefully and provides visual feedback state
 
-export function createClipboard() {
+export function useClipboard() {
   let copied = $state(false);
   let error = $state<string | null>(null);
   let resetTimer: ReturnType<typeof setTimeout> | null = null;

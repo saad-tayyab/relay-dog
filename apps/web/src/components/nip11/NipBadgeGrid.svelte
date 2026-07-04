@@ -55,40 +55,42 @@ const sortedNips = $derived([...nips].sort((a, b) => a - b));
 
 {#if nips && nips.length > 0}
   <SectionCard className="animate-fade-in">
-    <h3 class="text-sm font-semibold text-text-muted uppercase tracking-wider mb-4">
+    <h3 class="text-sm font-semibold text-text-primary mb-4">
       Supported NIPs ({nips.length})
     </h3>
-    <div class="flex flex-wrap gap-2">
+    <ul class="flex flex-wrap gap-2">
       {#each sortedNips as n (n)}
         {@const info = NIP_INFO[n]}
-        <a
-          href={nipLink(n)}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105"
-          style="background-color: {info?.color || '#60a5fa'}15; color: {info?.color || '#60a5fa'}; border: 1px solid {info?.color || '#60a5fa'}30"
-          title={info?.desc || `NIP-${n}`}
-        >
-          <span class="font-bold">NIP-{n}</span>
-          {#if info?.desc}
-            <span class="hidden sm:inline opacity-70">· {info.desc}</span>
-          {/if}
-          <svg
-            aria-hidden="true"
-            class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
+        <li>
+          <a
+            href={nipLink(n)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:brightness-110 hover:shadow-sm"
+            style="background-color: {info?.color || '#60a5fa'}15; color: {info?.color || '#60a5fa'}; border: 1px solid {info?.color || '#60a5fa'}30"
+            title={info?.desc || `NIP-${n}`}
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            />
-          </svg>
-        </a>
+            <span class="font-bold">NIP-{n}</span>
+            {#if info?.desc}
+              <span class="hidden sm:inline opacity-70">· {info.desc}</span>
+            {/if}
+            <svg
+              aria-hidden="true"
+              class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+          </a>
+        </li>
       {/each}
-    </div>
+    </ul>
   </SectionCard>
 {/if}

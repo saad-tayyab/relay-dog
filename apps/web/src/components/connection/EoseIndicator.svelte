@@ -9,8 +9,8 @@ let { eoseResult }: { eoseResult: EoseResult | null } = $props();
     role="status"
     class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all
     {eoseResult.complete
-      ? 'bg-success/10 border border-success/20 text-success'
-      : 'bg-warning/10 border border-warning/20 text-warning'}"
+      ? 'bg-success-dim border border-success/20 text-success'
+      : 'bg-warning-dim border border-warning/20 text-warning'}"
   >
     {#if eoseResult.complete}
       <span>✓</span>

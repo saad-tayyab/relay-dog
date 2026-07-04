@@ -5,9 +5,11 @@ import TagEditor from "./TagEditor.svelte";
 
 let {
 	targetRelay,
+	prefilledEvent,
 	onPublishComplete,
 }: {
 	targetRelay: string;
+	prefilledEvent?: unknown;
 	onPublishComplete?: (result: {
 		success: boolean;
 		eventId?: string;
@@ -21,6 +23,13 @@ const composer = useEventComposer();
 
 $effect(() => {
 	composer.setTargetRelay(targetRelay);
+});
+
+// Prefill event data from Verifier "Edit & Re-publish" flow
+$effect(() => {
+	if (prefilledEvent) {
+		composer.prefill(prefilledEvent);
+	}
 });
 
 const commonKinds = [
@@ -46,7 +55,7 @@ async function handlePublish() {
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">Event Composer</h3>
-      <span class="text-[10px] text-text-muted">NIP-01, NIP-07</span>
+      <span class="text-xs text-text-muted">NIP-01, NIP-07</span>
     </div>
 
     <!-- Kind Selector -->
@@ -152,14 +161,14 @@ async function handlePublish() {
       <div
         role="status"
         class="px-3 py-2 rounded-lg text-xs {composer.result.success
-          ? 'bg-success/10 border border-success/20 text-success'
-          : 'bg-error/10 border border-error/20 text-error'}"
+          ? 'bg-success-dim border border-success/20 text-success'
+          : 'bg-error-dim border border-error/20 text-error'}"
       >
         {#if composer.result.success}
-          <span aria-hidden="true">✅</span> Published! Event ID: <span class="font-mono">{composer.result.eventId}</span>
+          <span aria-hidden="true">✓</span> Published! Event ID: <span class="font-mono">{composer.result.eventId}</span>
           <span class="text-text-muted ml-2">({Math.round(composer.result.latencyMs)}ms)</span>
         {:else}
-          <span aria-hidden="true">❌</span> {composer.result.error}
+          <span aria-hidden="true">✕</span> {composer.result.error}
         {/if}
       </div>
     {/if}

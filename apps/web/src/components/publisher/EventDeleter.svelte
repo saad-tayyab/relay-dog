@@ -7,12 +7,13 @@ let { targetRelay }: { targetRelay: string } = $props();
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const deleter = useEventDeleter();
 
-let localRelay = $state("");
-
-// Sync from prop → local state → composable
+// Set initial relay from prop (runs once on mount)
+let relayInitialized = $state(false);
 $effect(() => {
-	localRelay = targetRelay;
-	deleter.setTargetRelay(targetRelay);
+	if (targetRelay && !relayInitialized) {
+		deleter.setTargetRelay(targetRelay);
+		relayInitialized = true;
+	}
 });
 
 let inputIds = $state("");
@@ -31,6 +32,10 @@ function handleAddIds() {
 
 let confirmDelete = $state(false);
 
+function handleRelayInput(e: Event) {
+	deleter.setTargetRelay((e.target as HTMLInputElement).value);
+}
+
 async function handleDelete() {
 	if (!confirmDelete) {
 		confirmDelete = true;
@@ -45,7 +50,7 @@ async function handleDelete() {
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">Event Deleter</h3>
-      <span class="text-[10px] text-text-muted">NIP-09</span>
+      <span class="text-xs text-text-muted">NIP-09</span>
     </div>
 
     <!-- Manual Input -->
@@ -64,7 +69,7 @@ async function handleDelete() {
         type="button"
         onclick={handleAddIds}
         disabled={!inputIds.trim()}
-        class="mt-2 px-3 py-1.5 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        class="min-h-[44px] mt-2 px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
       >
         Add IDs
       </button>
@@ -84,7 +89,7 @@ async function handleDelete() {
                 type="button"
                 aria-label="Remove event ID"
                 onclick={() => deleter.removeEventId(id)}
-                class="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-muted hover:text-error transition-colors ml-2"
+                class="flex items-center justify-center p-2 -m-2 text-text-muted hover:text-error transition-colors ml-2"
               >
                 <span aria-hidden="true">✕</span>
               </button>
@@ -114,8 +119,8 @@ async function handleDelete() {
       <input
         id="delete-relay"
         type="text"
-        bind:value={localRelay}
-        onblur={() => deleter.setTargetRelay(localRelay)}
+        value={deleter.targetRelay}
+        oninput={handleRelayInput}
         placeholder="wss://relay.example.com"
         class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
       />
@@ -128,7 +133,7 @@ async function handleDelete() {
 
     <!-- Confirmation Banner -->
     {#if confirmDelete}
-      <div role="alert" class="p-3 bg-warning-dim border border-warning/30 rounded-lg text-xs">
+      <div role="alert" class="p-3 bg-warning-dim border border-warning/20 rounded-lg text-xs">
         <p class="text-warning mb-2">
           Confirm deletion of {deleter.eventIds.length} event{deleter.eventIds.length !== 1 ? 's' : ''} from {deleter.targetRelay || 'relay'}?
         </p>
@@ -170,14 +175,14 @@ async function handleDelete() {
         {#each deleter.results as r (r.eventId)}
           <div
             class="px-2 py-1.5 rounded text-xs {r.success
-              ? 'bg-success/10 border border-success/20 text-success'
-              : 'bg-error/10 border border-error/20 text-error'}"
+              ? 'bg-success-dim border border-success/20 text-success'
+              : 'bg-error-dim border border-error/20 text-error'}"
           >
             <span class="font-mono">{r.eventId.slice(0, 12)}...</span>
             {#if r.success}
-              ✅ Deleted
+              <span aria-hidden="true">✓</span> Deleted
             {:else}
-              ❌ {r.error}
+              <span aria-hidden="true">✕</span> {r.error}
             {/if}
           </div>
         {/each}

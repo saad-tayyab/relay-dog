@@ -1,15 +1,15 @@
 # 🗄️ Database Schema
 
-Relay Scope uses **PostgreSQL** with **Drizzle ORM**. The schema defines 7 tables for tracking relays, their info, health status, events, monitoring jobs, NIP-66 discoveries, and NIP-65 relay lists.
+Relay Scope uses **PostgreSQL** with **Drizzle ORM** and the **bun-sql** driver (Bun's native SQL client). The schema defines 5 managed tables for tracking relays, their info, events, NIP-66 discoveries, and NIP-65 relay lists.
+
+> **Note:** Two legacy tables (`health_checks`, `monitoring_jobs`) exist in the database from earlier migrations but are no longer managed by Drizzle ORM. They are not referenced in the current schema and should be dropped when safe to do so.
 
 ## Entity Relationship Diagram
 
 ```mermaid
 erDiagram
     relays ||--o{ relay_info_snapshots : "has NIP-11 history"
-    relays ||--o{ health_checks : "has health history"
     relays ||--o{ relay_events : "captures events"
-    relays ||--o| monitoring_jobs : "scheduled checks"
     relays ||--o{ relay_discoveries : "NIP-66 monitor data"
     relays ||--o{ relay_list_entries : "NIP-65 relay lists"
 
@@ -44,19 +44,6 @@ erDiagram
         timestamp fetched_at
     }
 
-    health_checks {
-        uuid id PK
-        uuid relay_id FK
-        boolean http_reachable
-        boolean cors_configured
-        boolean websocket_connectable
-        integer latency_ms
-        integer http_status_code
-        text error_message
-        timestamp checked_at
-        jsonb nip67_eose_hints
-    }
-
     relay_events {
         uuid id PK
         uuid relay_id FK
@@ -67,16 +54,6 @@ erDiagram
         jsonb tags
         timestamp created_at
         timestamp received_at
-    }
-
-    monitoring_jobs {
-        uuid id PK
-        uuid relay_id FK UK
-        boolean enabled
-        integer interval_ms
-        timestamp last_run_at
-        timestamp next_run_at
-        timestamp created_at
     }
 
     relay_discoveries {
@@ -149,25 +126,6 @@ Historical NIP-11 snapshots. A new row is inserted each time we fetch updated NI
 
 **Indexes**: `relay_id`, `fetched_at`
 
-### `health_checks`
-
-Each row represents a single health check result for a relay.
-
-| Column | Type | Nullable | Description |
-|--------|------|----------|-------------|
-| `id` | `uuid` | PK | Auto-generated UUID |
-| `relay_id` | `uuid` | FK, NOT NULL | References `relays.id` (CASCADE) |
-| `http_reachable` | `boolean` | NOT NULL | HTTP endpoint responded OK |
-| `cors_configured` | `boolean` | NOT NULL | CORS headers present |
-| `websocket_connectable` | `boolean` | NOT NULL | WebSocket connection succeeded |
-| `latency_ms` | `integer` | ✅ | HTTP round-trip time in ms |
-| `http_status_code` | `integer` | ✅ | HTTP response status code |
-| `error_message` | `text` | ✅ | Categorized error — `timeout`, `connection_refused`, `dns_error`, `tls_error`, `invalid_target`, `websocket_error` |
-| `checked_at` | `timestamptz` | NOT NULL | When this check was performed |
-| `nip67_eose_hints` | `jsonb` | ✅ | NIP-67 EOSE completeness hints (`EoseResult`) |
-
-**Indexes**: `relay_id`, `checked_at`
-
 ### `relay_events`
 
 Captured Nostr events received from relay WebSocket connections.
@@ -185,22 +143,6 @@ Captured Nostr events received from relay WebSocket connections.
 | `received_at` | `timestamptz` | NOT NULL | When we received the event |
 
 **Indexes**: `relay_id`, `kind`, `nostr_event_id`, `created_at`
-
-### `monitoring_jobs`
-
-Scheduled monitoring configuration per relay. One job per relay.
-
-| Column | Type | Nullable | Description |
-|--------|------|----------|-------------|
-| `id` | `uuid` | PK | Auto-generated UUID |
-| `relay_id` | `uuid` | FK, UK, NOT NULL | References `relays.id` (CASCADE) |
-| `enabled` | `boolean` | NOT NULL | Job active (default: true) |
-| `interval_ms` | `integer` | NOT NULL | Check interval in ms (default: 60000) |
-| `last_run_at` | `timestamptz` | ✅ | When this job last executed |
-| `next_run_at` | `timestamptz` | ✅ | When this job should next run |
-| `created_at` | `timestamptz` | NOT NULL | Job creation timestamp |
-
-**Indexes**: `enabled`
 
 ### `relay_discoveries`
 
@@ -240,37 +182,11 @@ NIP-65 relay list entries tracking which relays users list for read/write. One r
 
 ## Common Queries
 
-### Get relays with latest health check
-
-```sql
-SELECT r.*, hc.*
-FROM relays r
-LEFT JOIN health_checks hc ON r.id = hc.relay_id
-  AND hc.checked_at = (
-    SELECT MAX(checked_at) FROM health_checks WHERE relay_id = r.id
-  )
-ORDER BY r.updated_at DESC;
-```
-
 ### Find relays by supported NIP
 
 ```sql
 SELECT * FROM relays
 WHERE 42 = ANY(supported_nips);
-```
-
-### Health check success rate (last 24h)
-
-```sql
-SELECT
-  r.url,
-  COUNT(*) as total_checks,
-  SUM(CASE WHEN hc.http_reachable AND hc.websocket_connectable THEN 1 ELSE 0 END) as success,
-  ROUND(AVG(hc.latency_ms)) as avg_latency_ms
-FROM relays r
-JOIN health_checks hc ON r.id = hc.relay_id
-WHERE hc.checked_at > NOW() - INTERVAL '24 hours'
-GROUP BY r.url;
 ```
 
 ### Relay popularity (NIP-65)
@@ -301,9 +217,9 @@ Unbounded table growth is prevented by a daily cron job:
 
 | Table | Retention | Rationale |
 |-------|-----------|-----------|
-| `health_checks` | 90 days | Operational data, not historical analytics |
 | `relay_events` | 30 days | Captured events are ephemeral debug data |
 | `relay_info_snapshots` | 180 days | NIP-11 changes are infrequent, keep longer |
+| `relay_discoveries` | 180 days | Monitor observations older than 6 months are stale |
 
 ## Migrations
 
@@ -317,10 +233,24 @@ bun run db:migrate
 # Push schema directly (dev only, no migration file)
 bun run db:push
 
+# Upgrade migration folders to v1 format (run once after upgrading to drizzle-kit v1)
+bun run --bun run drizzle-kit up
+
 # Open Drizzle Studio (visual browser)
 bun run db:studio
 ```
 
+## Driver
+
+The API uses `drizzle-orm/bun-sql` — Bun's native SQL client. This provides:
+
+- Native performance without external PostgreSQL client libraries
+- First-class Drizzle ORM integration
+- JIT (just-in-time) compiled query mappers for reduced latency
+- Connection pooling built into Bun's SQL module
+
+The previous `postgres-js` driver (`drizzle-orm/postgres-js`) was replaced with `bun-sql` in v0.9.0.
+
 ---
 
-*Last updated: v0.9.0 — 2026-07-01*
+*Last updated: v0.9.0 — 2026-07-04*

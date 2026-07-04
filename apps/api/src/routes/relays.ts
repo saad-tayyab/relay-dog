@@ -1,8 +1,8 @@
 import { zValidator } from '@hono/zod-validator';
-import { and, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { db } from '../db';
-import { healthChecks, relayInfoSnapshots, relays } from '../db/schema';
+import { relayDiscovered, relayInfoSnapshots, relays } from '../db/schema';
 import { categorizeError } from '../lib/errors';
 import { createRelaySchema, updateRelaySchema } from '../lib/schemas';
 import { assertSafeUrl, assertSafeUrlResolved } from '../lib/ssrf';
@@ -90,7 +90,6 @@ relayRoutes.get('/', async (c) => {
     .from(relays)
     .where(whereClause);
 
-  // Step 1: Paginate on relays only (no JOIN inflation)
   const paginatedRelays = await db
     .select()
     .from(relays)
@@ -112,30 +111,9 @@ relayRoutes.get('/', async (c) => {
     });
   }
 
-  // Step 2: Fetch health checks for relays in this page, pick latest in JS
-  const relayIds = paginatedRelays.map((r) => r.id);
-  const allHC = await db
-    .select()
-    .from(healthChecks)
-    .where(inArray(healthChecks.relayId, relayIds))
-    .orderBy(desc(healthChecks.checkedAt));
-
-  const hcMap = new Map<string, typeof healthChecks.$inferSelect>();
-  for (const hc of allHC) {
-    if (!hcMap.has(hc.relayId)) {
-      hcMap.set(hc.relayId, hc);
-    }
-  }
-
-  // Step 3: Assemble final results
-  const data = paginatedRelays.map((relay) => ({
-    ...relay,
-    lastHealthCheck: hcMap.get(relay.id) ?? null,
-  }));
-
   return c.json({
     success: true,
-    data,
+    data: paginatedRelays,
     meta: {
       page,
       limit,
@@ -149,17 +127,9 @@ relayRoutes.get('/', async (c) => {
 relayRoutes.get('/:id', async (c) => {
   const id = c.req.param('id');
 
-  const [result] = await db
-    .select({
-      relay: relays,
-      lastHealthCheck: healthChecks,
-    })
-    .from(relays)
-    .leftJoin(healthChecks, eq(relays.id, healthChecks.relayId))
-    .where(eq(relays.id, id))
-    .limit(1);
+  const [relay] = await db.select().from(relays).where(eq(relays.id, id)).limit(1);
 
-  if (!result) {
+  if (!relay) {
     return c.json({ success: false, error: 'Relay not found' }, 404);
   }
 
@@ -173,8 +143,7 @@ relayRoutes.get('/:id', async (c) => {
   return c.json({
     success: true,
     data: {
-      ...result.relay,
-      lastHealthCheck: result.lastHealthCheck,
+      ...relay,
       latestInfo: latestInfo || null,
     },
   });
@@ -274,7 +243,7 @@ relayRoutes.delete('/:id', requireApiKey, async (c) => {
   return c.json({ success: true, data: deleted });
 });
 
-// ─── POST /api/relays/:id/check — Run health check on a relay ───
+// ─── POST /api/relays/:id/check — Run on-demand health check ───
 relayRoutes.post('/:id/check', requireApiKey, async (c) => {
   const id = c.req.param('id');
 
@@ -292,11 +261,8 @@ relayRoutes.post('/:id/check', requireApiKey, async (c) => {
     return c.json({ success: false, error: 'Invalid or disallowed relay URL' }, 400);
   }
 
-  let httpReachable = false;
-  let corsConfigured = false;
+  let rttOpen: number | null = null;
   let websocketConnectable = false;
-  let latencyMs: number | null = null;
-  let httpStatusCode: number | null = null;
   let errorMessage: string | null = null;
 
   try {
@@ -307,10 +273,10 @@ relayRoutes.post('/:id/check', requireApiKey, async (c) => {
       mode: 'cors',
       signal: AbortSignal.timeout(10000),
     });
-    latencyMs = Math.round(performance.now() - start);
-    httpReachable = res.ok;
-    httpStatusCode = res.status;
-    corsConfigured = true;
+    rttOpen = Math.round(performance.now() - start);
+    if (!res.ok) {
+      errorMessage = categorizeError(new Error(`HTTP ${res.status}`));
+    }
   } catch (e: unknown) {
     errorMessage = categorizeError(e);
   }
@@ -337,37 +303,35 @@ relayRoutes.post('/:id/check', requireApiKey, async (c) => {
     if (!errorMessage) errorMessage = categorizeError(e);
   }
 
-  const [healthCheck] = await db
-    .insert(healthChecks)
+  // Store as NIP-66 discovery with 'self' sentinel
+  await db
+    .insert(relayDiscovered)
     .values({
-      relayId: id,
-      httpReachable,
-      corsConfigured,
-      websocketConnectable,
-      latencyMs,
-      httpStatusCode,
-      errorMessage,
+      relayUrl: relay.url,
+      monitorPubkey: 'self',
+      rttOpen,
+      networkType: null,
     })
-    .returning();
+    .onConflictDoUpdate({
+      target: [relayDiscovered.relayUrl, relayDiscovered.monitorPubkey],
+      set: {
+        rttOpen,
+        discoveredAt: new Date(),
+      },
+    });
 
   await db.update(relays).set({ updatedAt: new Date() }).where(eq(relays.id, id));
 
-  return c.json({ success: true, data: healthCheck });
-});
-
-// ─── GET /api/relays/:id/history — Get health check history ───
-relayRoutes.get('/:id/history', async (c) => {
-  const id = c.req.param('id');
-  const { limit } = parsePageLimit('1', c.req.query('limit') || '50');
-
-  const history = await db
-    .select()
-    .from(healthChecks)
-    .where(eq(healthChecks.relayId, id))
-    .orderBy(desc(healthChecks.checkedAt))
-    .limit(limit);
-
-  return c.json({ success: true, data: history });
+  return c.json({
+    success: true,
+    data: {
+      relayUrl: relay.url,
+      monitorPubkey: 'self',
+      rttOpen,
+      websocketConnectable,
+      errorMessage,
+    },
+  });
 });
 
 // ─── GET /api/relays/:id/nip11 — Get NIP-11 history ───

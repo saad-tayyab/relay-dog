@@ -372,7 +372,7 @@ docker compose down
 - [ ] PM2/systemd process manager running
 - [ ] Monitoring job enabled
 - [ ] PostgreSQL bound to `127.0.0.1` only
-- [ ] Data retention cron configured (health_checks 90d, events 30d, snapshots 180d)
+- [ ] Data retention cron configured (events 30d, snapshots 180d, discoveries 180d)
 
 ---
 

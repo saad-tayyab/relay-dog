@@ -47,13 +47,15 @@ docs/
 │   ├── phase-8-developer-toolkit.md  # Developer toolkit (complete ✅)
 │   ├── phase-9-accessibility.md      # WCAG 2.2 AA (complete ✅)
 │   ├── phase-10-infrastructure-hardening.md # DevSecOps (complete ✅)
-│   └── phase-11-production-deployment.md # Fly.io deploy (planned 📋)
+│   ├── phase-11-production-deployment.md # Fly.io deploy (planned 📋)
+│   └── phase-12-nip66-passive-monitoring.md # NIP-66 ingestor (planned 📋)
 │
 ├── prompts/
 │   ├── best-practices.md             # AI prompt engineering practices
 │   ├── phase-5-prompts.md            # Phase 5 prompt templates
 │   ├── phase-7-prompts.md            # Phase 7 prompt templates
-│   └── phase-8-prompts.md            # Phase 8 prompt templates
+│   ├── phase-8-prompts.md            # Phase 8 prompt templates
+│   └── phase-12-prompts.md           # Phase 12 prompt templates
 │
 └── changelog.md                       # Release history
 ```

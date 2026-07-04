@@ -4,6 +4,33 @@ All notable changes to Relay Scope are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Conventional Commits](https://conventionalcommits.org).
 
+## [0.9.1] - 2026-07-04
+
+### Changed
+
+#### API (`@relayscope/api`)
+- **Drizzle ORM v1 best practices** — comprehensive upgrade of database layer
+  - Switched from `drizzle-orm/postgres-js` to `drizzle-orm/bun-sql` (Bun's native SQL client)
+  - Enabled JIT (just-in-time) compiled query mappers via `jit: true` for 25-30% latency reduction
+  - Removed unused `defineRelations` block and `relations` import (dead code — RQB not used)
+  - Upgraded migration folder format via `drizzle-kit up` (snapshots now version 8)
+  - Removed `postgres` npm dependency (no longer needed with bun-sql driver)
+
+### Removed
+
+#### API (`@relayscope/api`)
+- Removed `defineRelations()` and relational query builder support from schema (unused)
+- Removed `postgres` (postgres.js) driver dependency
+
+### Documentation
+- Updated `docs/architecture/database.md` — removed `health_checks` and `monitoring_jobs` from schema docs (legacy tables, no longer managed by Drizzle), added driver section, added `drizzle-kit up` command
+- Updated `docs/api/endpoints.md` — updated cascading deletes description
+- Updated `docs/development/infrastructure-security.md` — updated data retention table
+- Updated `docs/development/deployment.md` — updated retention cron checklist
+- Updated `docs/audit/packages.md` — added package change entry
+
+---
+
 ## [0.9.0] - 2026-07-01
 
 ### Added

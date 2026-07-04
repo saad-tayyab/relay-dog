@@ -7,7 +7,7 @@ import { logger } from 'hono/logger';
 import { rateLimiter } from 'hono-rate-limiter';
 import { db } from './db';
 import { relays } from './db/schema';
-import { startMonitor } from './jobs/relayMonitor';
+import { startNip66Ingestor } from './jobs/nip66Ingestor';
 import directoryRoutes from './routes/directory';
 import discoverRoutes from './routes/discover';
 import popularityRoutes from './routes/popularity';
@@ -190,6 +190,5 @@ process.on('SIGINT', () => server.stop());
 
 log({ level: 'info', msg: 'Server started', port: env.PORT });
 
-// Monitor interval: min 10s to prevent abuse
-const monitorInterval = Math.max(10_000, env.MONITOR_INTERVAL_MS);
-startMonitor(monitorInterval);
+// NIP-66 ingestor: subscribes to monitor relays for passive health data
+startNip66Ingestor();

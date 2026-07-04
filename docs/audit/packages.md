@@ -76,6 +76,7 @@ Version tracking for declared dependencies. Updated each time package manifests 
 | 2026-06-30 | React → Svelte 5 migration | Removed: react, react-dom, @types/react, @types/react-dom, @vitejs/plugin-react. Added: svelte 5.35, @sveltejs/vite-plugin-svelte 5.0, svelte-check 4.1 |
 | 2026-06-30 | Added nostr-tools | nostr-tools 2.23.8 (Phase 3: Event Verifier) |
 | 2026-06-30 | Drizzle ORM v1 RC | drizzle-orm 0.45.2→1.0.0-rc.4, drizzle-kit 0.31.10→1.0.0-rc.4, added defineRelations(), drizzle() object syntax |
+| 2026-07-04 | Drizzle best practices | Switched from postgres-js to bun-sql driver, enabled JIT mappers, removed unused relations, upgraded migration folders via `drizzle-kit up` |
 | 2026-06-30 | Vite 8 plugin compat | svelte 5.35→5.56, @sveltejs/vite-plugin-svelte 5.0→7.1.2 (Vite 8 support) |
 | 2026-06-30 | Phase 6 security hardening | Added zod 4.4.3, @hono/zod-validator 0.8.0, hono-rate-limiter 0.5.3. Removed node-cron, @types/node-cron. Moved dotenv to apps/api devDependencies |
 | 2026-06-30 | Turbo/repo hygiene | turbo 2.10.1→2.10.2, packageManager bun 1.2.17→1.3.14, lint wired through turbo, dotenv moved to apps/api |

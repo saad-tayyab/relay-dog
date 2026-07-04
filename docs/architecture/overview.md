@@ -14,7 +14,7 @@ graph TB
 
     subgraph "Server"
         API["⚡ API Server<br/>Hono + Bun"]
-        MON["🔄 Monitor Job<br/>Background Scheduler"]
+        MON["🔄 NIP-66 Ingestor<br/>Passive Monitor Subscriber"]
     end
 
     subgraph "Data"

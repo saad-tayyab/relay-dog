@@ -249,7 +249,6 @@ Unbounded table growth causes disk exhaustion and slow queries. Every table with
 
 | Table | Retention | Rationale |
 |-------|-----------|-----------|
-| `health_checks` | 90 days | Operational data, not historical analytics |
 | `relay_events` | 30 days | Captured events are ephemeral debug data |
 | `relay_info_snapshots` | 180 days | NIP-11 changes are infrequent, keep longer |
 | `relay_discoveries` | 180 days | Monitor data, useful for trending |

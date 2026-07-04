@@ -20,8 +20,8 @@ const serverEnvSchema = z
     API_KEY: z.string().min(1).optional(),
     CORS_ORIGINS: z.string().default('http://localhost:5173,http://localhost:3000'),
 
-    // Relay Monitor
-    MONITOR_INTERVAL_MS: z.coerce.number().int().min(1000).default(60000),
+    // NIP-66 Monitor Relays (comma-separated WebSocket URLs)
+    MONITOR_RELAYS: z.string().optional(),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== 'production') {

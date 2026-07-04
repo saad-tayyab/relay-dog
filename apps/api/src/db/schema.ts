@@ -1,4 +1,3 @@
-import { defineRelations } from 'drizzle-orm';
 import {
   boolean,
   index,
@@ -60,29 +59,6 @@ export const relayInfoSnapshots = pgTable(
   ],
 );
 
-// ─── Health Checks ───
-export const healthChecks = pgTable(
-  'health_checks',
-  {
-    id: uuid('id').primaryKey().defaultRandom(),
-    relayId: uuid('relay_id')
-      .notNull()
-      .references(() => relays.id, { onDelete: 'cascade' }),
-    httpReachable: boolean('http_reachable').notNull(),
-    corsConfigured: boolean('cors_configured').notNull(),
-    websocketConnectable: boolean('websocket_connectable').notNull(),
-    latencyMs: integer('latency_ms'),
-    httpStatusCode: integer('http_status_code'),
-    errorMessage: text('error_message'),
-    checkedAt: timestamp('checked_at', { withTimezone: true }).defaultNow().notNull(),
-    nip67EoseHints: jsonb('nip67_eose_hints'),
-  },
-  (table) => [
-    index('health_checks_relay_id_idx').on(table.relayId),
-    index('health_checks_checked_at_idx').on(table.checkedAt),
-  ],
-);
-
 // ─── Relay Events (captured from WebSocket) ───
 export const relayEvents = pgTable(
   'relay_events',
@@ -105,24 +81,6 @@ export const relayEvents = pgTable(
     index('relay_events_nostr_event_id_idx').on(table.nostrEventId),
     index('relay_events_created_at_idx').on(table.createdAt),
   ],
-);
-
-// ─── Monitoring Jobs ───
-export const monitoringJobs = pgTable(
-  'monitoring_jobs',
-  {
-    id: uuid('id').primaryKey().defaultRandom(),
-    relayId: uuid('relay_id')
-      .notNull()
-      .references(() => relays.id, { onDelete: 'cascade' })
-      .unique(),
-    enabled: boolean('enabled').default(true).notNull(),
-    intervalMs: integer('interval_ms').default(60000).notNull(),
-    lastRunAt: timestamp('last_run_at', { withTimezone: true }),
-    nextRunAt: timestamp('next_run_at', { withTimezone: true }),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-  },
-  (table) => [index('monitoring_jobs_enabled_idx').on(table.enabled)],
 );
 
 // ─── Relay Discoveries (NIP-66) ───
@@ -159,58 +117,10 @@ export const relayListEntries = pgTable(
   (t) => [unique('relay_list_entries_author_relay_key').on(t.authorPubkey, t.relayUrl)],
 );
 
-// ─── Relations ───
-
-export const relations = defineRelations(
-  {
-    relays,
-    relayInfoSnapshots,
-    healthChecks,
-    relayEvents,
-    monitoringJobs,
-    relayDiscovered,
-    relayListEntries,
-  },
-  (r) => ({
-    relays: {
-      infoSnapshots: r.many.relayInfoSnapshots(),
-      healthChecks: r.many.healthChecks(),
-      events: r.many.relayEvents(),
-      monitoringJob: r.one.monitoringJobs(),
-    },
-    relayInfoSnapshots: {
-      relay: r.one.relays({
-        from: r.relayInfoSnapshots.relayId,
-        to: r.relays.id,
-      }),
-    },
-    healthChecks: {
-      relay: r.one.relays({
-        from: r.healthChecks.relayId,
-        to: r.relays.id,
-      }),
-    },
-    relayEvents: {
-      relay: r.one.relays({
-        from: r.relayEvents.relayId,
-        to: r.relays.id,
-      }),
-    },
-    monitoringJobs: {
-      relay: r.one.relays({
-        from: r.monitoringJobs.relayId,
-        to: r.relays.id,
-      }),
-    },
-  }),
-);
-
 // ─── Type exports for use in routes ───
 export type Relay = typeof relays.$inferSelect;
 export type NewRelay = typeof relays.$inferInsert;
 export type RelayInfoSnapshot = typeof relayInfoSnapshots.$inferSelect;
-export type HealthCheck = typeof healthChecks.$inferSelect;
 export type RelayEvent = typeof relayEvents.$inferSelect;
-export type MonitoringJob = typeof monitoringJobs.$inferSelect;
 export type RelayDiscovery = typeof relayDiscovered.$inferSelect;
 export type RelayListEntry = typeof relayListEntries.$inferSelect;

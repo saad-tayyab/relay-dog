@@ -91,18 +91,6 @@ export interface RelayInfoSnapshot {
   fetchedAt: Date;
 }
 
-export interface HealthCheck {
-  id: string;
-  relayId: string;
-  httpReachable: boolean;
-  corsConfigured: boolean;
-  websocketConnectable: boolean;
-  latencyMs: number | null;
-  httpStatusCode: number | null;
-  errorMessage: string | null;
-  checkedAt: Date;
-}
-
 export interface RelayEvent {
   id: string;
   relayId: string;
@@ -115,20 +103,9 @@ export interface RelayEvent {
   receivedAt: Date;
 }
 
-export interface MonitoringJob {
-  id: string;
-  relayId: string;
-  enabled: boolean;
-  intervalMs: number;
-  lastRunAt: Date | null;
-  nextRunAt: Date | null;
-  createdAt: Date;
-}
-
 // ─── API Response Types ───
 
 export interface RelayWithHealth extends Relay {
-  lastHealthCheck?: HealthCheck | null;
   latestInfo?: RelayInfoSnapshot | null;
 }
 
@@ -229,12 +206,12 @@ export interface DirectoryRelay {
   isPublic: boolean;
   createdAt: Date;
   updatedAt: Date;
-  lastHealthCheck: {
-    httpReachable: boolean;
-    corsConfigured: boolean;
-    websocketConnectable: boolean;
-    latencyMs: number | null;
-    checkedAt: Date;
+  lastDiscovery: {
+    rttOpen: number | null;
+    rttRead: number | null;
+    rttWrite: number | null;
+    networkType: string | null;
+    discoveredAt: Date;
   } | null;
 }
 

@@ -10,12 +10,16 @@
     "passThroughEnv": ["DATABASE_URL", "API_KEY", "CI", "GITHUB_TOKEN"],
     "envMode": "strict"
   },
+  "remote": {
+    "apiUrl": "https://vercel.com/api/repos"
+  },
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
       "inputs": ["src/**", "package.json", "tsconfig.json"],
-      "env": ["VITE_API_URL"]
+      "env": ["VITE_API_URL"],
+      "outputMode": "new-only"
     },
     "dev": {
       "cache": false,
@@ -27,11 +31,13 @@
     },
     "type-check": {
       "dependsOn": ["^type-check"],
-      "inputs": ["src/**", "tsconfig.json"]
+      "inputs": ["src/**", "tsconfig.json"],
+      "outputMode": "errors-only"
     },
     "test": {
       "dependsOn": ["^build"],
-      "env": ["NODE_ENV", "DATABASE_URL", "API_KEY"]
+      "env": ["NODE_ENV", "DATABASE_URL", "API_KEY"],
+      "outputMode": "errors-only"
     },
     "preview": {
       "cache": false,

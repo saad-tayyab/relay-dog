@@ -5,6 +5,7 @@ import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import { secureHeaders } from 'hono/secure-headers';
 import { rateLimiter } from 'hono-rate-limiter';
 import { log } from './lib/log';
 import directoryRoutes from './routes/directory';
@@ -67,17 +68,22 @@ export function createApp() {
   // ─── Body Size Limit ───
   app.use('/api/*', bodyLimit({ maxSize: 100 * 1024 }));
 
-  // ─── Security Headers ───
+  // ─── Security Headers (Hono built-in + custom CSP) ───
+  app.use(
+    '*',
+    secureHeaders({
+      // Override defaults — handle CSP separately for API responses
+      contentSecurityPolicy: false,
+      xFrameOptions: false,
+      strictTransportSecurity: isProduction
+        ? { maxAge: 63072000, includeSubDomains: true, preload: true }
+        : false,
+    }),
+  );
+
   app.use('*', async (c, next) => {
     await next();
-    c.header('X-Content-Type-Options', 'nosniff');
-    c.header('X-Frame-Options', 'DENY');
-    c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
     c.header('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
-    c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-    if (isProduction) {
-      c.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-    }
   });
 
   // ─── Routes ───

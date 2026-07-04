@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { NostrEvent } from '@relayscope/shared';
-import { parseExpiration } from '../../utils/relay';
-import ExpiredBadge from './ExpiredBadge.svelte';
+import type { NostrEvent } from "@relayscope/shared";
+import { parseExpiration } from "../../utils/relay";
+import ExpiredBadge from "./ExpiredBadge.svelte";
 
 let { event }: { event: NostrEvent } = $props();
 
@@ -9,56 +9,56 @@ let expanded = $state(false);
 let copied = $state(false);
 
 const KIND_COLORS: Record<number, string> = {
-  0: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-  1: 'bg-green-500/15 text-green-400 border-green-500/30',
-  4: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
-  42: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+	0: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+	1: "bg-green-500/15 text-green-400 border-green-500/30",
+	4: "bg-purple-500/15 text-purple-400 border-purple-500/30",
+	42: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
 };
 
 const KIND_LABELS: Record<number, string> = {
-  0: 'Metadata',
-  1: 'Note',
-  4: 'DM',
-  42: 'Channel',
+	0: "Metadata",
+	1: "Note",
+	4: "DM",
+	42: "Channel",
 };
 
 function getKindColor(kind: number): string {
-  return KIND_COLORS[kind] || 'bg-gray-500/15 text-gray-400 border-gray-500/30';
+	return KIND_COLORS[kind] || "bg-gray-500/15 text-gray-400 border-gray-500/30";
 }
 
 function getKindLabel(kind: number): string {
-  return KIND_LABELS[kind] || `Kind ${kind}`;
+	return KIND_LABELS[kind] || `Kind ${kind}`;
 }
 
 function formatRelativeTime(createdAt: number): string {
-  const now = Math.floor(Date.now() / 1000);
-  const diff = now - createdAt;
+	const now = Math.floor(Date.now() / 1000);
+	const diff = now - createdAt;
 
-  if (diff < 0 || diff < 60) return 'just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
-  return new Date(createdAt * 1000).toLocaleDateString();
+	if (diff < 0 || diff < 60) return "just now";
+	if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+	if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+	if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+	return new Date(createdAt * 1000).toLocaleDateString();
 }
 
 function truncatePubkey(pubkey: string): string {
-  if (pubkey.length <= 8) return pubkey;
-  return `${pubkey.slice(0, 8)}…`;
+	if (pubkey.length <= 8) return pubkey;
+	return `${pubkey.slice(0, 8)}…`;
 }
 
 function truncateContent(content: string, maxLen = 200): string {
-  if (content.length <= maxLen) return content;
-  return `${content.slice(0, maxLen)}…`;
+	if (content.length <= maxLen) return content;
+	return `${content.slice(0, maxLen)}…`;
 }
 
 async function handleCopy() {
-  try {
-    await navigator.clipboard.writeText(JSON.stringify(event, null, 2));
-    copied = true;
-    setTimeout(() => (copied = false), 1500);
-  } catch {
-    // Clipboard API may be denied
-  }
+	try {
+		await navigator.clipboard.writeText(JSON.stringify(event, null, 2));
+		copied = true;
+		setTimeout(() => (copied = false), 1500);
+	} catch {
+		// Clipboard API may be denied
+	}
 }
 
 const kindColor = $derived(getKindColor(event.kind));

@@ -1,14 +1,14 @@
 <script lang="ts">
-import type { RelayFees } from '@relayscope/shared';
-import SectionCard from '../ui/SectionCard.svelte';
+import type { RelayFees } from "@relayscope/shared";
+import { SectionCard } from "@relayscope/ui";
 
 let { fees }: { fees: RelayFees | null } = $props();
 
 function formatAmount(amount: number, unit: string): string {
-  if (unit === 'msats') {
-    return `${(amount / 1000).toFixed(2)} sats`;
-  }
-  return `${amount} sats`;
+	if (unit === "msats") {
+		return `${(amount / 1000).toFixed(2)} sats`;
+	}
+	return `${amount} sats`;
 }
 </script>
 

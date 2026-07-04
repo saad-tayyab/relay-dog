@@ -13,7 +13,9 @@ discoverRoutes.get('/:id/discoveries', async (c) => {
     return c.json({ success: false, error: 'Relay not found' }, 404);
   }
 
-  const discoveries = await getDiscoveriesByUrl.execute({ relayUrl: relay.url });
+  const discoveries = await getDiscoveriesByUrl.execute({
+    relayUrl: relay.url,
+  });
 
   const monitorCount = new Set(discoveries.map((d: RelayDiscovery) => d.monitorPubkey)).size;
   const avgRttOpen =

@@ -85,7 +85,9 @@ export function exportToFile(events: NostrEvent[], pubkey: string): string {
   const date = new Date().toISOString().split('T')[0];
   const filename = `nostr-backup-${shortPubkey}-${date}.json`;
 
-  const blob = new Blob([JSON.stringify(events, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(events, null, 2)], {
+    type: 'application/json',
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { NostrEvent } from '@relayscope/shared';
-import { toNpub } from '../../utils/nostrVerify';
-import SectionCard from '../ui/SectionCard.svelte';
-import KindBadge from './KindBadge.svelte';
+import type { NostrEvent } from "@relayscope/shared";
+import { SectionCard } from "@relayscope/ui";
+import { toNpub } from "../../utils/nostrVerify";
+import KindBadge from "./KindBadge.svelte";
 
 let { event }: { event: NostrEvent } = $props();
 
@@ -16,43 +16,48 @@ const relativeTime = $derived(formatRelativeTime(event.created_at));
 const absoluteTime = $derived(formatAbsoluteTime(event.created_at));
 const contentTooLong = $derived(event.content.length > 500);
 const displayedContent = $derived(
-  contentTooLong && !contentExpanded ? `${event.content.slice(0, 500)}…` : event.content,
+	contentTooLong && !contentExpanded
+		? `${event.content.slice(0, 500)}…`
+		: event.content,
 );
 
 function formatRelativeTime(createdAt: number): string {
-  const now = Math.floor(Date.now() / 1000);
-  const diff = now - createdAt;
+	const now = Math.floor(Date.now() / 1000);
+	const diff = now - createdAt;
 
-  if (diff < 0 || diff < 60) return 'just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)} days ago`;
-  return `${Math.floor(diff / 604800)} weeks ago`;
+	if (diff < 0 || diff < 60) return "just now";
+	if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+	if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+	if (diff < 604800) return `${Math.floor(diff / 86400)} days ago`;
+	return `${Math.floor(diff / 604800)} weeks ago`;
 }
 
 function formatAbsoluteTime(createdAt: number): string {
-  return new Date(createdAt * 1000).toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
+	return new Date(createdAt * 1000).toLocaleString(undefined, {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+		hour: "numeric",
+		minute: "2-digit",
+	});
 }
 
-async function copyToClipboard(text: string, which: 'id' | 'pubkey'): Promise<void> {
-  try {
-    await navigator.clipboard.writeText(text);
-    if (which === 'id') {
-      copiedId = true;
-      setTimeout(() => (copiedId = false), 1500);
-    } else {
-      copiedPubkey = true;
-      setTimeout(() => (copiedPubkey = false), 1500);
-    }
-  } catch {
-    // Clipboard API may be denied
-  }
+async function copyToClipboard(
+	text: string,
+	which: "id" | "pubkey",
+): Promise<void> {
+	try {
+		await navigator.clipboard.writeText(text);
+		if (which === "id") {
+			copiedId = true;
+			setTimeout(() => (copiedId = false), 1500);
+		} else {
+			copiedPubkey = true;
+			setTimeout(() => (copiedPubkey = false), 1500);
+		}
+	} catch {
+		// Clipboard API may be denied
+	}
 }
 </script>
 

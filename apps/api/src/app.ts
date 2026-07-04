@@ -72,12 +72,11 @@ export function createApp() {
   app.use(
     '*',
     secureHeaders({
-      // Override defaults — handle CSP separately for API responses
-      contentSecurityPolicy: false,
       xFrameOptions: false,
       strictTransportSecurity: isProduction
-        ? { maxAge: 63072000, includeSubDomains: true, preload: true }
+        ? 'max-age=63072000; includeSubDomains; preload'
         : false,
+      xXssProtection: false,
     }),
   );
 
@@ -130,7 +129,11 @@ export function createApp() {
 
   // ─── Error Handler ───
   app.onError((err, c) => {
-    log({ level: 'error', msg: 'Request error', error: err.stack ?? err.message ?? String(err) });
+    log({
+      level: 'error',
+      msg: 'Request error',
+      error: err.stack ?? err.message ?? String(err),
+    });
     return c.json({ success: false, error: 'Internal server error' }, 500);
   });
 

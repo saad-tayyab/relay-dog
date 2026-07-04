@@ -1,16 +1,18 @@
 <script lang="ts">
-import type { NostrEvent } from '@relayscope/shared';
-import EventDetails from './EventDetails.svelte';
-import EventInput from './EventInput.svelte';
-import TagDecoder from './TagDecoder.svelte';
-import VerificationPanel from './VerificationPanel.svelte';
+import type { NostrEvent } from "@relayscope/shared";
+import EventDetails from "./EventDetails.svelte";
+import EventInput from "./EventInput.svelte";
+import TagDecoder from "./TagDecoder.svelte";
+import VerificationPanel from "./VerificationPanel.svelte";
 
-let { onEditAndRepublish }: { onEditAndRepublish?: (event: NostrEvent) => void } = $props();
+let {
+	onEditAndRepublish,
+}: { onEditAndRepublish?: (event: NostrEvent) => void } = $props();
 
 let event = $state<NostrEvent | null>(null);
 
 function handleEvent(parsed: NostrEvent): void {
-  event = parsed;
+	event = parsed;
 }
 </script>
 

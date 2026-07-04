@@ -1,21 +1,20 @@
 <script lang="ts">
-import { getHashSection, type Section, setHashSection } from './utils/router';
-import './index.css';
+import { getHashSection, type Section, setHashSection } from "./utils/router";
+import "./index.css";
 
+import { EmptyState, Toast } from "@relayscope/ui";
 // Components
-import InspectorSection from './components/inspector/InspectorSection.svelte';
-import MobileNav from './components/nav/MobileNav.svelte';
-import NavBar from './components/nav/NavBar.svelte';
-import PublisherSection from './components/publisher/PublisherSection.svelte';
-import RelayDirectory from './components/relay/RelayDirectory.svelte';
-import SearchBar from './components/search/SearchBar.svelte';
-import Toast from './components/shared/Toast.svelte';
-import ToolsSection from './components/tools/ToolsSection.svelte';
-import EmptyState from './components/ui/EmptyState.svelte';
-import EventVerifier from './components/verifier/EventVerifier.svelte';
+import InspectorSection from "./components/inspector/InspectorSection.svelte";
+import MobileNav from "./components/nav/MobileNav.svelte";
+import NavBar from "./components/nav/NavBar.svelte";
+import PublisherSection from "./components/publisher/PublisherSection.svelte";
+import RelayDirectory from "./components/relay/RelayDirectory.svelte";
+import SearchBar from "./components/search/SearchBar.svelte";
+import ToolsSection from "./components/tools/ToolsSection.svelte";
+import EventVerifier from "./components/verifier/EventVerifier.svelte";
 
 // Composables
-import { useRelayInspector } from './lib/composables/useRelayInspector.svelte';
+import { useRelayInspector } from "./lib/composables/useRelayInspector.svelte";
 
 // ─── State ───
 
@@ -28,22 +27,22 @@ const inspector = useRelayInspector();
 // ─── Navigation ───
 
 function handleNavigate(section: Section) {
-  activeSection = section;
-  setHashSection(section);
+	activeSection = section;
+	setHashSection(section);
 }
 
 $effect(() => {
-  function onHashChange() {
-    activeSection = getHashSection();
-  }
-  window.addEventListener('hashchange', onHashChange);
-  return () => window.removeEventListener('hashchange', onHashChange);
+	function onHashChange() {
+		activeSection = getHashSection();
+	}
+	window.addEventListener("hashchange", onHashChange);
+	return () => window.removeEventListener("hashchange", onHashChange);
 });
 
 function handleEditAndRepublish(event: unknown) {
-  prefilledEvent = event;
-  activeSection = 'publisher';
-  setHashSection('publisher');
+	prefilledEvent = event;
+	activeSection = "publisher";
+	setHashSection("publisher");
 }
 </script>
 

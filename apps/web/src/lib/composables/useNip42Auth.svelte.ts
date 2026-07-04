@@ -53,7 +53,11 @@ export function useNip42Auth() {
     // Capture challenge BEFORE any async operations to prevent race condition
     const challenge = pendingChallenge;
     if (!challenge) {
-      state = { ...state, error: 'No pending challenge', status: 'auth_failed' };
+      state = {
+        ...state,
+        error: 'No pending challenge',
+        status: 'auth_failed',
+      };
       return null;
     }
 

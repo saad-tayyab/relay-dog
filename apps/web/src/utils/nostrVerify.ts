@@ -19,7 +19,10 @@ export function computeEventId(event: NostrEvent): string {
 /**
  * Compare the computed event ID against the stored id field.
  */
-export function eventIdMatches(event: NostrEvent): { computed: string; matches: boolean } {
+export function eventIdMatches(event: NostrEvent): {
+  computed: string;
+  matches: boolean;
+} {
   const computed = computeEventId(event);
   return { computed, matches: computed === event.id };
 }

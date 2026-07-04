@@ -156,7 +156,10 @@ describe('RelayDiscoverySchema', () => {
   });
 
   it('rejects wrong kind', () => {
-    const result = RelayDiscoverySchema.safeParse({ ...validDiscovery, kind: 1 });
+    const result = RelayDiscoverySchema.safeParse({
+      ...validDiscovery,
+      kind: 1,
+    });
     expect(result.success).toBe(false);
   });
 });
@@ -176,7 +179,10 @@ describe('RelayListEventSchema', () => {
   });
 
   it('rejects wrong kind', () => {
-    const result = RelayListEventSchema.safeParse({ ...validList, kind: 10001 });
+    const result = RelayListEventSchema.safeParse({
+      ...validList,
+      kind: 10001,
+    });
     expect(result.success).toBe(false);
   });
 });
@@ -195,7 +201,10 @@ describe('AuthEventSchema', () => {
   });
 
   it('rejects non-empty content', () => {
-    const result = AuthEventSchema.safeParse({ ...validAuth, content: 'not empty' });
+    const result = AuthEventSchema.safeParse({
+      ...validAuth,
+      content: 'not empty',
+    });
     expect(result.success).toBe(false);
   });
 

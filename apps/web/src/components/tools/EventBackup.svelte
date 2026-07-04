@@ -1,28 +1,27 @@
 <script lang="ts">
-import type { NostrEvent } from '@relayscope/shared';
-import { SimplePool } from 'nostr-tools/pool';
+import type { NostrEvent } from "@relayscope/shared";
+import { AccessibleTabs, SectionCard } from "@relayscope/ui";
+import { SimplePool } from "nostr-tools/pool";
 import {
-  type BackupOptions,
-  exportToFile,
-  fetchEventsForBackup,
-  importFromFile,
-  type RestoreResult,
-} from '../../utils/backup';
-import AccessibleTabs from '../shared/AccessibleTabs.svelte';
-import SectionCard from '../ui/SectionCard.svelte';
+	type BackupOptions,
+	exportToFile,
+	fetchEventsForBackup,
+	importFromFile,
+	type RestoreResult,
+} from "../../utils/backup";
 
-let activeTab = $state<'backup' | 'restore'>('backup');
+let activeTab = $state<"backup" | "restore">("backup");
 
 const tabs = [
-  { id: 'backup' as const, label: 'Backup', icon: '💾' },
-  { id: 'restore' as const, label: 'Restore', icon: '📤' },
+	{ id: "backup" as const, label: "Backup", icon: "💾" },
+	{ id: "restore" as const, label: "Restore", icon: "📤" },
 ];
 
 // Backup state
-let authorPubkey = $state('');
-let relayUrl = $state('');
-let kinds = $state('0,1,3');
-let limit = $state('1000');
+let authorPubkey = $state("");
+let relayUrl = $state("");
+let kinds = $state("0,1,3");
+let limit = $state("1000");
 let fetching = $state(false);
 let backupError = $state<string | null>(null);
 let backupSuccess = $state<string | null>(null);
@@ -34,92 +33,92 @@ let restoreProgress = $state({ total: 0, restored: 0, skipped: 0 });
 let restoreResult = $state<RestoreResult | null>(null);
 
 async function handleBackup() {
-  if (!authorPubkey || !relayUrl) return;
+	if (!authorPubkey || !relayUrl) return;
 
-  fetching = true;
-  try {
-    const options: BackupOptions = {
-      authorPubkey,
-      relayUrl,
-      kinds: kinds.split(',').map(Number).filter(Boolean),
-      limit: Number(limit) || 1000,
-    };
+	fetching = true;
+	try {
+		const options: BackupOptions = {
+			authorPubkey,
+			relayUrl,
+			kinds: kinds.split(",").map(Number).filter(Boolean),
+			limit: Number(limit) || 1000,
+		};
 
-    const events = await fetchEventsForBackup(options);
-    exportToFile(events, authorPubkey);
-    backupSuccess = `Exported ${events.length} events`;
-    backupError = null;
-  } catch (e) {
-    backupError = e instanceof Error ? e.message : 'Unknown error';
-  } finally {
-    fetching = false;
-  }
+		const events = await fetchEventsForBackup(options);
+		exportToFile(events, authorPubkey);
+		backupSuccess = `Exported ${events.length} events`;
+		backupError = null;
+	} catch (e) {
+		backupError = e instanceof Error ? e.message : "Unknown error";
+	} finally {
+		fetching = false;
+	}
 }
 
 async function handleFileImport(e: Event) {
-  const input = e.target as HTMLInputElement;
-  const file = input.files?.[0];
-  if (!file) return;
+	const input = e.target as HTMLInputElement;
+	const file = input.files?.[0];
+	if (!file) return;
 
-  try {
-    importedEvents = await importFromFile(file);
-    restoreResult = null;
-  } catch (err) {
-    backupError = err instanceof Error ? err.message : 'Unknown error';
-  }
+	try {
+		importedEvents = await importFromFile(file);
+		restoreResult = null;
+	} catch (err) {
+		backupError = err instanceof Error ? err.message : "Unknown error";
+	}
 }
 
 async function handleRestore() {
-  if (importedEvents.length === 0 || !relayUrl) return;
+	if (importedEvents.length === 0 || !relayUrl) return;
 
-  // Concurrency guard
-  if (restoring) return;
+	// Concurrency guard
+	if (restoring) return;
 
-  restoring = true;
-  backupError = null;
-  restoreProgress = { total: importedEvents.length, restored: 0, skipped: 0 };
+	restoring = true;
+	backupError = null;
+	restoreProgress = { total: importedEvents.length, restored: 0, skipped: 0 };
 
-  const pool = new SimplePool();
-  let restored = 0;
-  let skipped = 0;
-  const errors: string[] = [];
+	const pool = new SimplePool();
+	let restored = 0;
+	let skipped = 0;
+	const errors: string[] = [];
 
-  try {
-    const publishPromises = importedEvents.map(async (event) => {
-      try {
-        const pubs = pool.publish([relayUrl], event);
-        // 10-second timeout per event
-        const timeout = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('Publish timed out')), 10_000),
-        );
-        await Promise.race([pubs, timeout]);
-        restored++;
-      } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : String(e);
-        errors.push(`Event ${event.id?.slice(0, 8) || 'unknown'}: ${msg}`);
-      }
-      restoreProgress = { total: importedEvents.length, restored, skipped };
-    });
+	try {
+		const publishPromises = importedEvents.map(async (event) => {
+			try {
+				const pubs = pool.publish([relayUrl], event);
+				// 10-second timeout per event
+				const timeout = new Promise<never>((_, reject) =>
+					setTimeout(() => reject(new Error("Publish timed out")), 10_000),
+				);
+				await Promise.race([pubs, timeout]);
+				restored++;
+			} catch (e: unknown) {
+				const msg = e instanceof Error ? e.message : String(e);
+				errors.push(`Event ${event.id?.slice(0, 8) || "unknown"}: ${msg}`);
+			}
+			restoreProgress = { total: importedEvents.length, restored, skipped };
+		});
 
-    await Promise.allSettled(publishPromises);
-  } finally {
-    pool.close([relayUrl]);
-    restoreResult = {
-      total: importedEvents.length,
-      restored,
-      skipped,
-      errors,
-    };
-    restoring = false;
-  }
+		await Promise.allSettled(publishPromises);
+	} finally {
+		pool.close([relayUrl]);
+		restoreResult = {
+			total: importedEvents.length,
+			restored,
+			skipped,
+			errors,
+		};
+		restoring = false;
+	}
 }
 
 const importedKindsBreakdown = $derived.by(() => {
-  const breakdown: Record<number, number> = {};
-  for (const event of importedEvents) {
-    breakdown[event.kind] = (breakdown[event.kind] || 0) + 1;
-  }
-  return breakdown;
+	const breakdown: Record<number, number> = {};
+	for (const event of importedEvents) {
+		breakdown[event.kind] = (breakdown[event.kind] || 0) + 1;
+	}
+	return breakdown;
 });
 </script>
 

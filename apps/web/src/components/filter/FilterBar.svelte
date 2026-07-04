@@ -1,65 +1,68 @@
 <script lang="ts">
-import type { DirectoryFilters } from '@relayscope/shared';
+import type { DirectoryFilters } from "@relayscope/shared";
 
 let {
-  filters,
-  onSearch,
-  onNipsChange,
-  onSort,
-  onCountryChange,
-  supportsNip50 = false,
+	filters,
+	onSearch,
+	onNipsChange,
+	onSort,
+	onCountryChange,
+	supportsNip50 = false,
 }: {
-  filters: DirectoryFilters;
-  onSearch: (search: string) => void;
-  onNipsChange: (nips: number[]) => void;
-  onSort: (sortBy: DirectoryFilters['sortBy'], sortOrder: DirectoryFilters['sortOrder']) => void;
-  onCountryChange: (country: string | null) => void;
-  supportsNip50?: boolean;
+	filters: DirectoryFilters;
+	onSearch: (search: string) => void;
+	onNipsChange: (nips: number[]) => void;
+	onSort: (
+		sortBy: DirectoryFilters["sortBy"],
+		sortOrder: DirectoryFilters["sortOrder"],
+	) => void;
+	onCountryChange: (country: string | null) => void;
+	supportsNip50?: boolean;
 } = $props();
 
-let searchInput = $state('');
-let nipInput = $state('');
-let countryInput = $state('');
-let sortLocal = $state<DirectoryFilters['sortBy']>('name');
-let sortDirection = $state<DirectoryFilters['sortOrder']>('asc');
+let searchInput = $state("");
+let nipInput = $state("");
+let countryInput = $state("");
+let sortLocal = $state<DirectoryFilters["sortBy"]>("name");
+let sortDirection = $state<DirectoryFilters["sortOrder"]>("asc");
 
 // Sync local state when parent-provided filters change
 $effect(() => {
-  searchInput = filters.search || '';
+	searchInput = filters.search || "";
 });
 $effect(() => {
-  nipInput = filters.nips?.join(', ') || '';
+	nipInput = filters.nips?.join(", ") || "";
 });
 $effect(() => {
-  countryInput = filters.country || '';
+	countryInput = filters.country || "";
 });
 $effect(() => {
-  sortLocal = filters.sortBy;
+	sortLocal = filters.sortBy;
 });
 $effect(() => {
-  sortDirection = filters.sortOrder;
+	sortDirection = filters.sortOrder;
 });
 
 // Debounce search
 let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function handleSearchInput() {
-  if (searchTimeout) clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    onSearch(searchInput);
-  }, 300);
+	if (searchTimeout) clearTimeout(searchTimeout);
+	searchTimeout = setTimeout(() => {
+		onSearch(searchInput);
+	}, 300);
 }
 
 function handleNipBlur() {
-  const nips = nipInput
-    .split(',')
-    .map((s) => Number(s.trim()))
-    .filter((n) => !Number.isNaN(n) && n > 0);
-  onNipsChange(nips);
+	const nips = nipInput
+		.split(",")
+		.map((s) => Number(s.trim()))
+		.filter((n) => !Number.isNaN(n) && n > 0);
+	onNipsChange(nips);
 }
 
 function handleCountryChange() {
-  onCountryChange(countryInput || null);
+	onCountryChange(countryInput || null);
 }
 </script>
 

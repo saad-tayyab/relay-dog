@@ -1,138 +1,143 @@
 <script lang="ts">
-import type { NostrEvent } from '@relayscope/shared';
+import type { NostrEvent } from "@relayscope/shared";
 
 let { onEvent }: { onEvent: (event: NostrEvent) => void } = $props();
 
-let rawInput = $state('');
+let rawInput = $state("");
 let error = $state<string | null>(null);
 let isValid = $state(false);
 let textarea = $state<HTMLTextAreaElement | null>(null);
 
 const REQUIRED_FIELDS: (keyof NostrEvent)[] = [
-  'id',
-  'pubkey',
-  'sig',
-  'kind',
-  'created_at',
-  'tags',
-  'content',
+	"id",
+	"pubkey",
+	"sig",
+	"kind",
+	"created_at",
+	"tags",
+	"content",
 ];
 
 const EXAMPLE_EVENT: NostrEvent = {
-  kind: 1,
-  created_at: 1782799753,
-  tags: [
-    ['t', 'nostr'],
-    [
-      'e',
-      'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-      'wss://relay.damus.io',
-    ],
-    ['p', '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'],
-  ],
-  content: 'Hello from Relay Dog! This is a sample Nostr event for testing the Event Verifier.',
-  pubkey: '99cb2d2067ffa3fa6f20e84af42984ef013bec9efc47a69b733c09436d39619f',
-  id: '8731dc3adb4f9f98d5e89b7fdcae323520753deb37fe2dfa7cb76f80568a91b2',
-  sig: '009bbbd1fb51bcd1fcc6309f80558e84a959203a080d3659b38413d61b504840e96c6c07340bc8d10f425b5866ef2684bb06915078c07cfdb9b3abf2ba1a8f92',
+	kind: 1,
+	created_at: 1782799753,
+	tags: [
+		["t", "nostr"],
+		[
+			"e",
+			"abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+			"wss://relay.damus.io",
+		],
+		["p", "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"],
+	],
+	content:
+		"Hello from Relay Dog! This is a sample Nostr event for testing the Event Verifier.",
+	pubkey: "99cb2d2067ffa3fa6f20e84af42984ef013bec9efc47a69b733c09436d39619f",
+	id: "8731dc3adb4f9f98d5e89b7fdcae323520753deb37fe2dfa7cb76f80568a91b2",
+	sig: "009bbbd1fb51bcd1fcc6309f80558e84a959203a080d3659b38413d61b504840e96c6c07340bc8d10f425b5866ef2684bb06915078c07cfdb9b3abf2ba1a8f92",
 };
 
 function validateAndParse(input: string): void {
-  if (!input.trim()) {
-    error = null;
-    isValid = false;
-    return;
-  }
+	if (!input.trim()) {
+		error = null;
+		isValid = false;
+		return;
+	}
 
-  try {
-    const parsed: unknown = JSON.parse(input);
+	try {
+		const parsed: unknown = JSON.parse(input);
 
-    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-      error = 'Input must be a JSON object';
-      isValid = false;
-      return;
-    }
+		if (
+			typeof parsed !== "object" ||
+			parsed === null ||
+			Array.isArray(parsed)
+		) {
+			error = "Input must be a JSON object";
+			isValid = false;
+			return;
+		}
 
-    const obj = parsed as Record<string, unknown>;
+		const obj = parsed as Record<string, unknown>;
 
-    for (const field of REQUIRED_FIELDS) {
-      if (!(field in obj)) {
-        error = `Missing required field: "${field}"`;
-        isValid = false;
-        return;
-      }
-    }
+		for (const field of REQUIRED_FIELDS) {
+			if (!(field in obj)) {
+				error = `Missing required field: "${field}"`;
+				isValid = false;
+				return;
+			}
+		}
 
-    if (typeof obj.id !== 'string') {
-      error = 'Field "id" must be a string';
-      isValid = false;
-      return;
-    }
+		if (typeof obj.id !== "string") {
+			error = 'Field "id" must be a string';
+			isValid = false;
+			return;
+		}
 
-    if (typeof obj.pubkey !== 'string') {
-      error = 'Field "pubkey" must be a string';
-      isValid = false;
-      return;
-    }
+		if (typeof obj.pubkey !== "string") {
+			error = 'Field "pubkey" must be a string';
+			isValid = false;
+			return;
+		}
 
-    if (typeof obj.sig !== 'string') {
-      error = 'Field "sig" must be a string';
-      isValid = false;
-      return;
-    }
+		if (typeof obj.sig !== "string") {
+			error = 'Field "sig" must be a string';
+			isValid = false;
+			return;
+		}
 
-    if (typeof obj.kind !== 'number') {
-      error = 'Field "kind" must be a number';
-      isValid = false;
-      return;
-    }
+		if (typeof obj.kind !== "number") {
+			error = 'Field "kind" must be a number';
+			isValid = false;
+			return;
+		}
 
-    if (typeof obj.created_at !== 'number') {
-      error = 'Field "created_at" must be a number';
-      isValid = false;
-      return;
-    }
+		if (typeof obj.created_at !== "number") {
+			error = 'Field "created_at" must be a number';
+			isValid = false;
+			return;
+		}
 
-    if (!Array.isArray(obj.tags)) {
-      error = 'Field "tags" must be an array';
-      isValid = false;
-      return;
-    }
+		if (!Array.isArray(obj.tags)) {
+			error = 'Field "tags" must be an array';
+			isValid = false;
+			return;
+		}
 
-    if (typeof obj.content !== 'string') {
-      error = 'Field "content" must be a string';
-      isValid = false;
-      return;
-    }
+		if (typeof obj.content !== "string") {
+			error = 'Field "content" must be a string';
+			isValid = false;
+			return;
+		}
 
-    error = null;
-    isValid = true;
-    onEvent(obj as unknown as NostrEvent);
-  } catch {
-    error = 'Invalid JSON — check syntax and try again';
-    isValid = false;
-  }
+		error = null;
+		isValid = true;
+		onEvent(obj as unknown as NostrEvent);
+	} catch {
+		error = "Invalid JSON — check syntax and try again";
+		isValid = false;
+	}
 }
 
 function handleInput(): void {
-  validateAndParse(rawInput);
+	validateAndParse(rawInput);
 }
 
 function loadExample(): void {
-  rawInput = JSON.stringify(EXAMPLE_EVENT, null, 2);
-  validateAndParse(rawInput);
-  if (textarea) {
-    autoResize();
-  }
+	rawInput = JSON.stringify(EXAMPLE_EVENT, null, 2);
+	validateAndParse(rawInput);
+	if (textarea) {
+		autoResize();
+	}
 }
 
 function autoResize(): void {
-  if (!textarea) return;
-  textarea.style.height = 'auto';
-  textarea.style.height = `${textarea.scrollHeight}px`;
+	if (!textarea) return;
+	textarea.style.height = "auto";
+	textarea.style.height = `${textarea.scrollHeight}px`;
 }
 
 $effect(() => {
-  autoResize();
+	autoResize();
 });
 </script>
 

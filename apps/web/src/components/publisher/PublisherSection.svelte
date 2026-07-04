@@ -1,17 +1,17 @@
 <script lang="ts">
-import AccessibleTabs from '../shared/AccessibleTabs.svelte';
-import EventComposer from './EventComposer.svelte';
-import EventDeleter from './EventDeleter.svelte';
+import { AccessibleTabs } from "@relayscope/ui";
+import EventComposer from "./EventComposer.svelte";
+import EventDeleter from "./EventDeleter.svelte";
 
 let {
-  targetRelay,
-  prefilledEvent: _prefilledEvent,
+	targetRelay,
+	prefilledEvent: _prefilledEvent,
 }: {
-  targetRelay: string;
-  prefilledEvent?: unknown;
+	targetRelay: string;
+	prefilledEvent?: unknown;
 } = $props();
 
-let activeTab = $state('compose');
+let activeTab = $state("compose");
 </script>
 
 <div class="space-y-4">

@@ -1,13 +1,13 @@
 <script lang="ts">
-type CheckStatus = 'success' | 'error' | 'checking' | 'pending';
+type CheckStatus = "success" | "error" | "checking" | "pending";
 
 let { status }: { status: CheckStatus } = $props();
 
 const COLORS: Record<CheckStatus, string> = {
-  success: 'bg-success',
-  error: 'bg-error',
-  checking: 'bg-warning',
-  pending: 'bg-text-muted',
+	success: "bg-success",
+	error: "bg-error",
+	checking: "bg-warning",
+	pending: "bg-text-muted",
 };
 </script>
 

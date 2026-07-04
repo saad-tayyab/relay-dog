@@ -1,18 +1,18 @@
 <script lang="ts">
 let {
-  message,
-  type = 'success',
-  duration = 5000,
-  undoLabel,
-  onUndo,
-  onDismiss,
+	message,
+	type = "success",
+	duration = 5000,
+	undoLabel,
+	onUndo,
+	onDismiss,
 }: {
-  message: string;
-  type?: 'success' | 'error' | 'info';
-  duration?: number;
-  undoLabel?: string;
-  onUndo?: () => void;
-  onDismiss?: () => void;
+	message: string;
+	type?: "success" | "error" | "info";
+	duration?: number;
+	undoLabel?: string;
+	onUndo?: () => void;
+	onDismiss?: () => void;
 } = $props();
 
 let visible = $state(false);
@@ -20,44 +20,44 @@ let exiting = $state(false);
 
 // Slide in after mount
 $effect(() => {
-  requestAnimationFrame(() => {
-    visible = true;
-  });
+	requestAnimationFrame(() => {
+		visible = true;
+	});
 });
 
 // Auto-dismiss after duration
 $effect(() => {
-  const timer = setTimeout(() => {
-    dismiss();
-  }, duration);
+	const timer = setTimeout(() => {
+		dismiss();
+	}, duration);
 
-  return () => clearTimeout(timer);
+	return () => clearTimeout(timer);
 });
 
 function dismiss() {
-  if (exiting) return;
-  exiting = true;
-  // Wait for exit animation
-  setTimeout(() => {
-    onDismiss?.();
-  }, 250);
+	if (exiting) return;
+	exiting = true;
+	// Wait for exit animation
+	setTimeout(() => {
+		onDismiss?.();
+	}, 250);
 }
 
 function handleUndo() {
-  onUndo?.();
-  dismiss();
+	onUndo?.();
+	dismiss();
 }
 
 const typeStyles = {
-  success: 'border-success/30 bg-success-dim',
-  error: 'border-error/30 bg-error-dim',
-  info: 'border-accent-border bg-accent-dim',
+	success: "border-success/30 bg-success-dim",
+	error: "border-error/30 bg-error-dim",
+	info: "border-accent-border bg-accent-dim",
 } as const;
 
 const dotColors = {
-  success: 'bg-success',
-  error: 'bg-error',
-  info: 'bg-accent',
+	success: "bg-success",
+	error: "bg-error",
+	info: "bg-accent",
 } as const;
 </script>
 

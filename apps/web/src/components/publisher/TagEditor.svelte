@@ -1,39 +1,39 @@
 <script lang="ts">
 let {
-  tags,
-  onAdd,
-  onRemove,
-  onUpdate: _onUpdate,
+	tags,
+	onAdd,
+	onRemove,
+	onUpdate: _onUpdate,
 }: {
-  tags: string[][];
-  onAdd: (tag: string[]) => void;
-  onRemove: (index: number) => void;
-  onUpdate: (index: number, tag: string[]) => void;
+	tags: string[][];
+	onAdd: (tag: string[]) => void;
+	onRemove: (index: number) => void;
+	onUpdate: (index: number, tag: string[]) => void;
 } = $props();
 
-let tagKey = $state('');
-let tagValue = $state('');
+let tagKey = $state("");
+let tagValue = $state("");
 
 const presetTags = [
-  { key: 'e', label: 'Event Reference', placeholder: 'event ID' },
-  { key: 'p', label: 'Profile Reference', placeholder: 'pubkey' },
-  { key: 't', label: 'Hashtag', placeholder: 'hashtag' },
-  { key: 'd', label: 'Replaceable Coordinate', placeholder: 'coordinate' },
-  { key: 'expiration', label: 'Expiration', placeholder: 'unix timestamp' },
-  { key: 'relay', label: 'Relay URL', placeholder: 'wss://...' },
+	{ key: "e", label: "Event Reference", placeholder: "event ID" },
+	{ key: "p", label: "Profile Reference", placeholder: "pubkey" },
+	{ key: "t", label: "Hashtag", placeholder: "hashtag" },
+	{ key: "d", label: "Replaceable Coordinate", placeholder: "coordinate" },
+	{ key: "expiration", label: "Expiration", placeholder: "unix timestamp" },
+	{ key: "relay", label: "Relay URL", placeholder: "wss://..." },
 ];
 
 function handleAdd() {
-  if (tagKey.trim()) {
-    onAdd([tagKey.trim(), tagValue.trim()]);
-    tagKey = '';
-    tagValue = '';
-  }
+	if (tagKey.trim()) {
+		onAdd([tagKey.trim(), tagValue.trim()]);
+		tagKey = "";
+		tagValue = "";
+	}
 }
 
 function handlePreset(key: string) {
-  tagKey = key;
-  tagValue = '';
+	tagKey = key;
+	tagValue = "";
 }
 </script>
 

@@ -1,61 +1,61 @@
 <script lang="ts">
-import type { RelayPopularity } from '@relayscope/shared';
-import { useRelayDiscovery } from '../../lib/composables/useRelayDiscovery.svelte';
-import { apiUrl } from '../../utils/api';
-import type { RelayInfo } from '../../utils/relay';
-import { safeHttpsIconUrl } from '../../utils/relay';
-import MonitorDataPanel from '../monitoring/MonitorDataPanel.svelte';
-import FeeDisplay from '../nip11/FeeDisplay.svelte';
-import SectionCard from '../ui/SectionCard.svelte';
-import RelayListBadge from './RelayListBadge.svelte';
+import type { RelayPopularity } from "@relayscope/shared";
+import { SectionCard } from "@relayscope/ui";
+import { useRelayDiscovery } from "../../lib/composables/useRelayDiscovery.svelte";
+import { apiUrl } from "../../utils/api";
+import type { RelayInfo } from "../../utils/relay";
+import { safeHttpsIconUrl } from "../../utils/relay";
+import MonitorDataPanel from "../monitoring/MonitorDataPanel.svelte";
+import FeeDisplay from "../nip11/FeeDisplay.svelte";
+import RelayListBadge from "./RelayListBadge.svelte";
 
 let {
-  relayId,
-  relay: _relay,
-  info,
+	relayId,
+	relay: _relay,
+	info,
 }: {
-  relayId?: string;
-  relay?: { url: string };
-  info: RelayInfo;
+	relayId?: string;
+	relay?: { url: string };
+	info: RelayInfo;
 } = $props();
 
 const iconUrl = $derived(safeHttpsIconUrl(info.icon));
 
 function softwareHref(raw: string): string {
-  return raw.replace(/^git\+/, '');
+	return raw.replace(/^git\+/, "");
 }
 
 function isSoftwareUrl(raw: string): boolean {
-  return /^git\+https?:\/\//.test(raw) || /^https?:\/\//.test(raw);
+	return /^git\+https?:\/\//.test(raw) || /^https?:\/\//.test(raw);
 }
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const discovery = useRelayDiscovery();
 let popularity = $state<RelayPopularity | null>(null);
 
 function handleImageError(e: Event) {
-  const img = e.target as HTMLImageElement;
-  img.style.display = 'none';
+	const img = e.target as HTMLImageElement;
+	img.style.display = "none";
 }
 
 // Fetch discovery and popularity data on mount
 $effect(() => {
-  if (!relayId) return;
+	if (!relayId) return;
 
-  const controller = new AbortController();
-  discovery.fetchDiscoveries(relayId);
+	const controller = new AbortController();
+	discovery.fetchDiscoveries(relayId);
 
-  fetch(apiUrl(`/api/relays/${relayId}/popularity`), {
-    signal: controller.signal,
-  })
-    .then((res) => res.json())
-    .then((json) => {
-      if (json.success) popularity = json.data;
-    })
-    .catch(() => {});
+	fetch(apiUrl(`/api/relays/${relayId}/popularity`), {
+		signal: controller.signal,
+	})
+		.then((res) => res.json())
+		.then((json) => {
+			if (json.success) popularity = json.data;
+		})
+		.catch(() => {});
 
-  return () => {
-    controller.abort();
-  };
+	return () => {
+		controller.abort();
+	};
 });
 </script>
 

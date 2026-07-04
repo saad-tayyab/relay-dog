@@ -1,79 +1,83 @@
 <script lang="ts">
 // 1. Internal packages (stores, utils)
-import type { relaySocket } from '../../lib/stores/relaySocket.svelte';
-import type { ConnectionStatus, RelayInfo } from '../../utils/relay';
-import AuthStatusBadge from '../auth/AuthStatusBadge.svelte';
-import ConnectionPanel from '../connection/ConnectionPanel.svelte';
-import ConnectionStatusPanel from '../connection/ConnectionStatusPanel.svelte';
-import LatencyPanel from '../connection/LatencyPanel.svelte';
-import WriteTestPanel from '../connection/WriteTestPanel.svelte';
-import EventFeed from '../event/EventFeed.svelte';
-import FilterBuilder from '../filter/FilterBuilder.svelte';
-import FeeDisplay from '../nip11/FeeDisplay.svelte';
-import LimitationsPanel from '../nip11/LimitationsPanel.svelte';
-import NipBadgeGrid from '../nip11/NipBadgeGrid.svelte';
+
+import { AccessibleTabs, ErrorMessage, LoadingSpinner } from "@relayscope/ui";
+import type { relaySocket } from "../../lib/stores/relaySocket.svelte";
+import type { ConnectionStatus, RelayInfo } from "../../utils/relay";
+import AuthStatusBadge from "../auth/AuthStatusBadge.svelte";
+import ConnectionPanel from "../connection/ConnectionPanel.svelte";
+import ConnectionStatusPanel from "../connection/ConnectionStatusPanel.svelte";
+import LatencyPanel from "../connection/LatencyPanel.svelte";
+import WriteTestPanel from "../connection/WriteTestPanel.svelte";
+import EventFeed from "../event/EventFeed.svelte";
+import FilterBuilder from "../filter/FilterBuilder.svelte";
+import FeeDisplay from "../nip11/FeeDisplay.svelte";
+import LimitationsPanel from "../nip11/LimitationsPanel.svelte";
+import NipBadgeGrid from "../nip11/NipBadgeGrid.svelte";
 // 2. Relative component imports
-import AddToDirectory from '../relay/AddToDirectory.svelte';
-import RelayProfile from '../relay/RelayProfile.svelte';
-import AccessibleTabs from '../shared/AccessibleTabs.svelte';
-import ErrorMessage from '../ui/ErrorMessage.svelte';
-import LoadingSpinner from '../ui/LoadingSpinner.svelte';
+import AddToDirectory from "../relay/AddToDirectory.svelte";
+import RelayProfile from "../relay/RelayProfile.svelte";
 
 type SocketStore = ReturnType<typeof relaySocket>;
 
 let {
-  url,
-  relayInfo,
-  connectionStatus,
-  loading,
-  error,
-  socket,
-  latency,
-  writeTest,
-  dbRelayId,
-  inDirectory,
-  onRetry,
-  onInDirectoryChange,
+	url,
+	relayInfo,
+	connectionStatus,
+	loading,
+	error,
+	socket,
+	latency,
+	writeTest,
+	dbRelayId,
+	inDirectory,
+	onRetry,
+	onInDirectoryChange,
 }: {
-  url: string;
-  relayInfo: RelayInfo | null;
-  connectionStatus: ConnectionStatus | null;
-  loading: boolean;
-  error: string | null;
-  socket: SocketStore;
-  latency: {
-    metrics: {
-      wsRoundTripMs: number | null;
-      httpLatencyMs: number | null;
-      eoseTimeMs: number | null;
-      eoseEventCount: number;
-    };
-    measuring: boolean;
-    measureAll: (url: string) => void;
-  };
-  writeTest: {
-    status: 'idle' | 'testing' | 'success' | 'failed';
-    latencyMs: number | null;
-    error: string | null;
-    eventId: string | null;
-    runTest: (url: string) => void;
-    reset: () => void;
-  };
-  dbRelayId: string | null;
-  inDirectory: boolean;
-  onRetry: () => void;
-  onInDirectoryChange: (inDir: boolean, relayId?: string, relayUrl?: string) => void;
+	url: string;
+	relayInfo: RelayInfo | null;
+	connectionStatus: ConnectionStatus | null;
+	loading: boolean;
+	error: string | null;
+	socket: SocketStore;
+	latency: {
+		metrics: {
+			wsRoundTripMs: number | null;
+			httpLatencyMs: number | null;
+			eoseTimeMs: number | null;
+			eoseEventCount: number;
+		};
+		measuring: boolean;
+		measureAll: (url: string) => void;
+	};
+	writeTest: {
+		status: "idle" | "testing" | "success" | "failed";
+		latencyMs: number | null;
+		error: string | null;
+		eventId: string | null;
+		runTest: (url: string) => void;
+		reset: () => void;
+	};
+	dbRelayId: string | null;
+	inDirectory: boolean;
+	onRetry: () => void;
+	onInDirectoryChange: (
+		inDir: boolean,
+		relayId?: string,
+		relayUrl?: string,
+	) => void;
 } = $props();
 
-let activeTab = $state<'nip11' | 'stream'>('nip11');
+let activeTab = $state<"nip11" | "stream">("nip11");
 
 const tabs = $derived([
-  { id: 'nip11' as const, label: 'NIP-11 Info' },
-  {
-    id: 'stream' as const,
-    label: 'Live Stream',
-    badge: socket.events.length > 0 ? socket.events.length.toLocaleString() : null,
-  },
+	{ id: "nip11" as const, label: "NIP-11 Info" },
+	{
+		id: "stream" as const,
+		label: "Live Stream",
+		badge:
+			socket.events.length > 0 ? socket.events.length.toLocaleString() : null,
+	},
 ]);
 </script>
 

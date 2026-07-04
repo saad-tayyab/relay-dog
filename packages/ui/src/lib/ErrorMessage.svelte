@@ -1,10 +1,10 @@
 <script lang="ts">
 let {
-  message,
-  onRetry,
+	message,
+	onRetry,
 }: {
-  message: string;
-  onRetry?: () => void;
+	message: string;
+	onRetry?: () => void;
 } = $props();
 </script>
 

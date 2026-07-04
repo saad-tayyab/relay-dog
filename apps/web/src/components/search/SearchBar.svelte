@@ -1,20 +1,25 @@
 <script lang="ts">
-  let { url = $bindable(''), loading, onSubmit, onQuickPick }: {
-    url: string;
-    loading: boolean;
-    onSubmit: (e: Event) => void;
-    onQuickPick: (relay: string) => void;
-  } = $props();
+let {
+	url = $bindable(""),
+	loading,
+	onSubmit,
+	onQuickPick,
+}: {
+	url: string;
+	loading: boolean;
+	onSubmit: (e: Event) => void;
+	onQuickPick: (relay: string) => void;
+} = $props();
 
-  const POPULAR_RELAYS = [
-    'relay.damus.io',
-    'nos.lol',
-    'relay.nostr.band',
-    'relay.primal.net',
-    'relay.nostr.info',
-    'nostr.wine',
-    'relay.snort.social',
-  ];
+const POPULAR_RELAYS = [
+	"relay.damus.io",
+	"nos.lol",
+	"relay.nostr.band",
+	"relay.primal.net",
+	"relay.nostr.info",
+	"nostr.wine",
+	"relay.snort.social",
+];
 </script>
 
 <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-accent focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">

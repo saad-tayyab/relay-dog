@@ -94,7 +94,11 @@ export function useEventComposer() {
     }
 
     if (!state.targetRelay) {
-      return { success: false, error: 'No target relay specified', latencyMs: 0 };
+      return {
+        success: false,
+        error: 'No target relay specified',
+        latencyMs: 0,
+      };
     }
 
     if (!state.content.trim()) {

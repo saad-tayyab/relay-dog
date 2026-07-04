@@ -177,7 +177,9 @@ crudRoutes.put('/:id', requireApiKey, zValidator('json', updateRelaySchema), asy
     .update(relays)
     .set({
       ...(body.name !== undefined && { name: body.name }),
-      ...(body.description !== undefined && { description: body.description }),
+      ...(body.description !== undefined && {
+        description: body.description,
+      }),
       ...(body.isPublic !== undefined && { isPublic: body.isPublic }),
       ...(body.country !== undefined && { country: body.country }),
       updatedAt: new Date(),

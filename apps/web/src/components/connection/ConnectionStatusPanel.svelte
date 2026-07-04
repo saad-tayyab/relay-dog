@@ -1,29 +1,40 @@
 <script lang="ts">
-type CheckStatus = 'success' | 'error' | 'checking' | 'pending';
+type CheckStatus = "success" | "error" | "checking" | "pending";
 
 interface ConnectionStatus {
-  http: CheckStatus;
-  cors: CheckStatus;
-  websocket: CheckStatus;
-  httpDetail?: string;
-  corsDetail?: string;
-  wsDetail?: string;
-  latencyMs?: number;
+	http: CheckStatus;
+	cors: CheckStatus;
+	websocket: CheckStatus;
+	httpDetail?: string;
+	corsDetail?: string;
+	wsDetail?: string;
+	latencyMs?: number;
 }
 
-import SectionCard from '../ui/SectionCard.svelte';
-import StatusDot from '../ui/StatusDot.svelte';
+import { SectionCard, StatusDot } from "@relayscope/ui";
 
 let { status }: { status: ConnectionStatus | null } = $props();
 
 const checks = $derived(
-  status
-    ? [
-        { label: 'HTTP Reachable', key: 'http' as const, detail: status.httpDetail },
-        { label: 'CORS Configured', key: 'cors' as const, detail: status.corsDetail },
-        { label: 'WebSocket Connectable', key: 'websocket' as const, detail: status.wsDetail },
-      ]
-    : [],
+	status
+		? [
+				{
+					label: "HTTP Reachable",
+					key: "http" as const,
+					detail: status.httpDetail,
+				},
+				{
+					label: "CORS Configured",
+					key: "cors" as const,
+					detail: status.corsDetail,
+				},
+				{
+					label: "WebSocket Connectable",
+					key: "websocket" as const,
+					detail: status.wsDetail,
+				},
+			]
+		: [],
 );
 </script>
 

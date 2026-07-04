@@ -1,49 +1,48 @@
 <script lang="ts">
-import type { EoseState } from '../../lib/stores/relaySocket.svelte';
-import type { CheckStatus } from '../../utils/relay';
-import AuthPrefixDisplay from '../auth/AuthPrefixDisplay.svelte';
-import SectionCard from '../ui/SectionCard.svelte';
-import StatusDot from '../ui/StatusDot.svelte';
-import EoseIndicator from './EoseIndicator.svelte';
+import { SectionCard, StatusDot } from "@relayscope/ui";
+import type { EoseState } from "../../lib/stores/relaySocket.svelte";
+import type { CheckStatus } from "../../utils/relay";
+import AuthPrefixDisplay from "../auth/AuthPrefixDisplay.svelte";
+import EoseIndicator from "./EoseIndicator.svelte";
 
-type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
+type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
 
 const STATUS_MAP: Record<ConnectionStatus, CheckStatus> = {
-  disconnected: 'pending',
-  connecting: 'checking',
-  connected: 'success',
-  error: 'error',
+	disconnected: "pending",
+	connecting: "checking",
+	connected: "success",
+	error: "error",
 };
 
 const STATUS_LABEL: Record<ConnectionStatus, string> = {
-  disconnected: 'Disconnected',
-  connecting: 'Connecting…',
-  connected: 'Connected',
-  error: 'Error',
+	disconnected: "Disconnected",
+	connecting: "Connecting…",
+	connected: "Connected",
+	error: "Error",
 };
 
-import type { EoseResult } from '@relayscope/shared';
+import type { EoseResult } from "@relayscope/shared";
 
 let {
-  relayUrl,
-  status,
-  eventCount,
-  eose,
-  eoseHints = null,
-  error,
-  notices,
-  onConnect,
-  onDisconnect,
+	relayUrl,
+	status,
+	eventCount,
+	eose,
+	eoseHints = null,
+	error,
+	notices,
+	onConnect,
+	onDisconnect,
 }: {
-  relayUrl: string;
-  status: ConnectionStatus;
-  eventCount: number;
-  eose: EoseState;
-  eoseHints?: EoseResult | null;
-  error: string | null;
-  notices: string[];
-  onConnect: () => void;
-  onDisconnect: () => void;
+	relayUrl: string;
+	status: ConnectionStatus;
+	eventCount: number;
+	eose: EoseState;
+	eoseHints?: EoseResult | null;
+	error: string | null;
+	notices: string[];
+	onConnect: () => void;
+	onDisconnect: () => void;
 } = $props();
 </script>
 

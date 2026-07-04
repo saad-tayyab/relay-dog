@@ -1,35 +1,35 @@
 <script lang="ts">
-import { useEventComposer } from '../../lib/composables/useEventComposer.svelte';
-import SectionCard from '../ui/SectionCard.svelte';
-import TagEditor from './TagEditor.svelte';
+import { SectionCard } from "@relayscope/ui";
+import { useEventComposer } from "../../lib/composables/useEventComposer.svelte";
+import TagEditor from "./TagEditor.svelte";
 
 let {
-  targetRelay,
-  onPublishComplete,
+	targetRelay,
+	onPublishComplete,
 }: {
-  targetRelay: string;
-  onPublishComplete?: (result: {
-    success: boolean;
-    eventId?: string;
-    error?: string;
-    latencyMs: number;
-  }) => void;
+	targetRelay: string;
+	onPublishComplete?: (result: {
+		success: boolean;
+		eventId?: string;
+		error?: string;
+		latencyMs: number;
+	}) => void;
 } = $props();
 
 // biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
 const composer = useEventComposer();
 
 $effect(() => {
-  composer.setTargetRelay(targetRelay);
+	composer.setTargetRelay(targetRelay);
 });
 
 const commonKinds = [
-  { kind: 0, label: 'Metadata' },
-  { kind: 1, label: 'Note' },
-  { kind: 3, label: 'Contacts' },
-  { kind: 5, label: 'Deletion' },
-  { kind: 7, label: 'Reaction' },
-  { kind: 27676, label: 'Long-form' },
+	{ kind: 0, label: "Metadata" },
+	{ kind: 1, label: "Note" },
+	{ kind: 3, label: "Contacts" },
+	{ kind: 5, label: "Deletion" },
+	{ kind: 7, label: "Reaction" },
+	{ kind: 27676, label: "Long-form" },
 ];
 
 const charCount = $derived(composer.state.content.length);
@@ -37,8 +37,8 @@ const maxChars = $derived(10000); // Default, could come from NIP-11
 const isOverLimit = $derived(charCount > maxChars);
 
 async function handlePublish() {
-  const result = await composer.publish();
-  onPublishComplete?.(result);
+	const result = await composer.publish();
+	onPublishComplete?.(result);
 }
 </script>
 

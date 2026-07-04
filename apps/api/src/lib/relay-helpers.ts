@@ -1,5 +1,5 @@
+import type { relayDiscovered, relays } from '@relayscope/database/schema';
 import type { DirectoryRelay, RelayLimitation } from '@relayscope/shared';
-import type { relayDiscovered, relays } from '../db/schema';
 
 // ─── Type aliases ───
 type RelayRow = typeof relays.$inferSelect;

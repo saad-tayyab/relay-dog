@@ -1,6 +1,6 @@
 <script lang="ts">
 import { convertKey, detectKeyFormat } from '../../utils/keys';
-import SectionCard from '../SectionCard.svelte';
+import SectionCard from '../ui/SectionCard.svelte';
 
 let input = $state('');
 let result = $state<{

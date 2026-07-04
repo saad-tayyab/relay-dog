@@ -5,16 +5,40 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./src/types.ts",
-      "default": "./src/types.ts"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     },
     "./schemas": {
       "types": "./src/schemas.ts",
       "default": "./src/schemas.ts"
     },
     "./types": {
-      "types": "./src/types.ts",
-      "default": "./src/types.ts"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./nip11": {
+      "types": "./src/nip11.ts",
+      "default": "./src/nip11.ts"
+    },
+    "./relay": {
+      "types": "./src/relay.ts",
+      "default": "./src/relay.ts"
+    },
+    "./event": {
+      "types": "./src/event.ts",
+      "default": "./src/event.ts"
+    },
+    "./directory": {
+      "types": "./src/directory.ts",
+      "default": "./src/directory.ts"
+    },
+    "./auth": {
+      "types": "./src/auth.ts",
+      "default": "./src/auth.ts"
+    },
+    "./api": {
+      "types": "./src/api.ts",
+      "default": "./src/api.ts"
     }
   },
   "scripts": {

@@ -8,8 +8,8 @@ import {
   importFromFile,
   type RestoreResult,
 } from '../../utils/backup';
-import SectionCard from '../SectionCard.svelte';
 import AccessibleTabs from '../shared/AccessibleTabs.svelte';
+import SectionCard from '../ui/SectionCard.svelte';
 
 let activeTab = $state<'backup' | 'restore'>('backup');
 

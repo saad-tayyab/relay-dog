@@ -1,6 +1,6 @@
 <script lang="ts">
 import { useEventDeleter } from '../../lib/composables/useEventDeleter.svelte';
-import SectionCard from '../SectionCard.svelte';
+import SectionCard from '../ui/SectionCard.svelte';
 
 let { targetRelay }: { targetRelay: string } = $props();
 

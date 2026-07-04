@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { NostrEvent } from '@relayscope/shared';
 import { eventIdMatches, toNpub, verifySignature } from '../../utils/nostrVerify';
-import SectionCard from '../SectionCard.svelte';
+import SectionCard from '../ui/SectionCard.svelte';
 
 let {
   event,

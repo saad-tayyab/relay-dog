@@ -1,9 +1,9 @@
+import { db } from '@relayscope/database';
+import { getLatestDiscovery, getRelayById } from '@relayscope/database/queries';
+import { relayDiscovered, relays } from '@relayscope/database/schema';
 import type { DirectoryFilters } from '@relayscope/shared';
 import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
-import { db } from '../db';
-import { getLatestDiscovery, getRelayById } from '../db/queries';
-import { relayDiscovered, relays } from '../db/schema';
 import {
   latencyWinner as computeLatencyWinner,
   nipDiff,

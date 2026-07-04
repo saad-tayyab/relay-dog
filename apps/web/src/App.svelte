@@ -1,8 +1,4 @@
 <script lang="ts">
-import { relaySocket } from './lib/stores/relaySocket.svelte';
-import { apiUrl } from './utils/api';
-import type { ConnectionStatus, RelayInfo } from './utils/relay';
-import { checkConnections, fetchNip11, normalizeUrl } from './utils/relay';
 import { getHashSection, type Section, setHashSection } from './utils/router';
 import './index.css';
 
@@ -11,50 +7,23 @@ import InspectorSection from './components/inspector/InspectorSection.svelte';
 import MobileNav from './components/nav/MobileNav.svelte';
 import NavBar from './components/nav/NavBar.svelte';
 import PublisherSection from './components/publisher/PublisherSection.svelte';
-import RelayDirectory from './components/RelayDirectory.svelte';
+import RelayDirectory from './components/relay/RelayDirectory.svelte';
+import SearchBar from './components/search/SearchBar.svelte';
 import Toast from './components/shared/Toast.svelte';
 import ToolsSection from './components/tools/ToolsSection.svelte';
+import EmptyState from './components/ui/EmptyState.svelte';
 import EventVerifier from './components/verifier/EventVerifier.svelte';
 
 // Composables
-import { useLatencyMeasurement } from './lib/composables/useLatencyMeasurement.svelte';
-import { useToast } from './lib/composables/useToast.svelte';
-import { useWriteTest } from './lib/composables/useWriteTest.svelte';
-
-const POPULAR_RELAYS = [
-  'relay.damus.io',
-  'nos.lol',
-  'relay.nostr.band',
-  'relay.primal.net',
-  'relay.nostr.info',
-  'nostr.wine',
-  'relay.snort.social',
-];
+import { useRelayInspector } from './lib/composables/useRelayInspector.svelte';
 
 // ─── State ───
 
-let url = $state('');
-let relayInfo = $state<RelayInfo | null>(null);
-let connectionStatus = $state<ConnectionStatus | null>(null);
-let loading = $state(false);
-let error = $state<string | null>(null);
 let activeSection = $state<Section>(getHashSection());
-let dbRelayId = $state<string | null>(null);
-let inDirectory = $state(false);
 let prefilledEvent = $state<unknown>(null);
 
-const normalizedUrl = $derived(normalizeUrl(url));
-
-// WebSocket store — reactive to URL changes via getter
-const socket = relaySocket(() => normalizedUrl);
-
-// Composable instances
-// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
-const latency = useLatencyMeasurement();
-// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
-const writeTest = useWriteTest();
-// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable, not a React hook
-const toast = useToast();
+// biome-ignore lint/correctness/useHookAtTopLevel: Svelte 5 composable pattern
+const inspector = useRelayInspector();
 
 // ─── Navigation ───
 
@@ -63,7 +32,6 @@ function handleNavigate(section: Section) {
   setHashSection(section);
 }
 
-// Listen for hash changes (back/forward)
 $effect(() => {
   function onHashChange() {
     activeSection = getHashSection();
@@ -76,104 +44,6 @@ function handleEditAndRepublish(event: unknown) {
   prefilledEvent = event;
   activeSection = 'publisher';
   setHashSection('publisher');
-}
-
-function handleInDirectoryChange(inDir: boolean, relayId?: string, relayUrl?: string) {
-  inDirectory = inDir;
-  if (inDir && relayId && relayUrl) {
-    toast.show({
-      message: `"${relayUrl}" added to directory`,
-      type: 'success',
-      undoLabel: 'Undo',
-      onUndo: () => {
-        // Remove the relay we just added
-        const headers: Record<string, string> = {};
-        const savedKey = localStorage.getItem('relayscope_api_key');
-        if (savedKey) {
-          headers.Authorization = `Bearer ${savedKey}`;
-        }
-        fetch(apiUrl(`/api/relays/${relayId}`), {
-          method: 'DELETE',
-          headers,
-          signal: AbortSignal.timeout(10_000),
-        })
-          .then(() => {
-            inDirectory = false;
-          })
-          .catch(() => {
-            // Undo failed — silently ignore
-          });
-      },
-    });
-  }
-}
-
-// ─── Actions ───
-
-async function handleFetch(targetUrl?: string) {
-  const inputUrl = targetUrl || url;
-  const normalized = normalizeUrl(inputUrl);
-  if (!normalized) return;
-
-  loading = true;
-  error = null;
-  relayInfo = null;
-  connectionStatus = null;
-  dbRelayId = null;
-  inDirectory = false;
-  toast.hide();
-  latency.reset();
-  writeTest.reset();
-
-  try {
-    const [infoResult, connResult] = await Promise.allSettled([
-      fetchNip11(normalized),
-      checkConnections(normalized),
-    ]);
-
-    // NIP-11 info
-    if (infoResult.status === 'fulfilled') {
-      relayInfo = infoResult.value;
-    } else {
-      error =
-        infoResult.reason instanceof Error
-          ? infoResult.reason.message
-          : 'Failed to fetch NIP-11 info';
-    }
-
-    // Connection status (always available from allSettled)
-    if (connResult.status === 'fulfilled') {
-      connectionStatus = connResult.value;
-    }
-
-    // Look up DB relay ID for Phase 7 data
-    dbRelayId = null;
-    inDirectory = false;
-    try {
-      const lookupRes = await fetch(apiUrl(`/api/relays/lookup?url=${encodeURIComponent(normalized)}`));
-      const lookupJson = await lookupRes.json();
-      if (lookupJson.success && lookupJson.data) {
-        dbRelayId = lookupJson.data.id;
-        inDirectory = true;
-      }
-    } catch {
-      // Not in DB — that's fine, Phase 7 panels won't show
-    }
-  } catch (e: unknown) {
-    error = e instanceof Error ? e.message : 'Unknown error occurred';
-  } finally {
-    loading = false;
-  }
-}
-
-function handleSubmit(e: Event) {
-  e.preventDefault();
-  handleFetch();
-}
-
-function handleQuickPick(relay: string) {
-  url = relay;
-  handleFetch(relay);
 }
 </script>
 
@@ -210,100 +80,31 @@ function handleQuickPick(relay: string) {
 
   <main id="main-content" class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
     <!-- URL Input -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-accent focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">
-      Skip to main content
-    </a>
-    <search onsubmit={handleSubmit} class="mb-8 animate-fade-in" aria-label="Inspect a relay">
-      <div class="flex gap-2">
-        <div class="relative flex-1">
-          <div class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
-            <svg
-              aria-hidden="true"
-              class="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-          <label for="relay-url" class="sr-only">Relay URL</label>
-          <input
-            id="relay-url"
-            type="text"
-            bind:value={url}
-            placeholder="wss://relay.damus.io"
-            class="w-full pl-10 pr-4 py-3 rounded-xl bg-dark-card border border-dark-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border focus:ring-1 focus:ring-accent-border transition-all font-mono text-sm"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading || !url.trim()}
-          class="px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-2"
-        >
-          {#if loading}
-            <div
-              class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
-            ></div>
-            Inspecting
-          {:else}
-            <svg
-              aria-hidden="true"
-              class="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
-            Inspect
-          {/if}
-        </button>
-      </div>
-
-      <!-- Quick pick relays -->
-      <div class="mt-3 flex flex-wrap gap-1.5">
-        <span class="text-xs text-text-muted mr-1 py-1">Try:</span>
-        {#each POPULAR_RELAYS as relay (relay)}
-          <button
-            type="button"
-            onclick={() => handleQuickPick(relay)}
-            class="text-xs min-h-[44px] px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
-          >
-            {relay}
-          </button>
-        {/each}
-      </div>
-    </search>
+    <SearchBar
+      bind:url={inspector.url}
+      loading={inspector.loading}
+      onSubmit={inspector.handleSubmit}
+      onQuickPick={inspector.handleQuickPick}
+    />
 
     <!-- Navigation -->
-    <NavBar {activeSection} onNavigate={handleNavigate} eventCount={socket.events.length} />
+    <NavBar {activeSection} onNavigate={handleNavigate} eventCount={inspector.socket.events.length} />
 
     <!-- Inspector Section -->
     {#if activeSection === 'inspector'}
       <InspectorSection
-        url={normalizedUrl}
-        {relayInfo}
-        {connectionStatus}
-        {loading}
-        {error}
-        {socket}
-        {latency}
-        {writeTest}
-        {dbRelayId}
-        {inDirectory}
-        onRetry={() => handleFetch()}
-        onInDirectoryChange={handleInDirectoryChange}
+        url={inspector.normalizedUrl}
+        relayInfo={inspector.relayInfo}
+        connectionStatus={inspector.connectionStatus}
+        loading={inspector.loading}
+        error={inspector.error}
+        socket={inspector.socket}
+        latency={inspector.latency}
+        writeTest={inspector.writeTest}
+        dbRelayId={inspector.dbRelayId}
+        inDirectory={inspector.inDirectory}
+        onRetry={() => inspector.handleFetch()}
+        onInDirectoryChange={inspector.handleInDirectoryChange}
       />
     {/if}
 
@@ -314,7 +115,7 @@ function handleQuickPick(relay: string) {
 
     <!-- Publisher Section -->
     {#if activeSection === 'publisher'}
-      <PublisherSection targetRelay={normalizedUrl} {prefilledEvent} />
+      <PublisherSection targetRelay={inspector.normalizedUrl} {prefilledEvent} />
     {/if}
 
     <!-- Tools Section -->
@@ -326,76 +127,17 @@ function handleQuickPick(relay: string) {
     {#if activeSection === 'directory'}
       <RelayDirectory
         onSelectRelay={(relayUrl) => {
-          url = relayUrl;
+          inspector.url = relayUrl;
           activeSection = 'inspector';
           setHashSection('inspector');
-          handleFetch(relayUrl);
+          inspector.handleFetch(relayUrl);
         }}
       />
     {/if}
 
     <!-- Empty State -->
-    {#if !loading && !error && !relayInfo && activeSection === 'inspector'}
-      <section aria-label="Welcome" class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
-        <div
-          class="w-20 h-20 rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center mb-6"
-        >
-          <svg
-            aria-hidden="true"
-            class="w-10 h-10 text-text-muted"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="1"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M13 10V3L4 14h7v7l9-11h-7z"
-            />
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-        </div>
-        <h2 class="text-xl font-semibold text-text-primary mb-2">
-          Inspect a Nostr Relay
-        </h2>
-        <p class="text-text-muted text-sm max-w-sm mb-6">
-          Enter a relay URL above to fetch its NIP-11 info document, check connection status, and
-          explore supported features.
-        </p>
-        <div class="flex flex-wrap justify-center gap-2 text-xs text-text-muted">
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            NIP-11 Info
-          </span>
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            Connection Checks
-          </span>
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            Live Stream
-          </span>
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            Event Verifier
-          </span>
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            Event Publisher
-          </span>
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            Key Converter
-          </span>
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            NIP-05 Checker
-          </span>
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            QR Code
-          </span>
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            Backup & Restore
-          </span>
-          <span class="px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border">
-            Relay Directory
-          </span>
-        </div>
-      </section>
+    {#if !inspector.loading && !inspector.error && !inspector.relayInfo && activeSection === 'inspector'}
+      <EmptyState />
     {/if}
   </main>
 
@@ -412,16 +154,16 @@ function handleQuickPick(relay: string) {
     </div>
   </footer>
 
-  <!-- Toast notification for "Add to Directory" -->
-  {#if toast.visible}
-    {#key toast.key}
+  <!-- Toast notification -->
+  {#if inspector.toast.visible}
+    {#key inspector.toast.key}
       <Toast
-        message={toast.message}
-        type={toast.type}
-        duration={toast.duration}
-        undoLabel={toast.undoLabel}
-        onUndo={toast.onUndo}
-        onDismiss={() => toast.hide()}
+        message={inspector.toast.message}
+        type={inspector.toast.type}
+        duration={inspector.toast.duration}
+        undoLabel={inspector.toast.undoLabel}
+        onUndo={inspector.toast.onUndo}
+        onDismiss={() => inspector.toast.hide()}
       />
     {/key}
   {/if}

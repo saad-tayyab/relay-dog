@@ -1,6 +1,6 @@
 <script lang="ts">
 import { type Nip05Result, verifyNip05 } from '../../utils/nip05';
-import SectionCard from '../SectionCard.svelte';
+import SectionCard from '../ui/SectionCard.svelte';
 
 let identifier = $state('');
 let expectedPubkey = $state('');

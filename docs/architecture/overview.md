@@ -34,20 +34,30 @@ graph TB
 
 ## Package Architecture
 
-The monorepo contains five packages with clear dependency boundaries:
+The monorepo contains eight packages with clear dependency boundaries:
 
 ```mermaid
 graph LR
     ENV["@relayscope/env<br/>Environment Validation"]
     TSCONFIG["@relayscope/tsconfig<br/>TypeScript Presets"]
     SHARED["@relayscope/shared<br/>Types & Schemas"]
+    DB["@relayscope/database<br/>Drizzle Schema & Queries"]
+    AUTH["@relayscope/auth<br/>API Key Middleware"]
+    UI["@relayscope/ui<br/>Shared Svelte Components"]
     WEB["@relayscope/web<br/>Svelte Frontend"]
     API["@relayscope/api<br/>Hono Backend"]
 
     WEB -->|"imports types"| SHARED
+    WEB -->|"imports components"| UI
     API -->|"imports types"| SHARED
+    API -->|"imports db connection"| DB
+    API -->|"imports middleware"| AUTH
+    DB -->|"imports types"| SHARED
+    AUTH -->|"imports env"| ENV
     API -->|"imports env"| ENV
     WEB -->|"imports env"| ENV
+    DB -->|"extends config"| TSCONFIG
+    UI -->|"extends config"| TSCONFIG
     API -->|"extends config"| TSCONFIG
     WEB -->|"extends config"| TSCONFIG
     SHARED -->|"extends config"| TSCONFIG
@@ -57,10 +67,15 @@ graph LR
 | Package | Stack | Responsibility |
 |---------|-------|----------------|
 | `@relayscope/web` | Vite + Svelte 5 + Tailwind v4 | Browser UI, NIP-11 viewer, connection checks, event tools |
-| `@relayscope/api` | Hono + Bun + Drizzle ORM | REST API, relay CRUD, health checks, monitoring, directory |
-| `@relayscope/shared` | TypeScript + Zod | Shared types, DTOs, entity interfaces, NIP validation schemas |
+| `@relayscope/api` | Hono + Bun | REST API, relay CRUD, health checks, monitoring, directory |
+| `@relayscope/shared` | TypeScript + Zod | Shared types, DTOs, entity interfaces, NIP validation schemas (see note below) |
+| `@relayscope/database` | Drizzle ORM + PostgreSQL | Drizzle schema definitions, prepared queries, DB connection |
+| `@relayscope/auth` | TypeScript | API key middleware (`requireApiKey`), authentication helpers |
+| `@relayscope/ui` | Svelte 5 | Shared Svelte components: `SectionCard`, `ErrorMessage`, `LoadingSpinner`, `StatusDot`, `AccessibleTabs`, `Toast` |
 | `@relayscope/env` | TypeScript + Zod | Server/client environment parsing and validation |
 | `@relayscope/tsconfig` | TypeScript configs | Shared TypeScript presets for Bun, Svelte, and base packages |
+
+> **Shared types note:** `@relayscope/shared` types are split into domain modules — `nip11.ts`, `relay.ts`, `event.ts`, `directory.ts`, `auth.ts`, `api.ts` — with `index.ts` re-exporting everything for backwards compatibility. Subpath imports (`@relayscope/shared/nip11`, `@relayscope/shared/relay`, etc.) are available for targeted imports.
 
 ## Data Flow
 
@@ -174,4 +189,4 @@ sequenceDiagram
 
 ---
 
-*Last updated: v0.9.0 — 2026-07-01*
+*Last updated: v0.10.0 — 2026-07-04*

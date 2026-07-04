@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { NostrEvent } from '@relayscope/shared';
 import { toNpub } from '../../utils/nostrVerify';
-import SectionCard from '../SectionCard.svelte';
+import SectionCard from '../ui/SectionCard.svelte';
 import KindBadge from './KindBadge.svelte';
 
 let { event }: { event: NostrEvent } = $props();

@@ -6,10 +6,8 @@
 // Force test environment
 Bun.env.NODE_ENV = 'test';
 
-// Provide a test API_KEY if not already set
-if (!Bun.env.API_KEY) {
-  Bun.env.API_KEY = 'test-api-key-for-unit-tests';
-}
+// Always force a known test API_KEY so auth tests are deterministic
+Bun.env.API_KEY = 'test-api-key-for-unit-tests';
 
 // Provide a DATABASE_URL if not already set (uses the dev database by default)
 if (!Bun.env.DATABASE_URL) {

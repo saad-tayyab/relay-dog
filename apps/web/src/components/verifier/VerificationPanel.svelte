@@ -25,7 +25,7 @@ function truncateHex(hex: string, chars = 8): string {
 </script>
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md space-y-4"><Card.Content class="p-5 lg:p-6">
-  <h3 class="text-sm font-semibold text-text-primary">Verification</h3>
+  <h3 class="text-sm font-semibold text-foreground">Verification</h3>
 
   <!-- Signature check -->
   <div
@@ -63,7 +63,7 @@ function truncateHex(hex: string, chars = 8): string {
       <p class="text-sm font-medium {sigResult ? 'text-success' : 'text-error'}">
         Signature {sigResult ? 'Valid' : 'Invalid'}
       </p>
-      <p class="text-xs text-text-muted mt-0.5">
+      <p class="text-xs text-muted-foreground mt-0.5">
         Schnorr signature verification (NIP-01)
       </p>
     </div>
@@ -105,17 +105,17 @@ function truncateHex(hex: string, chars = 8): string {
       <p class="text-sm font-medium {idResult.matches ? 'text-success' : 'text-error'}">
         Event ID {idResult.matches ? 'Match' : 'Mismatch'}
       </p>
-      <p class="text-xs text-text-muted mt-0.5">
+      <p class="text-xs text-muted-foreground mt-0.5">
         SHA-256 of canonical serialization
       </p>
       {#if !idResult.matches}
         <div class="mt-2 space-y-1">
           <div class="text-xs">
-            <span class="text-text-muted">Stored: </span>
+            <span class="text-muted-foreground">Stored: </span>
             <code class="font-mono text-error">{truncateHex(event.id)}</code>
           </div>
           <div class="text-xs">
-            <span class="text-text-muted">Computed: </span>
+            <span class="text-muted-foreground">Computed: </span>
             <code class="font-mono text-success">{truncateHex(idResult.computed)}</code>
           </div>
         </div>
@@ -124,12 +124,12 @@ function truncateHex(hex: string, chars = 8): string {
   </div>
 
   <!-- Signing pubkey -->
-  <div class="p-3 rounded-lg bg-dark-surface border border-dark-border">
-    <p class="text-xs text-text-muted mb-1">Signing Public Key</p>
-    <p class="text-xs font-mono text-text-secondary break-all" title={event.pubkey}>
+  <div class="p-3 rounded-lg bg-muted border border-border">
+    <p class="text-xs text-muted-foreground mb-1">Signing Public Key</p>
+    <p class="text-xs font-mono text-muted-foreground break-all" title={event.pubkey}>
       {event.pubkey}
     </p>
-    <p class="text-xs font-mono text-accent mt-1" title={npub}>
+    <p class="text-xs font-mono text-primary mt-1" title={npub}>
       {npub}
     </p>
   </div>
@@ -141,7 +141,7 @@ function truncateHex(hex: string, chars = 8): string {
       size="sm"
       aria-label="Edit and republish this event"
       onclick={() => onEditAndRepublish(event)}
-      class="w-full bg-dark-surface text-text-primary hover:text-accent hover:border-accent-border transition-all"
+      class="w-full bg-muted text-foreground hover:text-primary hover:border-primary/30 transition-all"
     >
       <span aria-hidden="true">✍️</span> Edit & Re-publish
     </Button>

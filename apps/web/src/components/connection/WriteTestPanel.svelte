@@ -37,16 +37,16 @@ const statusDisplay = $derived.by(() => {
 		case "testing":
 			return {
 				label: "Testing…",
-				color: "text-accent",
-				bg: "bg-accent-dim",
-				border: "border-accent-border",
+				color: "text-primary",
+				bg: "bg-primary/15",
+				border: "border-primary/30",
 			};
 		default:
 			return {
 				label: "Not tested",
-				color: "text-text-muted",
-				bg: "bg-dark-surface",
-				border: "border-dark-border",
+				color: "text-muted-foreground",
+				bg: "bg-muted",
+				border: "border-border",
 			};
 	}
 });
@@ -54,13 +54,13 @@ const statusDisplay = $derived.by(() => {
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="flex items-center justify-between mb-3">
-    <h3 class="text-sm font-semibold text-text-primary">Write Test</h3>
+    <h3 class="text-sm font-semibold text-foreground">Write Test</h3>
     {#if onRunTest}
       <Button
         variant="outline"
         onclick={onRunTest}
         disabled={status === 'testing'}
-        class="bg-dark-surface text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
+        class="bg-muted text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-40 transition-all"
       >
         {status === 'testing' ? 'Testing…' : 'Run Test'}
       </Button>
@@ -73,13 +73,13 @@ const statusDisplay = $derived.by(() => {
     </Badge>
 
     {#if latencyMs !== null}
-      <span class="text-xs text-text-muted">
-        Latency: <span class="font-mono text-text-secondary">{latencyMs}ms</span>
+      <span class="text-xs text-muted-foreground">
+        Latency: <span class="font-mono text-muted-foreground">{latencyMs}ms</span>
       </span>
     {/if}
 
     {#if eventId}
-      <span class="text-xs text-text-muted font-mono truncate max-w-[180px]" title={eventId}>
+      <span class="text-xs text-muted-foreground font-mono truncate max-w-[180px]" title={eventId}>
         id: {eventId.slice(0, 12)}…
       </span>
     {/if}

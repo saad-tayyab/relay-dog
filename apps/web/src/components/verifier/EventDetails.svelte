@@ -64,7 +64,7 @@ async function copyToClipboard(
 </script>
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md space-y-4"><Card.Content class="p-5 lg:p-6">
-  <h3 class="text-sm font-semibold text-text-primary">Event Details</h3>
+  <h3 class="text-sm font-semibold text-foreground">Event Details</h3>
 
   <!-- Screen reader live region for copy feedback -->
   <div aria-live="polite" class="sr-only">
@@ -75,14 +75,14 @@ async function copyToClipboard(
   <dl class="space-y-4">
     <!-- Kind -->
     <div>
-      <dt class="text-xs text-text-muted mb-1">Kind</dt>
+      <dt class="text-xs text-muted-foreground mb-1">Kind</dt>
       <dd><KindBadge kind={event.kind} /></dd>
     </div>
 
     <!-- ID -->
     <div>
       <div class="flex items-center gap-2 mb-1">
-        <dt class="text-xs text-text-muted">ID</dt>
+        <dt class="text-xs text-muted-foreground">ID</dt>
         <dd class="ml-auto">
           <TooltipWrap label="Copy event ID">
             <Button
@@ -90,7 +90,7 @@ async function copyToClipboard(
               size="sm"
               aria-label="Copy event ID to clipboard"
               onclick={() => copyToClipboard(event.id, 'id')}
-              class="text-text-muted hover:text-accent transition-colors gap-1"
+              class="text-muted-foreground hover:text-primary transition-colors gap-1"
             >
               {#if copiedId}
                 <svg
@@ -125,7 +125,7 @@ async function copyToClipboard(
           </TooltipWrap>
         </dd>
       </div>
-      <p class="text-xs font-mono text-text-secondary break-all" title={event.id}>
+      <p class="text-xs font-mono text-muted-foreground break-all" title={event.id}>
         {event.id}
       </p>
     </div>
@@ -133,7 +133,7 @@ async function copyToClipboard(
     <!-- Pubkey -->
     <div>
       <div class="flex items-center gap-2 mb-1">
-        <dt class="text-xs text-text-muted">Pubkey</dt>
+        <dt class="text-xs text-muted-foreground">Pubkey</dt>
         <dd class="ml-auto">
           <TooltipWrap label="Copy pubkey">
             <Button
@@ -141,7 +141,7 @@ async function copyToClipboard(
               size="sm"
               aria-label="Copy pubkey to clipboard"
               onclick={() => copyToClipboard(event.pubkey, 'pubkey')}
-              class="text-text-muted hover:text-accent transition-colors gap-1"
+              class="text-muted-foreground hover:text-primary transition-colors gap-1"
             >
               {#if copiedPubkey}
                 <svg
@@ -176,28 +176,28 @@ async function copyToClipboard(
           </TooltipWrap>
         </dd>
       </div>
-      <p class="text-xs font-mono text-text-secondary break-all" title={event.pubkey}>
+      <p class="text-xs font-mono text-muted-foreground break-all" title={event.pubkey}>
         {event.pubkey}
       </p>
-      <p class="text-xs font-mono text-accent mt-0.5" title={npub}>
+      <p class="text-xs font-mono text-primary mt-0.5" title={npub}>
         {npub}
       </p>
     </div>
 
     <!-- Created At -->
     <div>
-      <dt class="text-xs text-text-muted mb-1">Created At</dt>
-      <dd class="text-sm text-text-secondary">
+      <dt class="text-xs text-muted-foreground mb-1">Created At</dt>
+      <dd class="text-sm text-muted-foreground">
         <time datetime={new Date(event.created_at * 1000).toISOString()}>{relativeTime}</time>
-        <span class="text-text-muted ml-1.5">({absoluteTime})</span>
+        <span class="text-muted-foreground ml-1.5">({absoluteTime})</span>
       </dd>
     </div>
 
     <!-- Content -->
     <div>
-      <dt class="text-xs text-text-muted mb-1">Content</dt>
+      <dt class="text-xs text-muted-foreground mb-1">Content</dt>
       <dd
-        class="p-3 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-secondary whitespace-pre-wrap break-words leading-relaxed"
+        class="p-3 rounded-lg bg-muted border border-border text-sm text-muted-foreground whitespace-pre-wrap break-words leading-relaxed"
       >
         {displayedContent}
       </dd>
@@ -207,7 +207,7 @@ async function copyToClipboard(
           size="sm"
           aria-expanded={contentExpanded}
           onclick={() => (contentExpanded = !contentExpanded)}
-          class="text-accent hover:text-accent/80 transition-colors mt-1.5"
+          class="text-primary hover:text-primary/80 transition-colors mt-1.5"
         >
           {contentExpanded ? 'Show less' : `Show all (${event.content.length} chars)`}
         </Button>

@@ -33,8 +33,8 @@ $effect(() => {
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md flex flex-col"><Card.Content class="p-5 lg:p-6">
   <!-- Event count header -->
   <div class="flex items-center justify-between mb-3">
-    <h3 class="text-sm font-semibold text-text-primary">Event Feed</h3>
-    <span class="text-xs font-mono text-text-muted">
+    <h3 class="text-sm font-semibold text-foreground">Event Feed</h3>
+    <span class="text-xs font-mono text-muted-foreground">
       {events.length.toLocaleString()} events
     </span>
   </div>

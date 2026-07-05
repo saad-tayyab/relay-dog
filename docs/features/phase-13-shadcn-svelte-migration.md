@@ -1426,6 +1426,11 @@ bun run build
 - [x] **Full design system adoption**: replaced kind/size selector buttons with `ToggleGroup`
 - [x] **Full design system adoption**: replaced 4 raw empty states with `Empty` component
 - [x] `bun run type-check && bun run lint && bun run build` — all pass after full adoption
+- [x] **Theme refinement**: refined oklch values in `index.css` for better depth hierarchy (bg 14% → card 21% → muted 19% → border 30%)
+- [x] **Full class migration**: replaced all 311+ legacy class instances (`bg-dark-*`, `text-text-*`, `border-dark-*`, `bg-accent-dim`, `accent-border`, `ring-accent`) with shadcn semantic tokens across 35 files
+- [x] **Legacy cleanup**: removed dead `.dark` block, legacy `--relay-*` backing tokens, `--color-dark-*` compatibility bridges from `index.css`
+- [x] **Status tokens promoted**: `--success`, `--warning`, `--error` (+ dim variants) moved from legacy bridge to proper `:root` vars with `@theme inline` mapping
+- [x] `bun run type-check && bun run lint && bun run build` — all pass after full migration
 
 ### Full Migration — Final Verification
 

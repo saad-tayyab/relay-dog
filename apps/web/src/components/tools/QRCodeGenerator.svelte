@@ -76,16 +76,16 @@ async function copyImage() {
 }
 </script>
 
-<Card.Root class="rounded-xl border-dark-border bg-dark-card">
+<Card.Root class="rounded-xl border-border bg-card">
   <Card.Content class="space-y-4 p-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-text-primary">QR Code Generator</h3>
-      <Badge variant="outline" class="border-dark-border bg-dark-surface text-text-muted">{detectedType}</Badge>
+      <h3 class="text-sm font-semibold text-foreground">QR Code Generator</h3>
+      <Badge variant="outline" class="border-border bg-muted text-muted-foreground">{detectedType}</Badge>
     </div>
 
     <!-- Input -->
     <div>
-      <Label for="qr-input" class="mb-1 block text-xs text-text-muted">
+      <Label for="qr-input" class="mb-1 block text-xs text-muted-foreground">
         Enter npub, relay URL, event JSON, or any text
       </Label>
       <Textarea
@@ -94,13 +94,13 @@ async function copyImage() {
         oninput={handleInput}
         placeholder={"npub1... or wss://relay.example.com or event json"}
         rows={3}
-        class="border-dark-border bg-dark-surface px-3 font-mono text-sm text-text-primary placeholder:text-text-muted"
+        class="border-border bg-muted px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground"
       />
     </div>
 
     <!-- Size Selector -->
     <div class="flex items-center gap-2">
-      <span class="text-xs text-text-muted">Size:</span>
+      <span class="text-xs text-muted-foreground">Size:</span>
       <ToggleGroup.Root type="single" value={String(size)} onValueChange={(v) => { if (v) { size = Number(v) as 200 | 300 | 500; generateQR(); } }}>
         <ToggleGroup.Item value="200">200px</ToggleGroup.Item>
         <ToggleGroup.Item value="300">300px</ToggleGroup.Item>
@@ -110,9 +110,9 @@ async function copyImage() {
 
     <!-- QR Code Preview -->
     {#if generating}
-      <div class="flex items-center justify-center py-12 text-text-muted text-xs">
+      <div class="flex items-center justify-center py-12 text-muted-foreground text-xs">
         <span class="flex items-center gap-2">
-          <Spinner class="text-text-muted" />
+          <Spinner class="text-muted-foreground" />
           Generating QR code...
         </span>
       </div>
@@ -129,7 +129,7 @@ async function copyImage() {
             size="sm"
             aria-label="Download QR code as PNG"
             onclick={downloadQR}
-            class="min-h-[44px] border-dark-border bg-dark-surface text-xs text-text-primary hover:text-accent"
+            class="min-h-[44px] border-border bg-muted text-xs text-foreground hover:text-primary"
           >
             Download PNG
           </Button>
@@ -138,14 +138,14 @@ async function copyImage() {
             size="sm"
             aria-label="Copy QR code image to clipboard"
             onclick={copyImage}
-            class="min-h-[44px] border-dark-border bg-dark-surface text-xs text-text-primary hover:text-accent"
+            class="min-h-[44px] border-border bg-muted text-xs text-foreground hover:text-primary"
           >
             Copy Image
           </Button>
         </div>
       </div>
     {:else}
-      <div class="flex items-center justify-center py-12 text-text-muted text-xs">
+      <div class="flex items-center justify-center py-12 text-muted-foreground text-xs">
         Enter content above to generate QR code
       </div>
     {/if}

@@ -23,10 +23,10 @@ function getBadgeColor(type: string): string {
 </script>
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md space-y-3"><Card.Content class="p-5 lg:p-6">
-  <h3 class="text-sm font-semibold text-text-primary">
+  <h3 class="text-sm font-semibold text-foreground">
     Tags
     {#if tags.length > 0}
-      <span class="text-text-muted font-normal">({tags.length})</span>
+      <span class="text-muted-foreground font-normal">({tags.length})</span>
     {/if}
   </h3>
 
@@ -41,7 +41,7 @@ function getBadgeColor(type: string): string {
       {#each tags as tag, i (i)}
         {@const decoded = decodeTag(tag)}
         <div
-          class="flex items-start gap-2 p-2.5 rounded-lg bg-dark-surface border border-dark-border"
+          class="flex items-start gap-2 p-2.5 rounded-lg bg-muted border border-border"
         >
           <span
             class="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded border {getBadgeColor(
@@ -51,7 +51,7 @@ function getBadgeColor(type: string): string {
             {decoded.label}
           </span>
           <div class="min-w-0 flex-1">
-            <p class="text-xs text-text-secondary leading-relaxed break-all">
+            <p class="text-xs text-muted-foreground leading-relaxed break-all">
               {decoded.detail}
             </p>
           </div>

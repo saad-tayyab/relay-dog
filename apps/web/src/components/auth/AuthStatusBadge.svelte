@@ -29,9 +29,9 @@ const displayConfig = $derived.by(() => {
 		case "authenticating":
 			return {
 				label: "Authenticating…",
-				color: "text-accent",
-				bg: "bg-accent-dim",
-				border: "border-accent-border",
+				color: "text-primary",
+				bg: "bg-primary/15",
+				border: "border-primary/30",
 				icon: "⏳",
 			};
 		case "auth_failed":
@@ -45,9 +45,9 @@ const displayConfig = $derived.by(() => {
 		default:
 			return {
 				label: "Anonymous",
-				color: "text-text-muted",
-				bg: "bg-dark-surface",
-				border: "border-dark-border",
+				color: "text-muted-foreground",
+				bg: "bg-muted",
+				border: "border-border",
 				icon: "○",
 			};
 	}

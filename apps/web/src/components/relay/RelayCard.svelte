@@ -67,8 +67,8 @@ function isSoftwareUrl(raw: string): boolean {
   type="button"
   onclick={() => onSelect(relay.id)}
   class="group w-full text-left transition-all relative cursor-pointer outline-none {selected
-    ? 'ring-2 ring-accent border-accent-border'
-    : 'hover:border-accent-border/50'}"
+    ? 'ring-2 ring-primary border-primary/30'
+    : 'hover:border-primary/15'}"
 >
   <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
     <div class="flex items-start gap-3">
@@ -78,21 +78,21 @@ function isSoftwareUrl(raw: string): boolean {
           alt=""
           loading="lazy"
           decoding="async"
-          class="w-10 h-10 rounded-lg border border-dark-border object-cover shrink-0"
+          class="w-10 h-10 rounded-lg border border-border object-cover shrink-0"
           referrerpolicy="no-referrer"
           onerror={handleImageError}
         />
       {:else}
         <div
-          class="w-10 h-10 rounded-lg bg-dark-surface border border-dark-border flex items-center justify-center shrink-0"
+          class="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0"
         >
-          <span class="text-text-muted text-sm">⚡</span>
+          <span class="text-muted-foreground text-sm">⚡</span>
         </div>
       {/if}
 
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
-          <h3 class="text-sm font-semibold text-text-primary truncate">
+          <h3 class="text-sm font-semibold text-foreground truncate">
             {relay.name || 'Unknown Relay'}
           </h3>
           {#if isOnline}
@@ -106,7 +106,7 @@ function isSoftwareUrl(raw: string): boolean {
           type="button"
           variant="ghost"
           size="sm"
-          class="text-xs text-text-muted font-mono truncate mb-2 cursor-pointer hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors inline-flex items-center gap-1 text-left"
+          class="text-xs text-muted-foreground font-mono truncate mb-2 cursor-pointer hover:text-primary hover:underline decoration-dotted underline-offset-2 transition-colors inline-flex items-center gap-1 text-left"
           onclick={handleUrlClick}
           onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); const httpUrl = relay.url.replace(/^wss:\/\//i, 'https://').replace(/^ws:\/\//i, 'http://'); window.open(httpUrl, '_blank', 'noopener,noreferrer'); } }}
           title="Open relay URL"
@@ -129,10 +129,10 @@ function isSoftwareUrl(raw: string): boolean {
         </Button>
 
         {#if relay.description}
-          <p class="text-xs text-text-secondary line-clamp-2 mb-2">{relay.description}</p>
+          <p class="text-xs text-muted-foreground line-clamp-2 mb-2">{relay.description}</p>
         {/if}
 
-        <div class="flex items-center gap-3 text-xs text-text-muted">
+        <div class="flex items-center gap-3 text-xs text-muted-foreground">
           <span>{nipCount} NIPs</span>
           <span>·</span>
           <span>{latencyDisplay}</span>
@@ -144,7 +144,7 @@ function isSoftwareUrl(raw: string): boolean {
                 target="_blank"
                 rel="noopener noreferrer"
                 onclick={(e) => e.stopPropagation()}
-                class="hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors"
+                class="hover:text-primary hover:underline decoration-dotted underline-offset-2 transition-colors"
               >{relay.software}</a>
             {:else}
               <span>{relay.software}</span>

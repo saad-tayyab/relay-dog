@@ -131,8 +131,8 @@ const importedKindsBreakdown = $derived.by(() => {
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-text-primary">Event Backup & Restore</h3>
-      <span class="text-xs text-text-muted">NIP-01</span>
+      <h3 class="text-sm font-semibold text-foreground">Event Backup & Restore</h3>
+      <span class="text-xs text-muted-foreground">NIP-01</span>
     </div>
 
     <!-- Error/Success Feedback -->
@@ -162,7 +162,7 @@ const importedKindsBreakdown = $derived.by(() => {
         <!-- Backup Form -->
         <div class="space-y-3">
           <Field.Field>
-            <Label for="backup-pubkey" class="text-xs text-text-muted">
+            <Label for="backup-pubkey" class="text-xs text-muted-foreground">
               Author Pubkey (hex)
             </Label>
             <Input
@@ -170,24 +170,24 @@ const importedKindsBreakdown = $derived.by(() => {
               type="text"
               bind:value={authorPubkey}
               placeholder="64-char hex pubkey"
-              class="h-11 border-dark-border bg-dark-surface px-3 font-mono text-xs text-text-primary placeholder:text-text-muted"
+              class="h-11 border-border bg-muted px-3 font-mono text-xs text-foreground placeholder:text-muted-foreground"
             />
           </Field.Field>
 
           <Field.Field>
-            <Label for="backup-relay" class="text-xs text-text-muted">Relay URL</Label>
+            <Label for="backup-relay" class="text-xs text-muted-foreground">Relay URL</Label>
             <Input
               id="backup-relay"
               type="text"
               bind:value={relayUrl}
               placeholder="wss://relay.example.com"
-              class="h-11 border-dark-border bg-dark-surface px-3 font-mono text-sm text-text-primary placeholder:text-text-muted"
+              class="h-11 border-border bg-muted px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground"
             />
           </Field.Field>
 
           <div class="grid grid-cols-2 gap-3">
             <Field.Field>
-              <Label for="backup-kinds" class="text-xs text-text-muted">
+              <Label for="backup-kinds" class="text-xs text-muted-foreground">
                 Kinds (comma-separated)
               </Label>
               <Input
@@ -195,17 +195,17 @@ const importedKindsBreakdown = $derived.by(() => {
                 type="text"
                 bind:value={kinds}
                 placeholder="0,1,3"
-                class="h-11 border-dark-border bg-dark-surface px-3 font-mono text-xs text-text-primary placeholder:text-text-muted"
+                class="h-11 border-border bg-muted px-3 font-mono text-xs text-foreground placeholder:text-muted-foreground"
               />
             </Field.Field>
             <Field.Field>
-              <Label for="backup-limit" class="text-xs text-text-muted">Limit</Label>
+              <Label for="backup-limit" class="text-xs text-muted-foreground">Limit</Label>
               <Input
                 id="backup-limit"
                 type="number"
                 bind:value={limit}
                 placeholder="1000"
-                class="h-11 border-dark-border bg-dark-surface px-3 font-mono text-xs text-text-primary placeholder:text-text-muted"
+                class="h-11 border-border bg-muted px-3 font-mono text-xs text-foreground placeholder:text-muted-foreground"
               />
             </Field.Field>
           </div>
@@ -228,7 +228,7 @@ const importedKindsBreakdown = $derived.by(() => {
         <div class="space-y-3">
           <!-- File Import -->
           <Field.Field>
-            <Label for="restore-file" class="text-xs text-text-muted">
+            <Label for="restore-file" class="text-xs text-muted-foreground">
               Import backup file
             </Label>
             <Input
@@ -236,19 +236,19 @@ const importedKindsBreakdown = $derived.by(() => {
               type="file"
               accept=".json"
               onchange={handleFileImport}
-              class="h-11 border-dark-border bg-dark-surface px-3 text-sm text-text-primary file:mr-4 file:rounded-lg file:border-0 file:bg-accent file:px-3 file:py-1 file:text-sm file:text-white file:cursor-pointer"
+              class="h-11 border-border bg-muted px-3 text-sm text-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-accent file:px-3 file:py-1 file:text-sm file:text-white file:cursor-pointer"
             />
           </Field.Field>
 
           {#if importedEvents.length > 0}
             <!-- Preview -->
-            <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border">
-              <p class="text-xs text-text-muted mb-2">
+            <div class="px-3 py-2 rounded-lg bg-muted border border-border">
+              <p class="text-xs text-muted-foreground mb-2">
                 {importedEvents.length} events imported
               </p>
               <div class="flex flex-wrap gap-2 text-xs">
                 {#each Object.entries(importedKindsBreakdown) as [kind, count] (kind)}
-                  <span class="px-2 py-0.5 rounded bg-dark-border text-text-secondary">
+                  <span class="px-2 py-0.5 rounded bg-border text-muted-foreground">
                     kind {kind}: {count}
                   </span>
                 {/each}
@@ -257,7 +257,7 @@ const importedKindsBreakdown = $derived.by(() => {
 
             <!-- Target Relay -->
             <Field.Field>
-              <Label for="restore-relay" class="text-xs text-text-muted">
+              <Label for="restore-relay" class="text-xs text-muted-foreground">
                 Target Relay
               </Label>
               <Input
@@ -265,7 +265,7 @@ const importedKindsBreakdown = $derived.by(() => {
                 type="text"
                 bind:value={relayUrl}
                 placeholder="wss://relay.example.com"
-                class="h-11 border-dark-border bg-dark-surface px-3 font-mono text-sm text-text-primary placeholder:text-text-muted"
+                class="h-11 border-border bg-muted px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground"
               />
             </Field.Field>
 

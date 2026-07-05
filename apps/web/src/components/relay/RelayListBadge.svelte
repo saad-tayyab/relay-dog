@@ -8,7 +8,7 @@ let {
 } = $props();
 </script>
 
-<div class="flex items-center gap-3 text-xs text-text-muted">
+<div class="flex items-center gap-3 text-xs text-muted-foreground">
   {#if readCount > 0}
     <span class="flex items-center gap-1">
       <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
@@ -17,11 +17,11 @@ let {
   {/if}
   {#if writeCount > 0}
     <span class="flex items-center gap-1">
-      <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+      <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
       {writeCount} write{writeCount !== 1 ? 's' : ''}
     </span>
   {/if}
   {#if readCount === 0 && writeCount === 0}
-    <span class="text-text-muted">Not listed in any relay lists</span>
+    <span class="text-muted-foreground">Not listed in any relay lists</span>
   {/if}
 </div>

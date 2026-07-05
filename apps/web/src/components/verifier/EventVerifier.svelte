@@ -36,11 +36,11 @@ function handleEvent(parsed: NostrEvent): void {
       class="flex flex-col items-center justify-center py-16 text-center"
     >
       <div
-        class="w-16 h-16 rounded-2xl bg-dark-card border border-dark-border flex items-center justify-center mb-4"
+        class="w-16 h-16 rounded-2xl bg-card border border-border flex items-center justify-center mb-4"
       >
         <svg
           aria-hidden="true"
-          class="w-8 h-8 text-text-muted"
+          class="w-8 h-8 text-muted-foreground"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -53,10 +53,10 @@ function handleEvent(parsed: NostrEvent): void {
           />
         </svg>
       </div>
-      <h2 class="text-lg font-semibold text-text-primary mb-1">
+      <h2 class="text-lg font-semibold text-foreground mb-1">
         Paste a Nostr event JSON to verify
       </h2>
-      <p class="text-sm text-text-muted max-w-sm">
+      <p class="text-sm text-muted-foreground max-w-sm">
         Verify signatures, decode tags, and inspect event fields — all
         client-side.
       </p>

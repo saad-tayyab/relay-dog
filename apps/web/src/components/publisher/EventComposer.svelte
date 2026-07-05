@@ -63,7 +63,7 @@ async function handlePublish() {
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-text-primary">Event Composer</h3>
+      <h3 class="text-sm font-semibold text-foreground">Event Composer</h3>
       <Badge variant="outline" class="text-xs text-muted-foreground">NIP-01, NIP-07</Badge>
     </div>
 
@@ -91,7 +91,7 @@ async function handlePublish() {
     <div>
       <div class="flex items-center justify-between mb-1">
         <Label for="event-content" class="text-xs text-muted-foreground">Content</Label>
-        <span class="text-xs {isOverLimit ? 'text-error' : 'text-text-muted'}">
+        <span class="text-xs {isOverLimit ? 'text-error' : 'text-muted-foreground'}">
           {charCount.toLocaleString()} / {maxChars.toLocaleString()}
         </span>
       </div>
@@ -166,7 +166,7 @@ async function handlePublish() {
           <AlertTitle>Published</AlertTitle>
           <AlertDescription>
             <span aria-hidden="true">✓</span> Event ID: <span class="font-mono">{composer.result.eventId}</span>
-            <span class="text-text-muted ml-2">({Math.round(composer.result.latencyMs)}ms)</span>
+            <span class="text-muted-foreground ml-2">({Math.round(composer.result.latencyMs)}ms)</span>
           </AlertDescription>
         {:else}
           <AlertTitle>Publish failed</AlertTitle>

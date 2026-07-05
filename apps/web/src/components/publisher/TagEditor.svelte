@@ -76,7 +76,7 @@ function handlePreset(key: string) {
         variant="outline"
         size="sm"
         onclick={() => handlePreset(preset.key)}
-        class="bg-muted text-muted-foreground hover:text-primary hover:border-primary/30 transition-all"
+        class="transition-all {tagKey === preset.key ? 'text-primary border-primary/30 font-semibold' : 'text-muted-foreground hover:text-muted-foreground hover:bg-transparent hover:border-border dark:hover:bg-transparent'}"
       >
         {preset.label}
       </Button>

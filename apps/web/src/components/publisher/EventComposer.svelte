@@ -71,9 +71,9 @@ async function handlePublish() {
     <!-- Kind Selector -->
     <div>
       <Label for="kind-input" class="mb-1 block text-xs text-muted-foreground">Kind</Label>
-      <ToggleGroup.Root type="single" value={String(composer.state.kind)} onValueChange={(v) => { if (v) composer.setKind(Number(v)); }} class="mb-2 flex flex-wrap">
+      <ToggleGroup.Root type="single" variant="outline" value={String(composer.state.kind)} onValueChange={(v) => { if (v) composer.setKind(Number(v)); }} class="mb-2 flex flex-wrap">
         {#each commonKinds as k (k.kind)}
-          <ToggleGroup.Item value={String(k.kind)}>
+          <ToggleGroup.Item value={String(k.kind)} class="hover:bg-primary/15 data-[state=on]:text-primary data-[state=on]:font-semibold">
             {k.label}
           </ToggleGroup.Item>
         {/each}

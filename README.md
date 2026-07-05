@@ -436,6 +436,4 @@ The API server (Hono + Bun) runs separately from the frontend. Add the API's `CO
 
 MIT
 
-<p align="center">
-  Made with ❤️ by <a href="https://github.com/SaadTayyab">Saad Tayyab</a>
-</p>
+

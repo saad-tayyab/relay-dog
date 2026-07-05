@@ -1,5 +1,5 @@
 <script lang="ts">
-import { SectionCard } from "@relayscope/ui";
+import { SectionCard } from "@/components/shared/ui";
 import { useEventDeleter } from "../../lib/composables/useEventDeleter.svelte";
 
 let { targetRelay }: { targetRelay: string } = $props();

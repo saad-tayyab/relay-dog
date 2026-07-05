@@ -1,5 +1,5 @@
 <script lang="ts">
-import { SectionCard } from "@relayscope/ui";
+import { SectionCard } from "@/components/shared/ui";
 import { useEventComposer } from "../../lib/composables/useEventComposer.svelte";
 import TagEditor from "./TagEditor.svelte";
 

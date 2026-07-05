@@ -534,6 +534,13 @@ When creating or modifying a component, verify:
 | 11 | Focus is visible on all interactive elements (`:focus-visible`) | 2.4.7 |
 | 12 | No information conveyed by color alone (use icons/text too) | 1.4.1 |
 
+### shadcn-svelte-specific Accessibility Notes (Phase 13)
+
+- `Dialog` / `Sheet` / `AlertDialog` content must include a title element (`Dialog.Title`, `Sheet.Title`, `AlertDialog.Title`) so screen readers announce context.
+- Icon-only shadcn `Button` usage still requires explicit `aria-label`.
+- For `Field` + `Input` patterns, keep `Label` wired and connect hints/errors with `aria-describedby`.
+- Sonner toasts should remain non-blocking status announcements (`aria-live="polite"` / `role="status"` semantics) and should not replace critical blocking confirmations where user intent is required.
+
 ---
 
 *Previous: [Phase 8 — Developer Toolkit](phase-8-developer-toolkit.md)*

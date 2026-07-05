@@ -165,4 +165,24 @@ jobs:
 - [ ] Toggle raw JSON viewer → formatted JSON
 - [ ] Mobile responsive → layout adapts
 
+## UI Migration Slice Checks (Phase 13)
+
+When migrating to shadcn-svelte, verify each isolated slice before moving on:
+
+1. **Type/lint checks (web package first)**
+   - `bun run --filter @relayscope/web type-check`
+   - `bun run --filter @relayscope/web lint`
+2. **Smoke render check**
+   - Start app (`bun run --filter @relayscope/web dev`) and ensure migrated slice renders without console errors.
+3. **Responsive check**
+   - Validate at mobile + desktop widths that spacing remains compact and controls remain usable.
+4. **Accessibility check**
+   - Keyboard tab order and focus visibility
+   - Labels/described-by for form controls
+   - Icon-only buttons have `aria-label`
+   - Dynamic errors/status use `role="alert"` / `role="status"` or `aria-live`
+5. **shadcn smoke check**
+   - Confirm component import path uses `$lib/components/ui/*`
+   - Confirm `cn()` import (if used) comes from `$lib/shadcn/utils`
+
 ---

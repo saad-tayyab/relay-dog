@@ -19,6 +19,36 @@ All notable changes to Relay Scope are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Conventional Commits](https://conventionalcommits.org).
 
+## [Unreleased]
+
+### Added
+
+#### Web (`@relayscope/web`)
+- **Phase 13 shadcn-svelte migration completed**
+  - Added `apps/web/components.json` with `$lib`-based aliases and `utils` mapped to `$lib/shadcn/utils` (`style: rhea`)
+  - Added app-local shadcn primitive source under `apps/web/src/lib/components/ui/**`
+  - Added `apps/web/src/lib/shadcn/utils.ts` (`cn()` helper and utility types)
+  - Added shadcn-related dependencies (`bits-ui`, `svelte-sonner`, `clsx`, `tailwind-merge`, `tw-animate-css`, plus CLI-selected supporting deps)
+
+### Changed
+
+#### Web (`@relayscope/web`)
+- Added `$lib` alias support in `apps/web/vite.config.ts` and `apps/web/tsconfig.json` while preserving `@`
+- Merged shadcn semantic tokens into `apps/web/src/index.css` while preserving Relay Dog accessibility utilities, keyframes, `@source`, and legacy product tokens via non-cyclic `--relay-*` → `--color-*` mapping
+- Migrated initial isolated slice (`KeyConverter.svelte`) from `@relayscope/ui` primitives to shadcn primitives (`Card`, `Input`, `Label`, `Button`, `Badge`)
+- Migrated additional tool slices: `Nip05Checker.svelte`, `QRCodeGenerator.svelte`
+- Removed direct `@relayscope/ui` imports from `apps/web/src/**` by introducing web-local shared compatibility components (`apps/web/src/components/shared/**`) and switching existing consumers
+- Removed `@relayscope/ui` from `apps/web/package.json` dependencies
+- Re-implemented shared compatibility components to use shadcn primitives (`Card`, `Tabs`, `Spinner`, `Button`, `Empty`) while preserving Relay Dog behavior and accessibility
+
+### Documentation
+
+- Updated `docs/features/phase-13-shadcn-svelte-migration.md` status to **Complete** with verification snapshot and final migration notes
+- Updated `docs/README.md` feature map/doc status for Phase 13
+- Updated `docs/development/style-guide.md` with shadcn migration conventions
+- Updated `docs/development/testing.md` with Phase 13 UI migration slice checks
+- Updated `docs/features/phase-9-accessibility.md` with shadcn-specific accessibility expectations
+
 ## [0.9.1] - 2026-07-04
 
 ### Changed

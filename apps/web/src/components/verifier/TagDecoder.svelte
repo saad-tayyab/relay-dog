@@ -1,5 +1,5 @@
 <script lang="ts">
-import { SectionCard } from "@relayscope/ui";
+import { SectionCard } from "@/components/shared/ui";
 import { decodeTag } from "../../utils/nostrVerify";
 
 let { tags }: { tags: string[][] } = $props();

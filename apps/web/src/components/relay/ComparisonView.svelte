@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { DirectoryRelay } from "@relayscope/shared";
-import { SectionCard } from "@relayscope/ui";
+import { SectionCard } from "@/components/shared/ui";
 
 let {
 	relayA,

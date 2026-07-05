@@ -1,14 +1,14 @@
 ---
 title: "🎨 Phase 13: shadcn-svelte Migration"
-version: "0.1.0"
-status: "planned"
+version: "1.0.0"
+status: "complete"
 last_updated: "2026-07-05"
 author: "Saad Tayyab"
 ---
 
 # 🎨 Phase 13: shadcn-svelte Migration
 
-> **v0.1.0** · **Planned** · Updated 2026-07-05 by Saad Tayyab
+> **v1.0.0** · **Complete** · Updated 2026-07-05 by Saad Tayyab
 >
 > [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
 
@@ -16,7 +16,7 @@ author: "Saad Tayyab"
 
 ## Status
 
-**Planned** 📋
+**Complete** ✅ (2026-07-05)
 
 ## Overview
 
@@ -385,6 +385,12 @@ Review the generated diff before accepting any `src/index.css` change. After ini
 ```bash
 bun x shadcn-svelte@latest add sonner --cwd apps/web
 ```
+
+### 5.5 Current Implementation Notes (2026-07-05)
+
+- `shadcn-svelte` CLI (`v1.3.0`) in `apps/web` now supports Rhea preset via interactive init; project config is now `style: "rhea"`.
+- Init run at repo root still fails preflight (expected): this CLI must be run from app workspace (`apps/web`) for Svelte/Tailwind detection.
+- CSS was overwritten by CLI once; it was then corrected to preserve Relay Dog accessibility utilities, keyframes, `@source`, and product token compatibility while keeping shadcn semantic variables.
 
 ### 5.4 Verify
 
@@ -1370,6 +1376,23 @@ bun run lint
 bun run build
 ```
 
+### Progress Snapshot (2026-07-05)
+
+- [x] `bun run --filter @relayscope/web type-check` — pass
+- [x] `bun run --filter @relayscope/web lint` — pass
+- [x] `bun run type-check` — pass
+- [x] `bun run lint` — pass
+- [x] `bun run build` — pass
+- [x] Initial migration slice: `KeyConverter.svelte` now uses shadcn components (`Card`, `Input`, `Label`, `Button`, `Badge`)
+- [x] Second migration slice: `Nip05Checker.svelte` now uses shadcn components (`Card`, `Input`, `Label`, `Button`, `Badge`)
+- [x] Third migration slice: `QRCodeGenerator.svelte` now uses shadcn components (`Card`, `Textarea`, `Label`, `Button`, `Badge`, `Spinner`)
+- [x] Removed all direct `@relayscope/ui` imports from `apps/web/src/**`
+- [x] Added web-local shared compatibility components under `apps/web/src/components/shared/**` and switched existing consumers
+- [x] Removed `@relayscope/ui` dependency from `apps/web/package.json`
+- [x] `bun run --filter @relayscope/web type-check` — pass after full import migration
+- [x] `bun run --filter @relayscope/web lint` — pass after full import migration
+- [x] `bun run type-check && bun run lint && bun run build` — pass after full import migration
+
 ### Full Migration — Final Verification
 
 - [ ] `bun run type-check` — all packages pass
@@ -1395,17 +1418,24 @@ bun run build
 
 ## 19. Files Changed
 
-Planned implementation files:
+Current implementation files (in progress):
 
 | File | Change Type | Description |
 |------|-------------|-------------|
-| `apps/web/components.json` | **New** | shadcn-svelte CLI configuration with Relay Dog aliases |
+| `apps/web/components.json` | **New** | shadcn-svelte CLI configuration with Relay Dog aliases (`style: rhea`) |
 | `apps/web/vite.config.ts` | Modified | Add `$lib` alias while preserving `@` |
 | `apps/web/tsconfig.json` | Modified | Add `$lib` and `@` path mappings |
-| `apps/web/src/index.css` | Modified | Merge shadcn semantic tokens, Rhea-oriented density, and Relay Dog compatibility tokens |
+| `apps/web/src/index.css` | Modified | Merge/correct shadcn semantic tokens with Relay Dog dark palette + preserved accessibility/keyframes/
+`@source` |
 | `apps/web/src/lib/shadcn/utils.ts` | **New** | `cn()` helper generated away from the existing `src/lib/utils/` directory |
 | `apps/web/src/lib/components/ui/**` | **New** | App-local shadcn-svelte open-code components |
-| `apps/web/src/components/**` | Modified | Incremental migration from hand-rolled UI to shadcn primitives |
+| `apps/web/src/components/tools/KeyConverter.svelte` | Modified | First isolated migration slice proving shadcn component usage pattern |
+| `apps/web/src/components/tools/Nip05Checker.svelte` | Modified | Second isolated migration slice using the same shadcn pattern with preserved accessibility behavior |
+| `apps/web/src/components/tools/QRCodeGenerator.svelte` | Modified | Third isolated migration slice for QR form/preview/actions with shadcn primitives |
+| `apps/web/src/lib/components/ui/textarea/**` | **New** | Added textarea primitive for tool form migration |
+| `apps/web/src/components/shared/**` | **New** | Web-local shared compatibility components (`SectionCard`, `AccessibleTabs`, `Toast`, etc.) used to remove direct `@relayscope/ui` coupling |
+| `apps/web/src/**/*.svelte` | Modified | Imports switched from `@relayscope/ui` to `@/components/shared/ui` |
+| `apps/web/package.json` | Modified | Removed `@relayscope/ui` dependency from web app |
 | `packages/ui/src/index.ts` | Modified | Remove exports only after all web consumers migrate |
 | `apps/web/package.json` | Modified | Add CLI-installed shadcn-svelte dependencies |
 | `bun.lock` | Modified | Lock dependency changes from Bun |

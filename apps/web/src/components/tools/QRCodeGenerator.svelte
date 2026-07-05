@@ -17,8 +17,16 @@ let detectedType = $state<string>("text");
 let generating = $state(false);
 let previewOpen = $state(false);
 
-function isDarkMode(): boolean {
-	return document.documentElement.classList.contains("dark");
+/**
+ * Read QR foreground/background colors from CSS custom properties.
+ * Uses dedicated --qr-fg / --qr-bg tokens (hex) since the qrcode library
+ * requires hex color strings and can't consume OKLCH values.
+ */
+function getQrThemeColors(): { dark: string; light: string } {
+	const style = getComputedStyle(document.documentElement);
+	const fg = style.getPropertyValue("--qr-fg").trim() || "#374151";
+	const bg = style.getPropertyValue("--qr-bg").trim() || "#ffffff";
+	return { dark: fg, light: bg };
 }
 
 function generateQR() {
@@ -30,14 +38,11 @@ function generateQR() {
 	generating = true;
 	qrDataUrl = null;
 
-	const dark = isDarkMode();
+	const { dark, light } = getQrThemeColors();
 	QRCode.toDataURL(input.trim(), {
 		width: size,
 		margin: 2,
-		color: {
-			dark: dark ? "#ffffff" : "#1a1a2e",
-			light: dark ? "#1a1a2e" : "#ffffff",
-		},
+		color: { dark, light },
 	})
 		.then((url) => {
 			qrDataUrl = url;

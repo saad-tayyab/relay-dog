@@ -69,16 +69,16 @@ function handleEditAndRepublish(event: unknown) {
 }
 </script>
 
-<div class="min-h-screen bg-dark-bg">
+<div class="min-h-screen bg-background">
   <!-- Header -->
-  <header class="border-b border-dark-border bg-dark-card/50 backdrop-blur-sm sticky top-0 z-10">
+  <header class="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
     <div class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 py-5 flex items-center gap-3">
       <div
-        class="w-9 h-9 rounded-lg bg-accent-dim border border-accent-border flex items-center justify-center"
+        class="w-9 h-9 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center"
       >
         <svg
           aria-hidden="true"
-          class="w-5 h-5 text-accent"
+          class="w-5 h-5 text-primary"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -88,8 +88,8 @@ function handleEditAndRepublish(event: unknown) {
         </svg>
       </div>
       <div>
-        <h1 class="text-lg font-bold text-text-primary leading-tight">Relay Dog</h1>
-        <p class="text-xs text-text-muted">Nostr relay inspector</p>
+        <h1 class="text-lg font-bold text-foreground leading-tight">Relay Dog</h1>
+        <p class="text-xs text-muted-foreground">Nostr relay inspector</p>
       </div>
     </div>
   </header>
@@ -191,9 +191,9 @@ function handleEditAndRepublish(event: unknown) {
   <MobileNav {activeSection} onNavigate={handleNavigate} />
 
   <!-- Footer -->
-  <footer class="border-t border-dark-border mt-auto">
+  <footer class="border-t border-border mt-auto">
     <div
-      class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between text-xs text-text-muted"
+      class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between text-xs text-muted-foreground"
     >
       <span>Relay Dog · Nostr Relay Inspector</span>
       <span class="font-mono">v0.10.0</span>

@@ -72,22 +72,22 @@ const contentPreview = $derived(truncateContent(event.content));
 const expirationInfo = $derived(parseExpiration(event.tags));
 </script>
 
-<article class="border-b border-dark-border last:border-b-0 py-3 px-2">
+<article class="border-b border-border last:border-b-0 py-3 px-2">
   <!-- Header row -->
   <div class="flex items-center gap-2 mb-1.5">
     <Badge class="text-xs font-medium px-1.5 py-0.5 border {kindColor}">
       {kindLabel}
     </Badge>
     <ExpiredBadge expirationInfo={expirationInfo} />
-    <span class="text-xs font-mono text-text-muted" title={event.pubkey}>
+    <span class="text-xs font-mono text-muted-foreground" title={event.pubkey}>
       {truncatePubkey(event.pubkey)}
     </span>
-    <time class="text-xs text-text-muted ml-auto shrink-0" datetime={new Date(event.created_at * 1000).toISOString()}>{timestamp}</time>
+    <time class="text-xs text-muted-foreground ml-auto shrink-0" datetime={new Date(event.created_at * 1000).toISOString()}>{timestamp}</time>
   </div>
 
   <!-- Content preview -->
   {#if event.content}
-    <p class="text-xs text-text-secondary leading-relaxed whitespace-pre-wrap break-words">
+    <p class="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
       {contentPreview}
     </p>
   {/if}
@@ -161,7 +161,7 @@ const expirationInfo = $derived(parseExpiration(event.tags));
   {#if expanded}
     <ScrollArea.Root class="mt-2 max-h-64">
       <pre
-        class="p-4 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
+        class="p-4 rounded-lg bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
           event,
           null,
           2,

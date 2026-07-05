@@ -55,7 +55,7 @@ const sortedNips = $derived([...nips].sort((a, b) => a - b));
 
 {#if nips && nips.length > 0}
   <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md animate-fade-in"><Card.Content class="p-5 lg:p-6">
-    <h3 class="text-sm font-semibold text-text-primary mb-4">
+    <h3 class="text-sm font-semibold text-foreground mb-4">
       Supported NIPs ({nips.length})
     </h3>
     <ul class="flex flex-wrap gap-2">

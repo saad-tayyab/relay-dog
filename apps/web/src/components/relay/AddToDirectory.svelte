@@ -98,10 +98,10 @@ function cancel() {
   <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md animate-slide-up"><Card.Content class="p-5 lg:p-6">
     <div class="flex items-center gap-3">
       <div class="flex-1 min-w-0">
-        <p class="text-sm text-text-primary font-medium">
+        <p class="text-sm text-foreground font-medium">
           Save this relay to your directory?
         </p>
-        <p class="text-xs text-text-muted mt-0.5 truncate">
+        <p class="text-xs text-muted-foreground mt-0.5 truncate">
           {relayUrl}
         </p>
       </div>
@@ -136,7 +136,7 @@ function cancel() {
       class="space-y-3"
     >
       <div class="flex items-center justify-between">
-        <h3 class="text-sm font-semibold text-text-primary">Add to Directory</h3>
+        <h3 class="text-sm font-semibold text-foreground">Add to Directory</h3>
         <Button
           type="button"
           variant="ghost"

@@ -56,7 +56,7 @@ async function handleCheck() {
 const clipboard = useClipboard();
 </script>
 
-<Card.Root class="rounded-xl border-dark-border bg-dark-card">
+<Card.Root class="rounded-xl border-border bg-card">
   <Card.Content class="space-y-4 p-4">
     <!-- Screen reader live region for copy feedback -->
     <div aria-live="polite" class="sr-only">
@@ -65,13 +65,13 @@ const clipboard = useClipboard();
     </div>
 
     <div class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-text-primary">NIP-05 Checker</h3>
-      <Badge variant="outline" class="border-dark-border bg-dark-surface text-text-muted">NIP-05</Badge>
+      <h3 class="text-sm font-semibold text-foreground">NIP-05 Checker</h3>
+      <Badge variant="outline" class="border-border bg-muted text-muted-foreground">NIP-05</Badge>
     </div>
 
     <!-- Input -->
     <div>
-      <Label for="nip05-input" class="mb-1 block text-xs text-text-muted">
+      <Label for="nip05-input" class="mb-1 block text-xs text-muted-foreground">
         NIP-05 Identifier
       </Label>
       <Input
@@ -80,13 +80,13 @@ const clipboard = useClipboard();
         bind:value={identifier}
         placeholder="alice@example.com"
         aria-describedby="nip05-hint"
-        class="h-11 border-dark-border bg-dark-surface px-3 text-sm text-text-primary placeholder:text-text-muted"
+        class="h-11 border-border bg-muted px-3 text-sm text-foreground placeholder:text-muted-foreground"
       />
     </div>
 
     <!-- Optional expected pubkey -->
     <div>
-      <Label for="expected-pubkey" class="mb-1 block text-xs text-text-muted">
+      <Label for="expected-pubkey" class="mb-1 block text-xs text-muted-foreground">
         Expected pubkey (optional)
       </Label>
       <Input
@@ -94,7 +94,7 @@ const clipboard = useClipboard();
         type="text"
         bind:value={expectedPubkey}
         placeholder="64-char hex pubkey to verify against"
-        class="h-11 border-dark-border bg-dark-surface px-3 font-mono text-xs text-text-primary placeholder:text-text-muted"
+        class="h-11 border-border bg-muted px-3 font-mono text-xs text-foreground placeholder:text-muted-foreground"
       />
     </div>
 
@@ -140,16 +140,16 @@ const clipboard = useClipboard();
         <!-- Details -->
         <div class="space-y-2 text-xs">
           <div class="flex justify-between">
-            <span class="text-text-muted">Domain</span>
-            <span class="text-text-primary font-mono">{result.domain}</span>
+            <span class="text-muted-foreground">Domain</span>
+            <span class="text-foreground font-mono">{result.domain}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-text-muted">HTTP Status</span>
-            <span class="text-text-primary font-mono">{result.httpStatus ?? '—'}</span>
+            <span class="text-muted-foreground">HTTP Status</span>
+            <span class="text-foreground font-mono">{result.httpStatus ?? '—'}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-text-muted">Response Time</span>
-            <span class="text-text-primary font-mono">{Math.round(result.responseTimeMs)}ms</span>
+            <span class="text-muted-foreground">Response Time</span>
+            <span class="text-foreground font-mono">{Math.round(result.responseTimeMs)}ms</span>
           </div>
         </div>
 
@@ -157,18 +157,18 @@ const clipboard = useClipboard();
         {#if result.resolvedPubkey}
           <div class="space-y-1">
             <div class="flex items-center justify-between">
-              <span class="text-xs text-text-muted">Resolved pubkey (hex)</span>
+              <span class="text-xs text-muted-foreground">Resolved pubkey (hex)</span>
               <Button
                 variant="ghost"
                 size="sm"
                 aria-label="Copy to clipboard"
                 onclick={() => result?.resolvedPubkey && clipboard.copy(result.resolvedPubkey)}
-                class="min-h-[44px] text-xs text-accent"
+                class="min-h-[44px] text-xs text-primary"
               >
                 {clipboard.copied ? '✓ Copied' : 'Copy'}
               </Button>
             </div>
-            <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
+            <div class="px-3 py-2 rounded-lg bg-muted border border-border text-xs font-mono text-muted-foreground break-all">
               {result.resolvedPubkey}
             </div>
           </div>
@@ -176,18 +176,18 @@ const clipboard = useClipboard();
           {#if result.npub}
             <div class="space-y-1">
               <div class="flex items-center justify-between">
-                <span class="text-xs text-text-muted">npub</span>
+                <span class="text-xs text-muted-foreground">npub</span>
                 <Button
                   variant="ghost"
                   size="sm"
                   aria-label="Copy to clipboard"
                   onclick={() => result?.npub && clipboard.copy(result.npub)}
-                  class="min-h-[44px] text-xs text-accent"
+                  class="min-h-[44px] text-xs text-primary"
                 >
                   {clipboard.copied ? '✓ Copied' : 'Copy'}
                 </Button>
               </div>
-              <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
+              <div class="px-3 py-2 rounded-lg bg-muted border border-border text-xs font-mono text-muted-foreground break-all">
                 {result.npub}
               </div>
             </div>
@@ -198,12 +198,12 @@ const clipboard = useClipboard();
         {#if result.rawResponse}
           <Collapsible.Root bind:open={rawJsonOpen}>
             <Collapsible.Trigger
-              class="cursor-pointer text-xs text-text-muted hover:text-text-secondary transition-colors"
+              class="cursor-pointer text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
             >
               Raw JSON Response
             </Collapsible.Trigger>
              <Collapsible.Content>
-               <pre class="mt-2 p-4 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono">{JSON.stringify(
+               <pre class="mt-2 p-4 rounded-lg bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono">{JSON.stringify(
                   result.rawResponse,
                   null,
                   2,
@@ -216,8 +216,8 @@ const clipboard = useClipboard();
 
     <!-- History -->
     {#if history.length > 0}
-      <div class="border-t border-dark-border pt-3">
-        <p class="text-xs text-text-muted mb-2">Recent checks</p>
+      <div class="border-t border-border pt-3">
+        <p class="text-xs text-muted-foreground mb-2">Recent checks</p>
       <ul class="space-y-1">
         {#each history as item (item.identifier)}
           <li>
@@ -227,9 +227,9 @@ const clipboard = useClipboard();
                 identifier = item.identifier;
                 handleCheck();
               }}
-              class="w-full justify-between text-xs hover:bg-dark-surface"
+              class="w-full justify-between text-xs hover:bg-muted"
             >
-              <span class="text-text-secondary font-mono truncate">{item.identifier}</span>
+              <span class="text-muted-foreground font-mono truncate">{item.identifier}</span>
               <span class={item.verified ? 'text-success' : 'text-error'}>
                 {item.verified ? '✓' : '✗'}
               </span>

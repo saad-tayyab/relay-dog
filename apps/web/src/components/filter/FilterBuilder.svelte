@@ -72,7 +72,7 @@ function handleUnsubscribe() {
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="flex items-center justify-between mb-4">
-    <h3 class="text-sm font-semibold text-text-primary">Subscription Filter</h3>
+    <h3 class="text-sm font-semibold text-foreground">Subscription Filter</h3>
     {#if subId}
       <Badge variant="outline" class="px-2 py-0.5 text-xs font-mono">
         {subId}
@@ -169,7 +169,7 @@ function handleUnsubscribe() {
       </Button>
     {/if}
     {#if !connected}
-      <span class="text-xs text-text-muted">Connect to a relay first</span>
+      <span class="text-xs text-muted-foreground">Connect to a relay first</span>
     {/if}
   </div>
 </Card.Content></Card.Root>

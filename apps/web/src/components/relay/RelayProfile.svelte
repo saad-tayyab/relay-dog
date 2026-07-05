@@ -68,19 +68,19 @@ $effect(() => {
           alt="Relay icon"
           loading="lazy"
           decoding="async"
-          class="w-16 h-16 rounded-xl border border-dark-border object-cover shrink-0"
+          class="w-16 h-16 rounded-xl border border-border object-cover shrink-0"
           referrerpolicy="no-referrer"
           onerror={handleImageError}
         />
       {/if}
       <div class="flex-1 min-w-0">
-        <h2 class="text-2xl font-bold text-text-primary mb-1">
+        <h2 class="text-2xl font-bold text-foreground mb-1">
           {info.name || 'Unknown Relay'}
         </h2>
         {#if info.description}
-          <p class="text-sm text-text-secondary leading-relaxed mb-3">{info.description}</p>
+          <p class="text-sm text-muted-foreground leading-relaxed mb-3">{info.description}</p>
         {/if}
-        <div class="flex flex-wrap gap-3 text-sm text-text-muted">
+        <div class="flex flex-wrap gap-3 text-sm text-muted-foreground">
           {#if info.software}
             <span class="flex items-center gap-1.5">
               <svg
@@ -102,7 +102,7 @@ $effect(() => {
                   href={softwareHref(info.software)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors"
+                  class="hover:text-primary hover:underline decoration-dotted underline-offset-2 transition-colors"
                 >{info.software}</a>
               {:else}
                 {info.software}

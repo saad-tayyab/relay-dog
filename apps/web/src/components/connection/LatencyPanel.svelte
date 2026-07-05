@@ -14,7 +14,7 @@ let {
 } = $props();
 
 function latencyColor(ms: number | null): string {
-	if (ms === null) return "text-text-muted";
+	if (ms === null) return "text-muted-foreground";
 	if (ms < 100) return "text-success";
 	if (ms < 500) return "text-warning";
 	return "text-error";
@@ -28,14 +28,14 @@ function formatMs(ms: number | null): string {
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="flex items-center justify-between mb-3">
-    <h3 class="text-sm font-semibold text-text-primary">Latency & Performance</h3>
+    <h3 class="text-sm font-semibold text-foreground">Latency & Performance</h3>
     {#if onMeasure}
       <Button
         variant="outline"
         size="sm"
         onclick={onMeasure}
         disabled={measuring}
-        class="bg-dark-surface text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
+        class="bg-muted text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-40 transition-all"
       >
         {#if measuring}
           <span class="animate-pulse">Measuring…</span>
@@ -48,24 +48,24 @@ function formatMs(ms: number | null): string {
 
   <dl class="grid grid-cols-3 gap-3">
     <!-- WebSocket Latency -->
-    <div class="text-center p-3 rounded-lg bg-dark-surface border border-dark-border">
-      <dt class="text-xs uppercase tracking-wider text-text-muted mb-1">WS Round-Trip</dt>
+    <div class="text-center p-3 rounded-lg bg-muted border border-border">
+      <dt class="text-xs uppercase tracking-wider text-muted-foreground mb-1">WS Round-Trip</dt>
       <dd class="text-lg font-mono font-bold {latencyColor(metrics.wsRoundTripMs)}">
         {formatMs(metrics.wsRoundTripMs)}
       </dd>
     </div>
 
     <!-- HTTP Latency -->
-    <div class="text-center p-3 rounded-lg bg-dark-surface border border-dark-border">
-      <dt class="text-xs uppercase tracking-wider text-text-muted mb-1">HTTP (NIP-11)</dt>
+    <div class="text-center p-3 rounded-lg bg-muted border border-border">
+      <dt class="text-xs uppercase tracking-wider text-muted-foreground mb-1">HTTP (NIP-11)</dt>
       <dd class="text-lg font-mono font-bold {latencyColor(metrics.httpLatencyMs)}">
         {formatMs(metrics.httpLatencyMs)}
       </dd>
     </div>
 
     <!-- EOSE Timing -->
-    <div class="text-center p-3 rounded-lg bg-dark-surface border border-dark-border">
-      <dt class="text-xs uppercase tracking-wider text-text-muted mb-1">EOSE</dt>
+    <div class="text-center p-3 rounded-lg bg-muted border border-border">
+      <dt class="text-xs uppercase tracking-wider text-muted-foreground mb-1">EOSE</dt>
       <dd class="text-lg font-mono font-bold {latencyColor(metrics.eoseTimeMs)}">
         {formatMs(metrics.eoseTimeMs)}
       </dd>
@@ -73,7 +73,7 @@ function formatMs(ms: number | null): string {
   </dl>
 
   {#if metrics.eoseEventCount > 0}
-    <p class="mt-2 text-xs text-text-muted text-center">
+    <p class="mt-2 text-xs text-muted-foreground text-center">
       Loaded {metrics.eoseEventCount.toLocaleString()} historical events in {formatMs(metrics.eoseTimeMs)}
     </p>
   {/if}

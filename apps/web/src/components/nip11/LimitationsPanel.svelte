@@ -32,7 +32,7 @@ const items = $derived(
 
 {#if limitation && items.length > 0}
   <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md animate-fade-in"><Card.Content class="p-5 lg:p-6">
-    <h3 class="text-sm font-semibold text-text-primary mb-4">
+    <h3 class="text-sm font-semibold text-foreground mb-4">
       Limitations & Policies
     </h3>
     <dl class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -40,9 +40,9 @@ const items = $derived(
         {@const isBool = BOOLEAN_KEYS.includes(key)}
         {@const isTrue = val === true}
         <div
-          class="flex items-center justify-between px-4 py-3 rounded-lg bg-dark-surface border border-dark-border"
+          class="flex items-center justify-between px-4 py-3 rounded-lg bg-muted border border-border"
         >
-          <dt class="text-sm text-text-secondary">
+          <dt class="text-sm text-muted-foreground">
             {LABELS[key] ||
               key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
           </dt>
@@ -57,7 +57,7 @@ const items = $derived(
               </span>
             </dd>
           {:else}
-            <dd class="text-sm font-mono font-medium text-text-primary">
+            <dd class="text-sm font-mono font-medium text-foreground">
               {typeof val === 'number' ? val.toLocaleString() : String(val)}
             </dd>
           {/if}

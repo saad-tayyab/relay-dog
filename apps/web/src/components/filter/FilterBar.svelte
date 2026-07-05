@@ -72,7 +72,7 @@ function handleCountryChange() {
 <div class="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4">
   <!-- Search -->
   <div class="relative flex-1 min-w-[200px]">
-    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
+    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
       <svg
         aria-hidden="true"
         class="w-3.5 h-3.5"

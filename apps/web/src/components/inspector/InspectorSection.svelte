@@ -182,7 +182,7 @@ const tabs = $derived([
           <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
             <Collapsible.Root bind:open={jsonOpen}>
               <Collapsible.Trigger
-                class="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2"
+                class="cursor-pointer text-sm text-muted-foreground hover:text-muted-foreground transition-colors flex items-center gap-2 py-2"
               >
                 <svg
                   aria-hidden="true"
@@ -198,7 +198,7 @@ const tabs = $derived([
               </Collapsible.Trigger>
               <Collapsible.Content>
                 <pre
-                  class="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
+                  class="mt-2 p-4 rounded-xl bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
                     relayInfo,
                     null,
                     2,

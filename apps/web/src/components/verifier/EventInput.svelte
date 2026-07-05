@@ -143,14 +143,14 @@ $effect(() => {
 
 <div class="space-y-2">
   <div class="flex items-center justify-between">
-    <label for="event-json-input" class="text-sm font-medium text-text-secondary">
+    <label for="event-json-input" class="text-sm font-medium text-muted-foreground">
       Event JSON
     </label>
     <Button
       variant="ghost"
       size="sm"
       onclick={loadExample}
-      class="text-accent hover:text-accent/80 transition-colors"
+      class="text-primary hover:text-primary/80 transition-colors"
     >
       Load Example
     </Button>

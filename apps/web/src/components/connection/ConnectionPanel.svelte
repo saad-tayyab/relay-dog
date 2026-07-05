@@ -52,7 +52,7 @@ let {
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <StatusDot status={STATUS_MAP[status]} />
-        <span class="text-sm font-semibold text-text-primary">{STATUS_LABEL[status]}</span>
+        <span class="text-sm font-semibold text-foreground">{STATUS_LABEL[status]}</span>
       </div>
       {#if status === 'disconnected' || status === 'error'}
         <Button
@@ -75,7 +75,7 @@ let {
     </div>
 
     <!-- Relay URL -->
-    <div class="flex items-center gap-2 text-xs text-text-muted">
+    <div class="flex items-center gap-2 text-xs text-muted-foreground">
       <svg
         aria-hidden="true"
         class="w-3.5 h-3.5 shrink-0"
@@ -99,17 +99,17 @@ let {
     </div>
 
     <!-- Stats row -->
-    <div class="flex items-center gap-4 text-xs text-text-secondary">
+    <div class="flex items-center gap-4 text-xs text-muted-foreground">
       <span>
-        Events: <span class="font-mono text-text-primary">{eventCount.toLocaleString()}</span>
+        Events: <span class="font-mono text-foreground">{eventCount.toLocaleString()}</span>
       </span>
       {#if eose.received}
         <span>
           Historical:
-          <span class="font-mono text-text-primary">{eose.historicalCount.toLocaleString()}</span>
+          <span class="font-mono text-foreground">{eose.historicalCount.toLocaleString()}</span>
         </span>
         <span>
-          Live: <span class="font-mono text-text-primary">{eose.liveCount.toLocaleString()}</span>
+          Live: <span class="font-mono text-foreground">{eose.liveCount.toLocaleString()}</span>
         </span>
       {/if}
     </div>

@@ -67,6 +67,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Con
 - **Full design system adoption**: replaced kind/size selectors with `ToggleGroup`
 - **Full design system adoption**: replaced 4 raw empty states with `Empty` component
 - **Full design system adoption**: added reusable `TooltipWrap.svelte` shared component
+- **Full theme migration**: refined oklch dark theme values for better depth hierarchy (background 14%, card 21%, muted 19%, border 30%)
+- **Full theme migration**: replaced all 311+ legacy CSS class instances across 35 files with shadcn semantic tokens (`bg-card`, `text-foreground`, `border-border`, `bg-muted`, etc.)
+- **Full theme migration**: removed dead `.dark` block, legacy `--relay-*` variables, and `--color-dark-*` compatibility bridges from `index.css`
+- **Full theme migration**: promoted `--success`/`--warning`/`--error` status tokens to proper `:root` definitions with Tailwind `@theme inline` mapping
 
 ### Documentation
 

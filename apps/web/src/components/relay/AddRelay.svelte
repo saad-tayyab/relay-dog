@@ -108,7 +108,7 @@ function cancel() {
     <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
       <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-3">
         <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-text-primary">Add Relay</h3>
+          <h3 class="text-sm font-semibold text-foreground">Add Relay</h3>
           <TooltipWrap label="Cancel">
             <Button
               type="button"
@@ -148,7 +148,7 @@ function cancel() {
         <!-- Name -->
         <Field.Field>
           <Label for="add-relay-name" class="mb-1 block text-xs text-muted-foreground">
-            Name <span class="text-text-muted">(optional)</span>
+            Name <span class="text-muted-foreground">(optional)</span>
           </Label>
           <Input
             id="add-relay-name"
@@ -162,7 +162,7 @@ function cancel() {
         <!-- API Key -->
         <Field.Field>
           <Label for="add-relay-apikey" class="mb-1 block text-xs text-muted-foreground">
-            API Key <span class="text-text-muted">(saved locally)</span>
+            API Key <span class="text-muted-foreground">(saved locally)</span>
           </Label>
           <Input
             id="add-relay-apikey"

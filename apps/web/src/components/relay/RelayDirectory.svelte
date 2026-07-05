@@ -117,9 +117,9 @@ function closeComparison() {
   <!-- Selection Actions -->
   {#if selectedIds.size === 2}
     <div
-      class="flex items-center justify-between px-3 py-2 rounded-lg bg-accent-dim border border-accent-border"
+      class="flex items-center justify-between px-3 py-2 rounded-lg bg-primary/15 border border-primary/30"
     >
-      <span class="text-xs text-accent">
+      <span class="text-xs text-primary">
         {selectedIds.size} relays selected — ready to compare
       </span>
       <Button
@@ -157,7 +157,7 @@ function closeComparison() {
     <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
       <div class="text-center py-6">
         <p class="text-sm text-error mb-2">Failed to load directory</p>
-        <p class="text-xs text-text-muted">{directory.error}</p>
+        <p class="text-xs text-muted-foreground">{directory.error}</p>
         <Button
           type="button"
           variant="outline"
@@ -215,7 +215,7 @@ function closeComparison() {
 
   <!-- Total Count -->
   {#if directory.total > 0}
-    <p class="text-center text-xs text-text-muted">
+    <p class="text-center text-xs text-muted-foreground">
       {directory.total.toLocaleString()} relays in directory
     </p>
   {/if}

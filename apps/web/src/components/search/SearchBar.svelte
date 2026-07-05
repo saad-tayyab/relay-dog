@@ -31,7 +31,7 @@ const POPULAR_RELAYS = [
 <search onsubmit={onSubmit} class="mb-8 animate-fade-in" aria-label="Inspect a relay">
   <div class="flex gap-2">
     <div class="relative flex-1">
-      <div class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
+      <div class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
         <svg
           aria-hidden="true"
           class="w-4 h-4"
@@ -89,7 +89,7 @@ const POPULAR_RELAYS = [
 
   <!-- Quick pick relays -->
   <div class="mt-4 flex flex-wrap gap-2">
-    <span class="text-xs text-text-muted mr-1 py-1">Try:</span>
+    <span class="text-xs text-muted-foreground mr-1 py-1">Try:</span>
     {#each POPULAR_RELAYS as relay (relay)}
       <Button
         type="button"

@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@fontsource-variable/inter": "^5.2.8",
+    "@internationalized/date": "^3.12.0",
     "@lucide/svelte": "^1.23.0",
     "@relayscope/tsconfig": "workspace:*",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",

@@ -3,6 +3,7 @@ import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
 import { Badge } from "$lib/components/ui/badge";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
+import { DateTimePicker } from "$lib/components/ui/date-time-picker";
 import * as Field from "$lib/components/ui/field";
 import { Input } from "$lib/components/ui/input";
 import { Label } from "$lib/components/ui/label";
@@ -114,19 +115,11 @@ async function handlePublish() {
     />
 
     <!-- Created At -->
-    <div>
-      <Label for="created-at" class="mb-1 block text-xs text-muted-foreground">Created At</Label>
-      <Input
-        id="created-at"
-        type="datetime-local"
-        value={new Date(composer.state.createdAt * 1000).toISOString().slice(0, 16)}
-        oninput={(e) => {
-          const val = (e.target as HTMLInputElement).value;
-          composer.setCreatedAt(Math.floor(new Date(val).getTime() / 1000));
-        }}
-        class="h-11 border-border bg-card px-3 text-sm text-foreground"
-      />
-    </div>
+    <DateTimePicker
+      bind:value={composer.state.createdAt}
+      onChange={(ts) => composer.setCreatedAt(ts)}
+      label="Created At"
+    />
 
     <!-- Target Relay -->
     <div>

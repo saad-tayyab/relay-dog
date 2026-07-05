@@ -1,4 +1,7 @@
 <script lang="ts">
+import AlertTriangleIcon from "@lucide/svelte/icons/alert-triangle";
+import CheckIcon from "@lucide/svelte/icons/check";
+import XIcon from "@lucide/svelte/icons/x";
 import type { LatencyMetrics } from "@relayscope/shared";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
@@ -13,11 +16,17 @@ let {
 	onMeasure?: () => void;
 } = $props();
 
-function latencyColor(ms: number | null): string {
-	if (ms === null) return "text-muted-foreground";
-	if (ms < 100) return "text-success";
-	if (ms < 500) return "text-warning";
-	return "text-error";
+interface LatencyRating {
+	color: string;
+	icon: "good" | "warn" | "bad" | "none";
+	label: string;
+}
+
+function latencyRating(ms: number | null): LatencyRating {
+	if (ms === null) return { color: "text-muted-foreground", icon: "none", label: "Not measured" };
+	if (ms < 100) return { color: "text-success", icon: "good", label: "Fast" };
+	if (ms < 500) return { color: "text-warning", icon: "warn", label: "Moderate" };
+	return { color: "text-error", icon: "bad", label: "Slow" };
 }
 
 function formatMs(ms: number | null): string {
@@ -50,25 +59,37 @@ function formatMs(ms: number | null): string {
     <!-- WebSocket Latency -->
     <div class="text-center p-3 rounded-lg bg-muted border border-border">
       <dt class="text-xs uppercase tracking-wider text-muted-foreground mb-1">WS Round-Trip</dt>
-      <dd class="text-lg font-mono font-bold {latencyColor(metrics.wsRoundTripMs)}">
-        {formatMs(metrics.wsRoundTripMs)}
+      <dd class="text-lg font-mono font-bold {latencyRating(metrics.wsRoundTripMs).color}">
+        <span class="inline-flex items-center gap-1">
+          {#if latencyRating(metrics.wsRoundTripMs).icon === 'good'}<CheckIcon class="size-4" aria-hidden="true" />{:else if latencyRating(metrics.wsRoundTripMs).icon === 'warn'}<AlertTriangleIcon class="size-4" aria-hidden="true" />{:else if latencyRating(metrics.wsRoundTripMs).icon === 'bad'}<XIcon class="size-4" aria-hidden="true" />{/if}
+          {formatMs(metrics.wsRoundTripMs)}
+        </span>
       </dd>
+      <dd class="text-[10px] text-muted-foreground mt-0.5">{latencyRating(metrics.wsRoundTripMs).label}</dd>
     </div>
 
     <!-- HTTP Latency -->
     <div class="text-center p-3 rounded-lg bg-muted border border-border">
       <dt class="text-xs uppercase tracking-wider text-muted-foreground mb-1">HTTP (NIP-11)</dt>
-      <dd class="text-lg font-mono font-bold {latencyColor(metrics.httpLatencyMs)}">
-        {formatMs(metrics.httpLatencyMs)}
+      <dd class="text-lg font-mono font-bold {latencyRating(metrics.httpLatencyMs).color}">
+        <span class="inline-flex items-center gap-1">
+          {#if latencyRating(metrics.httpLatencyMs).icon === 'good'}<CheckIcon class="size-4" aria-hidden="true" />{:else if latencyRating(metrics.httpLatencyMs).icon === 'warn'}<AlertTriangleIcon class="size-4" aria-hidden="true" />{:else if latencyRating(metrics.httpLatencyMs).icon === 'bad'}<XIcon class="size-4" aria-hidden="true" />{/if}
+          {formatMs(metrics.httpLatencyMs)}
+        </span>
       </dd>
+      <dd class="text-[10px] text-muted-foreground mt-0.5">{latencyRating(metrics.httpLatencyMs).label}</dd>
     </div>
 
     <!-- EOSE Timing -->
     <div class="text-center p-3 rounded-lg bg-muted border border-border">
       <dt class="text-xs uppercase tracking-wider text-muted-foreground mb-1">EOSE</dt>
-      <dd class="text-lg font-mono font-bold {latencyColor(metrics.eoseTimeMs)}">
-        {formatMs(metrics.eoseTimeMs)}
+      <dd class="text-lg font-mono font-bold {latencyRating(metrics.eoseTimeMs).color}">
+        <span class="inline-flex items-center gap-1">
+          {#if latencyRating(metrics.eoseTimeMs).icon === 'good'}<CheckIcon class="size-4" aria-hidden="true" />{:else if latencyRating(metrics.eoseTimeMs).icon === 'warn'}<AlertTriangleIcon class="size-4" aria-hidden="true" />{:else if latencyRating(metrics.eoseTimeMs).icon === 'bad'}<XIcon class="size-4" aria-hidden="true" />{/if}
+          {formatMs(metrics.eoseTimeMs)}
+        </span>
       </dd>
+      <dd class="text-[10px] text-muted-foreground mt-0.5">{latencyRating(metrics.eoseTimeMs).label}</dd>
     </div>
   </dl>
 

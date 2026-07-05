@@ -63,7 +63,7 @@ const checks = $derived(
             <span
               class="text-xs font-medium {status[key] === 'success' ? 'text-success' : 'text-error'}"
             >
-              {detail}
+              {status[key] === 'success' ? '✓' : '✗'} {detail}
             </span>
           {/if}
         </li>

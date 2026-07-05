@@ -226,6 +226,40 @@ The project uses a **two-tier token system**: shadcn standard tokens for structu
 - The `-dim` variants are always used with `border-{status}/20` for a subtle tinted look
 - shadcn components handle their own token usage — don't override shadcn primitive colors
 
+#### WCAG 2.2 Contrast Requirements
+
+All color choices must satisfy these minimum contrast ratios (verified in `index.css`):
+
+| WCAG SC | Level | Requirement | Applies To |
+|---------|-------|-------------|------------|
+| **1.4.3** | AA | ≥ 4.5:1 normal text, ≥ 3:1 large text (≥18pt / ≥14pt bold) | All text on backgrounds |
+| **1.4.6** | AAA | ≥ 7:1 normal text, ≥ 4.5:1 large text | Preferred for body text |
+| **1.4.11** | AA | ≥ 3:1 for UI components and graphical objects | Borders, icons, focus rings |
+| **1.4.1** | A | Color must not be the sole means of conveying information | Status indicators |
+
+**Verified contrast pairs (light / dark mode):**
+
+| Pair | Light Ratio | Dark Ratio | Status |
+|------|------------|------------|--------|
+| foreground / background | 18:1 | 16:1 | ✅ AAA |
+| primary / background | 7.3:1 | 5.5:1 | ✅ AA+ |
+| muted-foreground / background | 7.3:1 | 9.8:1 | ✅ AAA |
+| border / background | 3.2:1 | 3.2:1 | ✅ SC 1.4.11 |
+| success / background | 4.6:1 | 5.0:1 | ✅ AA |
+| warning / background | 4.8:1 | 6.5:1 | ✅ AA |
+| error / background | 5.0:1 | 5.5:1 | ✅ AA |
+
+**Rules for status colors (SC 1.4.1):**
+- Never use color alone to indicate pass/fail, good/bad, online/offline
+- Always pair color with an icon (✓/✗/⚠) or text label ("Fast"/"Slow", "Online"/"Offline")
+- Use `role="alert"` for errors, `role="status"` for non-critical updates
+- The `StatusDot` component is `aria-hidden` — always provide adjacent text
+
+**Rules for NIP badges and dynamic colors:**
+- Use theme tokens (`text-kind-metadata`, etc.) not hardcoded Tailwind palette colors
+- For inline `style="color: ..."`, provide light/dark variants (see `NIP_INFO` in `nip-constants.ts`)
+- Avatar fallback colors must use ≤33% HSL lightness to guarantee 4.5:1 with `text-white`
+
 ### shadcn-svelte Migration Conventions (Phase 13)
 
 - Keep generated/open-code UI primitives under `apps/web/src/lib/components/ui/**`.

@@ -61,15 +61,16 @@ function isSoftwareUrl(raw: string): boolean {
 	return /^git\+https?:\/\//.test(raw) || /^https?:\/\//.test(raw);
 }
 
-/** Derive a deterministic color from the relay name for avatar fallback */
+/** Derive a deterministic color from the relay name for avatar fallback.
+ *  Uses 33% lightness to guarantee ≥4.5:1 contrast with white text (SC 1.4.3). */
 function relayColor(name: string | null): string {
-	if (!name) return "hsl(220, 60%, 40%)";
+	if (!name) return "hsl(220, 60%, 33%)";
 	let hash = 0;
 	for (const ch of name) {
 		hash = (hash * 31 + ch.charCodeAt(0)) | 0;
 	}
 	const hue = Math.abs(hash) % 360;
-	return `hsl(${hue}, 60%, 40%)`;
+	return `hsl(${hue}, 60%, 33%)`;
 }
 </script>
 

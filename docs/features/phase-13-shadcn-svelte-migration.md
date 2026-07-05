@@ -1412,6 +1412,20 @@ bun run build
 - [x] **Design system hardening**: added biome overrides for shadcn registry code (chart, data-table, sidebar, menubar, etc.)
 - [x] **Design system hardening**: added 40 new shadcn primitives on-demand (dialog, dropdown-menu, tooltip, select, table, sheet, popover, alert-dialog, scroll-area, calendar, command, sidebar, drawer, etc.)
 - [x] `bun run type-check && bun run lint && bun run build` — all pass after full hardening
+- [x] **Full design system adoption**: replaced all 15 raw `<button>` elements with shadcn `Button` component (10 files)
+- [x] **Full design system adoption**: replaced raw `<input>` and `<textarea>` with shadcn `Input`/`Textarea` (TagEditor, EventInput)
+- [x] **Full design system adoption**: replaced 6 raw status badge `<span>` patterns with `Badge` component (5 files)
+- [x] **Full design system adoption**: replaced 10 raw alert `<div>` patterns with `Alert` component + added `warning`/`success` variants (7 files)
+- [x] **Full design system adoption**: replaced `<details>` with `Collapsible` component (InspectorSection, Nip05Checker)
+- [x] **Full design system adoption**: added `Tooltip` wrappers to all icon buttons (8 files, 10+ buttons)
+- [x] **Full design system adoption**: added `Skeleton` loading states for RelayDirectory
+- [x] **Full design system adoption**: added `ScrollArea` to 4 overflow containers (EventFeed, MonitorDataPanel, EventCard, EventDeleter)
+- [x] **Full design system adoption**: added `DropdownMenu` action menus for relay cards
+- [x] **Full design system adoption**: replaced `confirm()` with `AlertDialog` for event deletion
+- [x] **Full design system adoption**: replaced manual Prev/Next with `Pagination` component
+- [x] **Full design system adoption**: replaced kind/size selector buttons with `ToggleGroup`
+- [x] **Full design system adoption**: replaced 4 raw empty states with `Empty` component
+- [x] `bun run type-check && bun run lint && bun run build` — all pass after full adoption
 
 ### Full Migration — Final Verification
 

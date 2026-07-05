@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
+import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 import {
 	eventIdMatches,
@@ -135,13 +136,14 @@ function truncateHex(hex: string, chars = 8): string {
 
   <!-- Edit & Re-publish -->
   {#if onEditAndRepublish}
-    <button
-      type="button"
+    <Button
+      variant="outline"
+      size="sm"
       aria-label="Edit and republish this event"
       onclick={() => onEditAndRepublish(event)}
-      class="w-full min-h-[44px] px-3 py-2.5 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent hover:border-accent-border transition-all"
+      class="w-full bg-dark-surface text-text-primary hover:text-accent hover:border-accent-border transition-all"
     >
       <span aria-hidden="true">✍️</span> Edit & Re-publish
-    </button>
+    </Button>
   {/if}
 </Card.Content></Card.Root>

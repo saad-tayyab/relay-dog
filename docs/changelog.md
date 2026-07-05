@@ -53,6 +53,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Con
 - **Design system hardening**: removed `@source "../../../packages/ui/src"` from `index.css` (no longer needed)
 - **Design system hardening**: added 40 new shadcn primitives on-demand (dialog, dropdown-menu, tooltip, select, table, sheet, popover, alert-dialog, scroll-area, calendar, command, sidebar, drawer, etc.)
 - **Design system hardening**: added biome overrides for shadcn registry code lint compliance
+- **Full design system adoption**: replaced all 15 raw `<button>` elements with shadcn `Button` across 10 files
+- **Full design system adoption**: replaced raw `<input>`, `<textarea>` with shadcn `Input`/`Textarea`
+- **Full design system adoption**: replaced 6 raw status badge `<span>` patterns with `Badge` across 5 files
+- **Full design system adoption**: replaced 10 raw alert `<div>` patterns with `Alert` + added `warning`/`success` variants
+- **Full design system adoption**: replaced `<details>` with `Collapsible` component
+- **Full design system adoption**: added `Tooltip` wrappers to all icon-only buttons (8 files)
+- **Full design system adoption**: added `Skeleton` loading states for RelayDirectory
+- **Full design system adoption**: added `ScrollArea` to 4 overflow containers
+- **Full design system adoption**: added `DropdownMenu` action menus for relay cards
+- **Full design system adoption**: replaced `confirm()` with `AlertDialog` for event deletion
+- **Full design system adoption**: replaced manual Prev/Next with `Pagination` component
+- **Full design system adoption**: replaced kind/size selectors with `ToggleGroup`
+- **Full design system adoption**: replaced 4 raw empty states with `Empty` component
+- **Full design system adoption**: added reusable `TooltipWrap.svelte` shared component
 
 ### Documentation
 

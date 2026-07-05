@@ -5,6 +5,7 @@
 import * as Alert from "$lib/components/ui/alert";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
+import * as Collapsible from "$lib/components/ui/collapsible";
 import { Spinner } from "$lib/components/ui/spinner";
 import * as Tabs from "$lib/components/ui/tabs";
 import type { relaySocket } from "../../lib/stores/relaySocket.svelte";
@@ -74,6 +75,7 @@ let {
 } = $props();
 
 let activeTab = $state<"nip11" | "stream">("nip11");
+let jsonOpen = $state(false);
 
 const tabs = $derived([
 	{ id: "nip11" as const, label: "NIP-11 Info" },
@@ -178,13 +180,13 @@ const tabs = $derived([
 
           <!-- Raw JSON toggle -->
           <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
-            <details class="group">
-              <summary
+            <Collapsible.Root bind:open={jsonOpen}>
+              <Collapsible.Trigger
                 class="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2"
               >
                 <svg
                   aria-hidden="true"
-                  class="w-4 h-4 transition-transform group-open:rotate-90"
+                  class="w-4 h-4 transition-transform data-[state=open]:rotate-90"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -193,14 +195,16 @@ const tabs = $derived([
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
                 Raw NIP-11 JSON
-              </summary>
-              <pre
-                class="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
-                  relayInfo,
-                  null,
-                  2,
-                )}</pre>
-            </details>
+              </Collapsible.Trigger>
+              <Collapsible.Content>
+                <pre
+                  class="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
+                    relayInfo,
+                    null,
+                    2,
+                  )}</pre>
+              </Collapsible.Content>
+            </Collapsible.Root>
           </Card.Content></Card.Root>
 
           <!-- Error details if connection had issues -->

@@ -2,7 +2,9 @@
 import type { ComparisonDiff, DirectoryRelay } from "@relayscope/shared";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
-import { Spinner } from "$lib/components/ui/spinner";
+import * as Empty from "$lib/components/ui/empty";
+import * as Pagination from "$lib/components/ui/pagination";
+import { Skeleton } from "$lib/components/ui/skeleton";
 import { useDirectory } from "../../lib/composables/useDirectory.svelte";
 import { apiFetch } from "../../utils/api";
 import FilterBar from "../filter/FilterBar.svelte";
@@ -134,8 +136,19 @@ function closeComparison() {
 
   <!-- Loading -->
   {#if directory.loading}
-    <div role="status" aria-label="Loading" class="flex items-center justify-center py-16">
-      <Spinner class="size-12 text-primary" />
+    <div role="status" aria-label="Loading relays" class="space-y-2">
+      {#each Array(5) as _, i (i)}
+        <div class="p-4 rounded-xl bg-card border border-border">
+          <div class="flex items-start gap-3">
+            <Skeleton class="w-10 h-10 rounded-lg shrink-0" />
+            <div class="flex-1 space-y-2">
+              <Skeleton class="h-4 w-[200px]" />
+              <Skeleton class="h-3 w-[300px]" />
+              <Skeleton class="h-3 w-[150px]" />
+            </div>
+          </div>
+        </div>
+      {/each}
     </div>
   {/if}
 
@@ -172,41 +185,32 @@ function closeComparison() {
     </div>
 
     {#if directory.relays.length === 0}
-      <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
-        <div class="text-center py-8">
-          <p class="text-sm text-text-muted">No relays found matching your filters.</p>
-        </div>
-      </Card.Content></Card.Root>
+      <Empty.Root class="py-8">
+        <Empty.Header>
+          <Empty.Title class="text-sm">No relays found</Empty.Title>
+          <Empty.Description class="text-xs">No relays match your current filters. Try adjusting your search criteria.</Empty.Description>
+        </Empty.Header>
+      </Empty.Root>
     {/if}
   {/if}
 
   <!-- Pagination -->
   {#if directory.totalPages > 1}
-    <div class="flex items-center justify-center gap-2">
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onclick={() => directory.setPage(directory.page - 1)}
-        disabled={directory.page <= 1}
-        class="min-h-[44px] px-3 py-2 text-xs"
-      >
-        ← Prev
-      </Button>
-      <span class="text-xs text-text-muted">
-        Page {directory.page} of {directory.totalPages}
-      </span>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onclick={() => directory.setPage(directory.page + 1)}
-        disabled={directory.page >= directory.totalPages}
-        class="min-h-[44px] px-3 py-2 text-xs"
-      >
-        Next →
-      </Button>
-    </div>
+    <Pagination.Root count={directory.total} perPage={directory.filters.limit} page={directory.page} onPageChange={(p) => directory.setPage(p)}>
+      <Pagination.Content>
+        <Pagination.Item>
+          <Pagination.PrevButton />
+        </Pagination.Item>
+        <Pagination.Item>
+          <Pagination.Link page={{ type: "page", value: directory.page }} isActive size="icon">
+            {directory.page}
+          </Pagination.Link>
+        </Pagination.Item>
+        <Pagination.Item>
+          <Pagination.NextButton />
+        </Pagination.Item>
+      </Pagination.Content>
+    </Pagination.Root>
   {/if}
 
   <!-- Total Count -->

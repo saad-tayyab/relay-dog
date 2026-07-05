@@ -1,13 +1,16 @@
 <script lang="ts">
 import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+import * as AlertDialog from "$lib/components/ui/alert-dialog";
 import { Badge } from "$lib/components/ui/badge";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 import * as Field from "$lib/components/ui/field";
 import { Input } from "$lib/components/ui/input";
 import { Label } from "$lib/components/ui/label";
+import * as ScrollArea from "$lib/components/ui/scroll-area";
 import { Textarea } from "$lib/components/ui/textarea";
 import { useEventDeleter } from "../../lib/composables/useEventDeleter.svelte";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
 
 let { targetRelay }: { targetRelay: string } = $props();
 
@@ -37,19 +40,15 @@ function handleAddIds() {
 	inputIds = "";
 }
 
-let confirmDelete = $state(false);
+let confirmOpen = $state(false);
 
 function handleRelayInput(e: Event) {
 	deleter.setTargetRelay((e.target as HTMLInputElement).value);
 }
 
 async function handleDelete() {
-	if (!confirmDelete) {
-		confirmDelete = true;
-		return;
-	}
 	await deleter.deleteEvents();
-	confirmDelete = false;
+	confirmOpen = false;
 }
 </script>
 
@@ -90,23 +89,27 @@ async function handleDelete() {
         <p class="text-xs text-text-muted">
           {deleter.eventIds.length} event{deleter.eventIds.length !== 1 ? 's' : ''} to delete
         </p>
-        <div class="max-h-32 overflow-y-auto space-y-1">
-          {#each deleter.eventIds as id (id)}
-            <div class="flex items-center justify-between px-2 py-1 rounded bg-dark-surface/50 text-xs">
-              <span class="font-mono text-text-secondary truncate">{id}</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label="Remove event ID"
-                onclick={() => deleter.removeEventId(id)}
-                class="ml-2 text-muted-foreground hover:text-destructive"
-              >
-                <span aria-hidden="true">✕</span>
-              </Button>
-            </div>
-          {/each}
-        </div>
+        <ScrollArea.Root class="max-h-32">
+          <div class="space-y-1">
+            {#each deleter.eventIds as id (id)}
+              <div class="flex items-center justify-between px-2 py-1 rounded bg-dark-surface/50 text-xs">
+                <span class="font-mono text-text-secondary truncate">{id}</span>
+                <TooltipWrap label="Remove event ID">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Remove event ID"
+                    onclick={() => deleter.removeEventId(id)}
+                    class="ml-2 text-muted-foreground hover:text-destructive"
+                  >
+                    <span aria-hidden="true">✕</span>
+                  </Button>
+                </TooltipWrap>
+              </div>
+            {/each}
+          </div>
+        </ScrollArea.Root>
       </div>
     {/if}
 
@@ -143,46 +146,35 @@ async function handleDelete() {
       <AlertDescription><span aria-hidden="true">⚠</span> Deletion is a request — relays may not honor it.</AlertDescription>
     </Alert>
 
-    <!-- Confirmation Banner -->
-    {#if confirmDelete}
-      <Alert variant="destructive" class="text-xs">
-        <AlertTitle>Confirm deletion</AlertTitle>
-        <AlertDescription class="mb-2">
-          Confirm deletion of {deleter.eventIds.length} event{deleter.eventIds.length !== 1 ? 's' : ''} from {deleter.targetRelay || 'relay'}?
-        </AlertDescription>
-        <div class="flex gap-2">
-          <Button
-            type="button"
-            variant="destructive"
-            onclick={handleDelete}
-            disabled={deleter.deleting}
-            class="min-h-[44px] px-4 py-2.5 text-xs font-semibold"
-          >
-            {deleter.deleting ? 'Deleting...' : 'Yes, delete'}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onclick={() => (confirmDelete = false)}
-            class="min-h-[44px] px-4 py-2.5 text-xs"
-          >
-            Cancel
-          </Button>
-        </div>
-      </Alert>
-    {:else}
-      <!-- Delete Button -->
-      <Button
-        type="button"
-        variant="destructive"
-        aria-label={`Delete ${deleter.eventIds.length} events`}
-        onclick={handleDelete}
-        disabled={deleter.deleting || deleter.eventIds.length === 0 || !deleter.targetRelay}
-        class="w-full min-h-[44px] px-4 py-3 text-sm font-semibold"
-      >
-        Delete {deleter.eventIds.length} Event{deleter.eventIds.length !== 1 ? 's' : ''}
-      </Button>
-    {/if}
+    <!-- Delete Button -->
+    <Button
+      type="button"
+      variant="destructive"
+      aria-label={`Delete ${deleter.eventIds.length} events`}
+      onclick={() => { confirmOpen = true; }}
+      disabled={deleter.deleting || deleter.eventIds.length === 0 || !deleter.targetRelay}
+      class="w-full min-h-[44px] px-4 py-3 text-sm font-semibold"
+    >
+      Delete {deleter.eventIds.length} Event{deleter.eventIds.length !== 1 ? 's' : ''}
+    </Button>
+
+    <!-- Delete Confirmation Dialog -->
+    <AlertDialog.Root bind:open={confirmOpen}>
+      <AlertDialog.Content>
+        <AlertDialog.Header>
+          <AlertDialog.Title>Delete {deleter.eventIds.length} event{deleter.eventIds.length !== 1 ? 's' : ''}?</AlertDialog.Title>
+          <AlertDialog.Description>
+            This sends a kind-5 deletion request to the relay. The request may not be honored.
+          </AlertDialog.Description>
+        </AlertDialog.Header>
+        <AlertDialog.Footer>
+          <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+          <AlertDialog.Action variant="destructive" onclick={handleDelete} disabled={deleter.deleting}>
+            {deleter.deleting ? 'Deleting...' : 'Delete'}
+          </AlertDialog.Action>
+        </AlertDialog.Footer>
+      </AlertDialog.Content>
+    </AlertDialog.Root>
 
     <!-- Results -->
     {#if deleter.results.length > 0}

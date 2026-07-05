@@ -1,11 +1,13 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
 import * as Card from "$lib/components/ui/card";
+import * as Empty from "$lib/components/ui/empty";
+import * as ScrollArea from "$lib/components/ui/scroll-area";
 import EventCard from "./EventCard.svelte";
 
 let { events }: { events: NostrEvent[] } = $props();
 
-let scrollEl = $state<HTMLOListElement | null>(null);
+let scrollEl = $state<HTMLElement | null>(null);
 let shouldAutoScroll = $state(true);
 let prevLength = $state(0);
 
@@ -39,18 +41,19 @@ $effect(() => {
 
   <!-- Event list -->
   {#if events.length === 0}
-    <div class="text-center py-10 text-text-muted text-xs">
-      No events yet. Subscribe with a filter to start receiving events.
-    </div>
+    <Empty.Root class="py-8 text-center">
+      <Empty.Header>
+        <Empty.Title class="text-sm">No events yet</Empty.Title>
+        <Empty.Description class="text-xs">Connect to a relay and send a filter to see events.</Empty.Description>
+      </Empty.Header>
+    </Empty.Root>
   {:else}
-    <ol
-      bind:this={scrollEl}
-      onscroll={handleScroll}
-      class="max-h-96 overflow-y-auto overflow-x-hidden"
-    >
-      {#each events as event (event.id)}
-        <li><EventCard {event} /></li>
-      {/each}
-    </ol>
+    <ScrollArea.Root class="max-h-96" viewportRef={scrollEl}>
+      <ol>
+        {#each events as event (event.id)}
+          <li><EventCard {event} /></li>
+        {/each}
+      </ol>
+    </ScrollArea.Root>
   {/if}
 </Card.Content></Card.Root>

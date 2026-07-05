@@ -2,6 +2,7 @@
 import { Badge } from "$lib/components/ui/badge";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
+import * as Collapsible from "$lib/components/ui/collapsible";
 import { Input } from "$lib/components/ui/input";
 import { Label } from "$lib/components/ui/label";
 import { useClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
@@ -12,6 +13,7 @@ let expectedPubkey = $state("");
 let checking = $state(false);
 let result = $state<Nip05Result | null>(null);
 let history = $state<Nip05Result[]>([]);
+let rawJsonOpen = $state(false);
 
 async function handleCheck() {
 	if (!identifier.includes("@")) return;
@@ -194,18 +196,20 @@ const clipboard = useClipboard();
 
         <!-- Raw Response -->
         {#if result.rawResponse}
-          <details class="group">
-            <summary
+          <Collapsible.Root bind:open={rawJsonOpen}>
+            <Collapsible.Trigger
               class="cursor-pointer text-xs text-text-muted hover:text-text-secondary transition-colors"
             >
               Raw JSON Response
-            </summary>
-             <pre class="mt-2 p-4 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono">{JSON.stringify(
-                result.rawResponse,
-                null,
-                2,
-              )}</pre>
-          </details>
+            </Collapsible.Trigger>
+             <Collapsible.Content>
+               <pre class="mt-2 p-4 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono">{JSON.stringify(
+                  result.rawResponse,
+                  null,
+                  2,
+                )}</pre>
+            </Collapsible.Content>
+          </Collapsible.Root>
         {/if}
       </div>
     {/if}
@@ -217,19 +221,19 @@ const clipboard = useClipboard();
       <ul class="space-y-1">
         {#each history as item (item.identifier)}
           <li>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               onclick={() => {
                 identifier = item.identifier;
                 handleCheck();
               }}
-              class="touch-target flex items-center justify-between w-full rounded px-2 py-1.5 text-xs transition-all hover:bg-dark-surface"
+              class="w-full justify-between text-xs hover:bg-dark-surface"
             >
               <span class="text-text-secondary font-mono truncate">{item.identifier}</span>
               <span class={item.verified ? 'text-success' : 'text-error'}>
                 {item.verified ? '✓' : '✗'}
               </span>
-            </button>
+            </Button>
           </li>
         {/each}
       </ul>

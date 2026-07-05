@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { EoseResult } from "@relayscope/shared";
+import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 import { StatusDot } from '$lib/components/ui/status-dot';
 import type { EoseState } from "../../lib/stores/relaySocket.svelte";
@@ -54,22 +55,22 @@ let {
         <span class="text-sm font-semibold text-text-primary">{STATUS_LABEL[status]}</span>
       </div>
       {#if status === 'disconnected' || status === 'error'}
-        <button
-          type="button"
+        <Button
+          variant="default"
           onclick={onConnect}
           disabled={!relayUrl}
-          class="min-h-[44px] px-4 py-2.5 rounded-lg bg-success-dim border border-success/20 text-success text-sm font-medium hover:bg-success/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          class="bg-success-dim border border-success/20 text-success hover:bg-success/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
         >
           Connect
-        </button>
+        </Button>
       {:else}
-        <button
-          type="button"
+        <Button
+          variant="destructive"
           onclick={onDisconnect}
-          class="min-h-[44px] px-4 py-2.5 rounded-lg bg-error-dim border border-error/20 text-error text-sm font-medium hover:bg-error/25 transition-all"
+          class="bg-error-dim border border-error/20 text-error hover:bg-error/25 transition-all"
         >
           Disconnect
-        </button>
+        </Button>
       {/if}
     </div>
 

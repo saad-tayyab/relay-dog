@@ -1,7 +1,9 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
+import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 import { toNpub } from "../../utils/nostrVerify";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
 import KindBadge from "./KindBadge.svelte";
 
 let { event }: { event: NostrEvent } = $props();
@@ -82,42 +84,45 @@ async function copyToClipboard(
       <div class="flex items-center gap-2 mb-1">
         <dt class="text-xs text-text-muted">ID</dt>
         <dd class="ml-auto">
-          <button
-            type="button"
-            aria-label="Copy event ID to clipboard"
-            onclick={() => copyToClipboard(event.id, 'id')}
-            class="min-h-[44px] text-xs px-2 py-1 text-text-muted hover:text-accent transition-colors flex items-center gap-1"
-          >
-            {#if copiedId}
-              <svg
-                aria-hidden="true"
-                class="w-3 h-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              Copied
-            {:else}
-              <svg
-                aria-hidden="true"
-                class="w-3 h-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
-              Copy
-            {/if}
-          </button>
+          <TooltipWrap label="Copy event ID">
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label="Copy event ID to clipboard"
+              onclick={() => copyToClipboard(event.id, 'id')}
+              class="text-text-muted hover:text-accent transition-colors gap-1"
+            >
+              {#if copiedId}
+                <svg
+                  aria-hidden="true"
+                  class="w-3 h-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                Copied
+              {:else}
+                <svg
+                  aria-hidden="true"
+                  class="w-3 h-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+                Copy
+              {/if}
+            </Button>
+          </TooltipWrap>
         </dd>
       </div>
       <p class="text-xs font-mono text-text-secondary break-all" title={event.id}>
@@ -130,42 +135,45 @@ async function copyToClipboard(
       <div class="flex items-center gap-2 mb-1">
         <dt class="text-xs text-text-muted">Pubkey</dt>
         <dd class="ml-auto">
-          <button
-            type="button"
-            aria-label="Copy pubkey to clipboard"
-            onclick={() => copyToClipboard(event.pubkey, 'pubkey')}
-            class="min-h-[44px] text-xs px-2 py-1 text-text-muted hover:text-accent transition-colors flex items-center gap-1"
-          >
-            {#if copiedPubkey}
-              <svg
-                aria-hidden="true"
-                class="w-3 h-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              Copied
-            {:else}
-              <svg
-                aria-hidden="true"
-                class="w-3 h-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
-              Copy
-            {/if}
-          </button>
+          <TooltipWrap label="Copy pubkey">
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label="Copy pubkey to clipboard"
+              onclick={() => copyToClipboard(event.pubkey, 'pubkey')}
+              class="text-text-muted hover:text-accent transition-colors gap-1"
+            >
+              {#if copiedPubkey}
+                <svg
+                  aria-hidden="true"
+                  class="w-3 h-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                Copied
+              {:else}
+                <svg
+                  aria-hidden="true"
+                  class="w-3 h-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+                Copy
+              {/if}
+            </Button>
+          </TooltipWrap>
         </dd>
       </div>
       <p class="text-xs font-mono text-text-secondary break-all" title={event.pubkey}>
@@ -194,14 +202,15 @@ async function copyToClipboard(
         {displayedContent}
       </dd>
       {#if contentTooLong}
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           aria-expanded={contentExpanded}
           onclick={() => (contentExpanded = !contentExpanded)}
-          class="min-h-[44px] text-xs px-2 py-1 text-accent hover:text-accent/80 transition-colors mt-1.5"
+          class="text-accent hover:text-accent/80 transition-colors mt-1.5"
         >
           {contentExpanded ? 'Show less' : `Show all (${event.content.length} chars)`}
-        </button>
+        </Button>
       {/if}
     </div>
   </dl>

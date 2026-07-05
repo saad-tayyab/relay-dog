@@ -7,6 +7,7 @@ import { Input } from "$lib/components/ui/input";
 import { Label } from "$lib/components/ui/label";
 import { Spinner } from "$lib/components/ui/spinner";
 import { apiFetch } from "../../utils/api";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
 
 let { onAdded }: { onAdded?: () => void } = $props();
 
@@ -108,15 +109,17 @@ function cancel() {
       <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-3">
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-semibold text-text-primary">Add Relay</h3>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onclick={cancel}
-            aria-label="Cancel"
-          >
-            <span aria-hidden="true">✕</span>
-          </Button>
+          <TooltipWrap label="Cancel">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onclick={cancel}
+              aria-label="Cancel"
+            >
+              <span aria-hidden="true">✕</span>
+            </Button>
+          </TooltipWrap>
         </div>
 
         <!-- Error -->

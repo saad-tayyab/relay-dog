@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { LatencyMetrics } from "@relayscope/shared";
+import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 
 let {
@@ -29,18 +30,19 @@ function formatMs(ms: number | null): string {
   <div class="flex items-center justify-between mb-3">
     <h3 class="text-sm font-semibold text-text-primary">Latency & Performance</h3>
     {#if onMeasure}
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="sm"
         onclick={onMeasure}
         disabled={measuring}
-        class="min-h-[44px] text-xs px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
+        class="bg-dark-surface text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
       >
         {#if measuring}
           <span class="animate-pulse">Measuring…</span>
         {:else}
           Measure
         {/if}
-      </button>
+      </Button>
     {/if}
   </div>
 

@@ -6,6 +6,7 @@ import * as Card from "$lib/components/ui/card";
 import { Label } from "$lib/components/ui/label";
 import { Spinner } from "$lib/components/ui/spinner";
 import { Textarea } from "$lib/components/ui/textarea";
+import * as ToggleGroup from "$lib/components/ui/toggle-group";
 import { detectKeyFormat } from "../../utils/keys";
 
 let input = $state("");
@@ -100,17 +101,11 @@ async function copyImage() {
     <!-- Size Selector -->
     <div class="flex items-center gap-2">
       <span class="text-xs text-text-muted">Size:</span>
-      {#each [200, 300, 500] as s (s)}
-        <Button
-          variant={size === s ? 'default' : 'outline'}
-          size="sm"
-          aria-pressed={size === s}
-          onclick={() => { size = s as 200 | 300 | 500; generateQR(); }}
-          class="min-h-[44px] text-xs {size === s ? '' : 'border-dark-border bg-dark-surface text-text-muted hover:text-text-primary'}"
-        >
-          {s}px
-        </Button>
-      {/each}
+      <ToggleGroup.Root type="single" value={String(size)} onValueChange={(v) => { if (v) { size = Number(v) as 200 | 300 | 500; generateQR(); } }}>
+        <ToggleGroup.Item value="200">200px</ToggleGroup.Item>
+        <ToggleGroup.Item value="300">300px</ToggleGroup.Item>
+        <ToggleGroup.Item value="500">500px</ToggleGroup.Item>
+      </ToggleGroup.Root>
     </div>
 
     <!-- QR Code Preview -->

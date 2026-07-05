@@ -1,4 +1,6 @@
 <script lang="ts">
+import { Badge } from "$lib/components/ui/badge";
+
 let { kind }: { kind: number } = $props();
 
 const KIND_COLORS: Record<number, string> = {
@@ -25,9 +27,7 @@ const colorClass = $derived(KIND_COLORS[kind] ?? DEFAULT_COLOR);
 const label = $derived(KIND_LABELS[kind] ?? `Kind ${kind}`);
 </script>
 
-<span
-  class="text-xs font-medium px-2 py-0.5 rounded border {colorClass}"
->
+<Badge variant="outline" class={colorClass}>
   {label}
   <span class="opacity-60 ml-0.5">({kind})</span>
-</span>
+</Badge>

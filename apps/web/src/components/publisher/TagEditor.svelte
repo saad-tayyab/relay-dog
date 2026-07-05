@@ -1,4 +1,8 @@
 <script lang="ts">
+import { Button } from "$lib/components/ui/button";
+import { Input } from "$lib/components/ui/input";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
+
 let {
 	tags,
 	onAdd,
@@ -49,14 +53,17 @@ function handlePreset(key: string) {
           {#if tag.length > 1 && tag[1]}
             <span class="text-xs font-mono text-text-secondary truncate flex-1">{tag[1]}</span>
           {/if}
-          <button
-            type="button"
-            aria-label="Remove tag"
-            onclick={() => onRemove(i)}
-            class="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-muted hover:text-error transition-colors"
-          >
-            <span aria-hidden="true">✕</span>
-          </button>
+          <TooltipWrap label="Remove tag">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Remove tag"
+              onclick={() => onRemove(i)}
+              class="h-6 w-6 text-text-muted hover:text-error transition-colors"
+            >
+              <span aria-hidden="true">✕</span>
+            </Button>
+          </TooltipWrap>
         </div>
       {/each}
     </div>
@@ -65,41 +72,43 @@ function handlePreset(key: string) {
   <!-- Preset Buttons -->
   <div class="flex flex-wrap gap-1">
     {#each presetTags as preset (preset.key)}
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="sm"
         onclick={() => handlePreset(preset.key)}
-        class="min-h-[44px] px-3 py-2 rounded text-xs bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
+        class="bg-dark-surface text-text-muted hover:text-accent hover:border-accent-border transition-all"
       >
         {preset.label}
-      </button>
+      </Button>
     {/each}
   </div>
 
   <!-- Add Custom Tag -->
   <div class="flex gap-2">
     <label for="tag-key" class="sr-only">Tag Key</label>
-    <input
+    <Input
       id="tag-key"
       type="text"
       bind:value={tagKey}
       placeholder="Key"
-      class="w-24 px-2 py-1.5 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+      class="w-24 px-2 py-1.5 text-xs font-mono text-text-primary placeholder:text-text-muted"
     />
     <label for="tag-value" class="sr-only">Tag Value</label>
-    <input
+    <Input
       id="tag-value"
       type="text"
       bind:value={tagValue}
       placeholder="Value (optional)"
-      class="flex-1 px-2 py-1.5 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+      class="flex-1 px-2 py-1.5 text-xs font-mono text-text-primary placeholder:text-text-muted"
     />
-    <button
-      type="button"
+    <Button
+      variant="default"
+      size="sm"
       onclick={handleAdd}
       disabled={!tagKey.trim()}
-      class="min-h-[44px] px-3 py-2 rounded-lg bg-accent text-white text-xs font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      class="bg-accent text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
     >
       Add
-    </button>
+    </Button>
   </div>
 </div>

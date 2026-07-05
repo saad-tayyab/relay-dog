@@ -40,6 +40,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Con
 - Removed direct `@relayscope/ui` imports from `apps/web/src/**` by introducing web-local shared compatibility components (`apps/web/src/components/shared/**`) and switching existing consumers
 - Removed `@relayscope/ui` from `apps/web/package.json` dependencies
 - Re-implemented shared compatibility components to use shadcn primitives (`Card`, `Tabs`, `Spinner`, `Button`, `Empty`) while preserving Relay Dog behavior and accessibility
+- Reduced `@relayscope/ui` package exports to a minimal shared surface (`StatusDot`) and moved web-facing shared primitives to app-local ownership
 
 ### Documentation
 

@@ -1,14 +1,14 @@
 ---
 title: "🏗️ System Architecture"
-version: "0.10.0"
+version: "0.10.1"
 status: "current"
-last_updated: "2026-07-04"
+last_updated: "2026-07-05"
 author: "Saad Tayyab"
 ---
 
 # 🏗️ System Architecture
 
-> **v0.10.0** · **Current** · Updated 2026-07-04 by Saad Tayyab
+> **v0.10.1** · **Current** · Updated 2026-07-05 by Saad Tayyab
 >
 > [📋 Changelog](../changelog.md) · [📖 Docs Hub](../README.md)
 
@@ -86,7 +86,7 @@ graph LR
 | `@relayscope/shared` | TypeScript + Zod | Shared types, DTOs, entity interfaces, NIP validation schemas (see note below) |
 | `@relayscope/database` | Drizzle ORM + PostgreSQL | Drizzle schema definitions, prepared queries, DB connection |
 | `@relayscope/auth` | TypeScript | API key middleware (`requireApiKey`), authentication helpers |
-| `@relayscope/ui` | Svelte 5 | Shared Svelte components: `SectionCard`, `ErrorMessage`, `LoadingSpinner`, `StatusDot`, `AccessibleTabs`, `Toast` |
+| `@relayscope/ui` | Svelte 5 | Minimal shared component package (currently `StatusDot`) while web owns shadcn primitives in-app |
 | `@relayscope/env` | TypeScript + Zod | Server/client environment parsing and validation |
 | `@relayscope/tsconfig` | TypeScript configs | Shared TypeScript presets for Bun, Svelte, and base packages |
 

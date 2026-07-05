@@ -3,6 +3,7 @@ import QRCode from "qrcode";
 import { Badge } from "$lib/components/ui/badge";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
+import * as Dialog from "$lib/components/ui/dialog";
 import { Label } from "$lib/components/ui/label";
 import { Spinner } from "$lib/components/ui/spinner";
 import { Textarea } from "$lib/components/ui/textarea";
@@ -14,6 +15,7 @@ let qrDataUrl = $state<string | null>(null);
 let size = $state<200 | 300 | 500>(300);
 let detectedType = $state<string>("text");
 let generating = $state(false);
+let previewOpen = $state(false);
 
 function isDarkMode(): boolean {
 	return document.documentElement.classList.contains("dark");
@@ -132,6 +134,15 @@ async function copyImage() {
           <Button
             variant="outline"
             size="sm"
+            aria-label="Preview QR code full size"
+            onclick={() => (previewOpen = true)}
+            class="min-h-[44px] border-border bg-muted text-xs text-foreground hover:text-primary"
+          >
+            Full Preview
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             aria-label="Download QR code as PNG"
             onclick={downloadQR}
             class="min-h-[44px] border-border bg-muted text-xs text-foreground hover:text-primary"
@@ -156,3 +167,40 @@ async function copyImage() {
     {/if}
   </Card.Content>
 </Card.Root>
+
+<!-- Full-size QR Preview Dialog -->
+<Dialog.Root bind:open={previewOpen}>
+  <Dialog.Content class="sm:max-w-md">
+    <Dialog.Header>
+      <Dialog.Title>QR Code Preview</Dialog.Title>
+      <Dialog.Description>
+        {size}px — {detectedType}
+      </Dialog.Description>
+    </Dialog.Header>
+    {#if qrDataUrl}
+      <div class="flex justify-center p-4 rounded-xl bg-background border border-border">
+        <img src={qrDataUrl} alt="QR code full preview" width={size} height={size} class="max-w-full h-auto" />
+      </div>
+      <Dialog.Footer class="flex flex-row gap-2 sm:justify-center">
+        <Button
+          variant="outline"
+          size="sm"
+          aria-label="Download QR code as PNG"
+          onclick={downloadQR}
+          class="min-h-[44px]"
+        >
+          Download PNG
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          aria-label="Copy QR code image to clipboard"
+          onclick={copyImage}
+          class="min-h-[44px]"
+        >
+          Copy Image
+        </Button>
+      </Dialog.Footer>
+    {/if}
+  </Dialog.Content>
+</Dialog.Root>

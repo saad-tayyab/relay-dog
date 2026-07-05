@@ -1,17 +1,16 @@
 <script lang="ts">
 import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
 import { Button } from "$lib/components/ui/button";
-import * as Card from "$lib/components/ui/card";
 import * as Field from "$lib/components/ui/field";
 import { Input } from "$lib/components/ui/input";
 import { Label } from "$lib/components/ui/label";
+import * as Sheet from "$lib/components/ui/sheet";
 import { Spinner } from "$lib/components/ui/spinner";
 import { apiFetch } from "../../utils/api";
-import TooltipWrap from "../shared/TooltipWrap.svelte";
 
 let { onAdded }: { onAdded?: () => void } = $props();
 
-let showForm = $state(false);
+let showSheet = $state(false);
 let url = $state("");
 let name = $state("");
 let apiKey = $state("");
@@ -59,7 +58,7 @@ async function handleSubmit() {
 			success = `Added "${json.data.name || json.data.url}" successfully`;
 			url = "";
 			name = "";
-			showForm = false;
+			showSheet = false;
 			onAdded?.();
 		} else if (res.status === 409) {
 			error = "This relay is already in the directory";
@@ -76,7 +75,7 @@ async function handleSubmit() {
 }
 
 function cancel() {
-	showForm = false;
+	showSheet = false;
 	error = null;
 	success = null;
 }
@@ -92,36 +91,24 @@ function cancel() {
   {/if}
 
   <!-- Toggle Button -->
-  {#if !showForm}
-    <Button
-      type="button"
-      variant="outline"
-      onclick={() => (showForm = true)}
-      class="w-full min-h-[44px] border-dashed text-sm text-muted-foreground"
-    >
-      <span aria-hidden="true">+</span> Add Relay
-    </Button>
-  {/if}
+  <Button
+    type="button"
+    variant="outline"
+    onclick={() => (showSheet = true)}
+    class="w-full min-h-[44px] border-dashed text-sm text-muted-foreground"
+  >
+    <span aria-hidden="true">+</span> Add Relay
+  </Button>
 
-  <!-- Add Relay Form -->
-  {#if showForm}
-    <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
-      <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-foreground">Add Relay</h3>
-          <TooltipWrap label="Cancel">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onclick={cancel}
-              aria-label="Cancel"
-            >
-              <span aria-hidden="true">✕</span>
-            </Button>
-          </TooltipWrap>
-        </div>
+  <!-- Add Relay Sheet -->
+  <Sheet.Root bind:open={showSheet}>
+    <Sheet.Content side="right" class="w-full sm:max-w-md">
+      <Sheet.Header>
+        <Sheet.Title>Add Relay</Sheet.Title>
+        <Sheet.Description>Add a new relay to the directory</Sheet.Description>
+      </Sheet.Header>
 
+      <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-4 mt-4">
         <!-- Error -->
         {#if error}
           <Alert variant="destructive" role="alert">
@@ -173,21 +160,31 @@ function cancel() {
           />
         </Field.Field>
 
-        <!-- Submit -->
-        <Button
-          type="submit"
-          variant="default"
-          disabled={submitting || !url.trim()}
-          class="w-full min-h-[44px] px-4 py-2.5 text-sm font-semibold"
-        >
-          {#if submitting}
-            <Spinner class="size-4" />
-            Adding…
-          {:else}
-            Add Relay
-          {/if}
-        </Button>
+        <!-- Actions -->
+        <div class="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onclick={cancel}
+            class="flex-1 min-h-[44px]"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="default"
+            disabled={submitting || !url.trim()}
+            class="flex-1 min-h-[44px] px-4 py-2.5 text-sm font-semibold"
+          >
+            {#if submitting}
+              <Spinner class="size-4" />
+              Adding…
+            {:else}
+              Add Relay
+            {/if}
+          </Button>
+        </div>
       </form>
-    </Card.Content></Card.Root>
-  {/if}
+    </Sheet.Content>
+  </Sheet.Root>
 </div>

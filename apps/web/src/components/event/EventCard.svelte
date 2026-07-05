@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
+import * as Avatar from "$lib/components/ui/avatar";
 import { Badge } from "$lib/components/ui/badge";
 import { Button } from "$lib/components/ui/button";
 import * as ScrollArea from "$lib/components/ui/scroll-area";
@@ -55,6 +56,13 @@ function truncateContent(content: string, maxLen = 200): string {
 	return `${content.slice(0, maxLen)}…`;
 }
 
+/** Derive a deterministic color from a hex pubkey for the avatar fallback */
+function pubkeyColor(pubkey: string): string {
+	const hash = Number.parseInt(pubkey.slice(0, 8), 16);
+	const hue = hash % 360;
+	return `hsl(${hue}, 60%, 40%)`;
+}
+
 async function handleCopy() {
 	try {
 		await navigator.clipboard.writeText(JSON.stringify(event, null, 2));
@@ -70,6 +78,7 @@ const kindLabel = $derived(getKindLabel(event.kind));
 const timestamp = $derived(formatRelativeTime(event.created_at));
 const contentPreview = $derived(truncateContent(event.content));
 const expirationInfo = $derived(parseExpiration(event.tags));
+const avatarBg = $derived(pubkeyColor(event.pubkey));
 </script>
 
 <article class="border-b border-border last:border-b-0 py-3 px-2">
@@ -79,6 +88,14 @@ const expirationInfo = $derived(parseExpiration(event.tags));
       {kindLabel}
     </Badge>
     <ExpiredBadge expirationInfo={expirationInfo} />
+    <Avatar.Root class="h-5 w-5">
+      <Avatar.Fallback
+        class="text-[8px] font-mono text-white"
+        style="background-color: {avatarBg}"
+      >
+        {event.pubkey.slice(0, 2).toUpperCase()}
+      </Avatar.Fallback>
+    </Avatar.Root>
     <span class="text-xs font-mono text-muted-foreground" title={event.pubkey}>
       {truncatePubkey(event.pubkey)}
     </span>

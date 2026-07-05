@@ -1,5 +1,9 @@
 <script lang="ts">
-import { SectionCard } from "@relayscope/ui";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
 import { useClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
 import { convertKey, detectKeyFormat } from "../../utils/keys";
 
@@ -36,8 +40,8 @@ const clipboard = useClipboard();
 const detectedFormat = $derived(detectKeyFormat(input.trim()));
 </script>
 
-<SectionCard>
-  <div class="space-y-4">
+<Card.Root class="rounded-xl border-border bg-card">
+  <Card.Content class="flex flex-col gap-4 p-4">
     <!-- Screen reader live region for copy feedback -->
     <div aria-live="polite" class="sr-only">
       {clipboard.copied ? 'Copied to clipboard' : ''}
@@ -45,83 +49,87 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
     </div>
 
     <div class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-text-primary">Key Converter</h3>
-      <span class="text-xs text-text-muted">NIP-19</span>
+      <h3 class="text-sm font-semibold text-foreground">Key Converter</h3>
+      <Badge variant="outline" class="border-border bg-muted text-muted-foreground">NIP-19</Badge>
     </div>
 
     <!-- Input -->
     <div>
-      <label for="key-input" class="block text-xs text-text-muted mb-1">
+      <Label for="key-input" class="mb-1 block text-xs text-muted-foreground">
         Enter npub, nsec, or hex key
-      </label>
-      <input
+      </Label>
+      <Input
         id="key-input"
         type="text"
         bind:value={input}
         oninput={handleConvert}
         placeholder="npub1... or nsec1... or 64-char hex"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all font-mono"
+        aria-describedby={detectedFormat !== 'unknown' && input.trim() ? 'key-format-hint' : undefined}
+        class="h-11 border-border bg-muted px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground"
       />
       {#if detectedFormat !== 'unknown' && input.trim()}
-        <p class="mt-1 text-xs text-text-muted">
-          Detected: <span class="text-accent">{detectedFormat}</span>
+        <p id="key-format-hint" class="mt-1 text-xs text-muted-foreground">
+          Detected: <span class="text-primary">{detectedFormat}</span>
         </p>
       {/if}
     </div>
 
     <!-- Error -->
     {#if error}
-      <div class="px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-xs text-error">
-        ⚠ {error}
+      <div role="alert" class="px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-xs text-error">
+        <span aria-hidden="true">⚠</span> {error}
       </div>
     {/if}
 
     <!-- Results -->
     {#if result}
-      <dl class="space-y-3">
+      <dl class="flex flex-col gap-3">
         <!-- npub -->
-        <div class="space-y-1">
+        <div class="flex flex-col gap-1">
           <div class="flex items-center justify-between">
-            <dt class="text-xs text-text-muted">npub</dt>
+            <dt class="text-xs text-muted-foreground">npub</dt>
             <dd>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 aria-label="Copy npub to clipboard"
                 onclick={() => { if (result) clipboard.copy(result.npub); }}
-                class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
+                class="min-h-[44px] text-xs text-primary"
               >
                 {clipboard.copied ? '✓ Copied' : 'Copy'}
-              </button>
+              </Button>
             </dd>
           </div>
-          <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
+          <div class="px-3 py-2 rounded-lg bg-muted border border-border text-xs font-mono text-muted-foreground break-all">
             {result.npub}
           </div>
         </div>
 
         <!-- nsec (with safety warning) -->
         {#if result.nsec}
-          <div class="space-y-1">
+          <div class="flex flex-col gap-1">
             <div class="flex items-center justify-between">
-              <dt class="text-xs text-text-muted">nsec</dt>
+              <dt class="text-xs text-muted-foreground">nsec</dt>
               <dd class="flex items-center gap-2">
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="sm"
                   aria-expanded={showNsec}
                   onclick={() => (showNsec = !showNsec)}
-                  class="min-h-[44px] text-xs px-2 py-1 text-text-muted hover:text-text-primary"
+                  class="min-h-[44px] text-xs text-muted-foreground hover:text-foreground"
                 >
                   {showNsec ? 'Hide' : 'Show'}
-                </button>
+                </Button>
                 {#if showNsec}
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     aria-label="Copy nsec to clipboard"
                     onclick={() => { if (result) clipboard.copy(result.nsec ?? ''); }}
-                    class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
+                    class="min-h-[44px] text-xs text-primary"
                   >
                     {clipboard.copied ? '✓ Copied' : 'Copy'}
-                  </button>
+                  </Button>
                 {/if}
               </dd>
             </div>
@@ -133,7 +141,7 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
                 <span aria-hidden="true">⚠</span> Never share your nsec with anyone!
               </p>
             {:else}
-              <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-muted">
+              <div class="px-3 py-2 rounded-lg bg-muted border border-border text-xs text-muted-foreground">
                 ••••••••••••••••••••••••••••••••
               </div>
             {/if}
@@ -141,25 +149,26 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
         {/if}
 
         <!-- hex -->
-        <div class="space-y-1">
+        <div class="flex flex-col gap-1">
           <div class="flex items-center justify-between">
-            <dt class="text-xs text-text-muted">hex</dt>
+            <dt class="text-xs text-muted-foreground">hex</dt>
             <dd>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 aria-label="Copy hex key to clipboard"
                 onclick={() => { if (result) clipboard.copy(result.hex); }}
-                class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
+                class="min-h-[44px] text-xs text-primary"
               >
                 {clipboard.copied ? '✓ Copied' : 'Copy'}
-              </button>
+              </Button>
             </dd>
           </div>
-          <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
+          <div class="px-3 py-2 rounded-lg bg-muted border border-border text-xs font-mono text-muted-foreground break-all">
             {result.hex}
           </div>
         </div>
       </dl>
     {/if}
-  </div>
-</SectionCard>
+  </Card.Content>
+</Card.Root>

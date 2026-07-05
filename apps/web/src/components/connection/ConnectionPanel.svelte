@@ -1,6 +1,9 @@
 <script lang="ts">
+import LinkIcon from "@lucide/svelte/icons/link";
 import type { EoseResult } from "@relayscope/shared";
-import { SectionCard, StatusDot } from "@relayscope/ui";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { StatusDot } from '$lib/components/ui/status-dot';
 import type { EoseState } from "../../lib/stores/relaySocket.svelte";
 import type { CheckStatus } from "../../utils/relay";
 import AuthPrefixDisplay from "../auth/AuthPrefixDisplay.svelte";
@@ -45,69 +48,51 @@ let {
 } = $props();
 </script>
 
-<SectionCard>
-  <div class="space-y-3">
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
+  <div class="flex flex-col gap-3">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <StatusDot status={STATUS_MAP[status]} />
-        <span class="text-sm font-semibold text-text-primary">{STATUS_LABEL[status]}</span>
+        <span class="text-sm font-semibold text-foreground">{STATUS_LABEL[status]}</span>
       </div>
       {#if status === 'disconnected' || status === 'error'}
-        <button
-          type="button"
+        <Button
+          variant="default"
           onclick={onConnect}
           disabled={!relayUrl}
-          class="min-h-[44px] px-4 py-2.5 rounded-lg bg-success-dim border border-success/20 text-success text-sm font-medium hover:bg-success/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          class="bg-success-dim border border-success/20 text-success hover:bg-success/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
         >
           Connect
-        </button>
+        </Button>
       {:else}
-        <button
-          type="button"
+        <Button
+          variant="destructive"
           onclick={onDisconnect}
-          class="min-h-[44px] px-4 py-2.5 rounded-lg bg-error-dim border border-error/20 text-error text-sm font-medium hover:bg-error/25 transition-all"
+          class="bg-error-dim border border-error/20 text-error hover:bg-error/25 transition-all"
         >
           Disconnect
-        </button>
+        </Button>
       {/if}
     </div>
 
     <!-- Relay URL -->
-    <div class="flex items-center gap-2 text-xs text-text-muted">
-      <svg
-        aria-hidden="true"
-        class="w-3.5 h-3.5 shrink-0"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"
-        />
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101"
-        />
-      </svg>
+    <div class="flex items-center gap-2 text-xs text-muted-foreground">
+      <LinkIcon class="size-3.5 shrink-0" aria-hidden="true" />
       <span class="font-mono truncate" title={relayUrl}>{relayUrl || 'No relay URL'}</span>
     </div>
 
     <!-- Stats row -->
-    <div class="flex items-center gap-4 text-xs text-text-secondary">
+    <div class="flex items-center gap-4 text-xs text-muted-foreground">
       <span>
-        Events: <span class="font-mono text-text-primary">{eventCount.toLocaleString()}</span>
+        Events: <span class="font-mono text-foreground">{eventCount.toLocaleString()}</span>
       </span>
       {#if eose.received}
         <span>
           Historical:
-          <span class="font-mono text-text-primary">{eose.historicalCount.toLocaleString()}</span>
+          <span class="font-mono text-foreground">{eose.historicalCount.toLocaleString()}</span>
         </span>
         <span>
-          Live: <span class="font-mono text-text-primary">{eose.liveCount.toLocaleString()}</span>
+          Live: <span class="font-mono text-foreground">{eose.liveCount.toLocaleString()}</span>
         </span>
       {/if}
     </div>
@@ -131,7 +116,7 @@ let {
 
     <!-- Notices -->
     {#if notices.length > 0}
-      <div role="status" aria-live="polite" class="space-y-1.5">
+      <div role="status" aria-live="polite" class="flex flex-col gap-1.5">
         {#each notices as notice, i (`notice-${i}`)}
           <div
             class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs"
@@ -142,4 +127,4 @@ let {
       </div>
     {/if}
   </div>
-</SectionCard>
+</Card.Content></Card.Root>

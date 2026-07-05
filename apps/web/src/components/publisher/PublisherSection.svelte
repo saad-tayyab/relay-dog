@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AccessibleTabs } from "@relayscope/ui";
+import * as Tabs from "$lib/components/ui/tabs";
 import EventComposer from "./EventComposer.svelte";
 import EventDeleter from "./EventDeleter.svelte";
 
@@ -21,20 +21,23 @@ $effect(() => {
 });
 </script>
 
-<div class="space-y-7">
-  <AccessibleTabs
-    ariaLabel="Publisher tools"
-    tabs={[
-      { id: 'compose', label: 'Compose', icon: '✍️' },
-      { id: 'delete', label: 'Delete', icon: '🗑️' },
-    ]}
-    {activeTab}
-    onTabChange={(id) => (activeTab = id)}
-  >
+<div class="flex flex-col gap-7">
+  <Tabs.Root value={activeTab} onValueChange={(id) => (activeTab = id)} aria-label="Publisher tools">
+    <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0">
+      <Tabs.Trigger value="compose" class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary">
+        <span aria-hidden="true">✍️</span> Compose
+      </Tabs.Trigger>
+      <Tabs.Trigger value="delete" class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary">
+        <span aria-hidden="true">🗑️</span> Delete
+      </Tabs.Trigger>
+    </Tabs.List>
+
+    <Tabs.Content value={activeTab} class="pt-5 focus:outline-none">
     {#if activeTab === 'compose'}
       <EventComposer {targetRelay} {prefilledEvent} />
     {:else}
       <EventDeleter {targetRelay} />
     {/if}
-  </AccessibleTabs>
+    </Tabs.Content>
+  </Tabs.Root>
 </div>

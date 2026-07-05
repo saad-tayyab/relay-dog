@@ -1,4 +1,6 @@
 <script lang="ts">
+import { Button } from "$lib/components/ui/button";
+import { cn } from "$lib/shadcn/utils";
 import { hasBackend } from "../../utils/api";
 import type { Section } from "../../utils/router";
 
@@ -19,20 +21,22 @@ const sections: { id: Section; label: string; icon: string }[] = [
 ];
 </script>
 
-<nav aria-label="Section navigation" class="fixed bottom-0 left-0 right-0 z-20 sm:hidden border-t border-dark-border bg-dark-card/95 backdrop-blur-sm">
+<nav aria-label="Section navigation" class="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden">
   <div class="flex items-center justify-around px-2 py-2">
     {#each sections as section (section.id)}
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onclick={() => onNavigate(section.id)}
         aria-current={activeSection === section.id ? 'page' : undefined}
-        class="flex flex-col items-center gap-1 min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-lg transition-all {activeSection === section.id
-          ? 'text-accent'
-          : 'text-text-muted'}"
+        class={cn(
+        "min-h-[44px] min-w-[44px] rounded-lg px-3 py-1.5 transition-all",
+        activeSection === section.id ? "text-primary" : "text-muted-foreground",
+      )}
       >
         <span class="text-lg" aria-hidden="true">{section.icon}</span>
         <span class="text-xs font-medium">{section.label}</span>
-      </button>
+      </Button>
     {/each}
   </div>
 </nav>

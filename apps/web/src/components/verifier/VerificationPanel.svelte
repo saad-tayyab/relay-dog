@@ -1,6 +1,9 @@
 <script lang="ts">
+import CheckCircleIcon from "@lucide/svelte/icons/circle-check";
+import XCircleIcon from "@lucide/svelte/icons/circle-x";
 import type { NostrEvent } from "@relayscope/shared";
-import { SectionCard } from "@relayscope/ui";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
 import {
 	eventIdMatches,
 	toNpub,
@@ -23,8 +26,8 @@ function truncateHex(hex: string, chars = 8): string {
 }
 </script>
 
-<SectionCard className="space-y-4">
-  <h3 class="text-sm font-semibold text-text-primary">Verification</h3>
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="flex flex-col gap-4 p-5 lg:p-6">
+  <h3 class="text-sm font-semibold text-foreground">Verification</h3>
 
   <!-- Signature check -->
   <div
@@ -35,34 +38,16 @@ function truncateHex(hex: string, chars = 8): string {
   >
     <div class="shrink-0 mt-0.5">
       {#if sigResult}
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-success"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <CheckCircleIcon class="size-5 text-success" aria-hidden="true" />
       {:else}
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-error"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <XCircleIcon class="size-5 text-error" aria-hidden="true" />
       {/if}
     </div>
     <div class="min-w-0">
       <p class="text-sm font-medium {sigResult ? 'text-success' : 'text-error'}">
         Signature {sigResult ? 'Valid' : 'Invalid'}
       </p>
-      <p class="text-xs text-text-muted mt-0.5">
+      <p class="text-xs text-muted-foreground mt-0.5">
         Schnorr signature verification (NIP-01)
       </p>
     </div>
@@ -77,44 +62,26 @@ function truncateHex(hex: string, chars = 8): string {
   >
     <div class="shrink-0 mt-0.5">
       {#if idResult.matches}
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-success"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <CheckCircleIcon class="size-5 text-success" aria-hidden="true" />
       {:else}
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-error"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <XCircleIcon class="size-5 text-error" aria-hidden="true" />
       {/if}
     </div>
     <div class="min-w-0">
       <p class="text-sm font-medium {idResult.matches ? 'text-success' : 'text-error'}">
         Event ID {idResult.matches ? 'Match' : 'Mismatch'}
       </p>
-      <p class="text-xs text-text-muted mt-0.5">
+      <p class="text-xs text-muted-foreground mt-0.5">
         SHA-256 of canonical serialization
       </p>
       {#if !idResult.matches}
-        <div class="mt-2 space-y-1">
+        <div class="mt-2 flex flex-col gap-1">
           <div class="text-xs">
-            <span class="text-text-muted">Stored: </span>
+            <span class="text-muted-foreground">Stored: </span>
             <code class="font-mono text-error">{truncateHex(event.id)}</code>
           </div>
           <div class="text-xs">
-            <span class="text-text-muted">Computed: </span>
+            <span class="text-muted-foreground">Computed: </span>
             <code class="font-mono text-success">{truncateHex(idResult.computed)}</code>
           </div>
         </div>
@@ -123,25 +90,26 @@ function truncateHex(hex: string, chars = 8): string {
   </div>
 
   <!-- Signing pubkey -->
-  <div class="p-3 rounded-lg bg-dark-surface border border-dark-border">
-    <p class="text-xs text-text-muted mb-1">Signing Public Key</p>
-    <p class="text-xs font-mono text-text-secondary break-all" title={event.pubkey}>
+  <div class="p-3 rounded-lg bg-muted border border-border">
+    <p class="text-xs text-muted-foreground mb-1">Signing Public Key</p>
+    <p class="text-xs font-mono text-muted-foreground break-all" title={event.pubkey}>
       {event.pubkey}
     </p>
-    <p class="text-xs font-mono text-accent mt-1" title={npub}>
+    <p class="text-xs font-mono text-primary mt-1" title={npub}>
       {npub}
     </p>
   </div>
 
   <!-- Edit & Re-publish -->
   {#if onEditAndRepublish}
-    <button
-      type="button"
+    <Button
+      variant="outline"
+      size="sm"
       aria-label="Edit and republish this event"
       onclick={() => onEditAndRepublish(event)}
-      class="w-full min-h-[44px] px-3 py-2.5 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent hover:border-accent-border transition-all"
+      class="w-full bg-muted text-foreground hover:text-primary hover:border-primary/30 transition-all"
     >
       <span aria-hidden="true">✍️</span> Edit & Re-publish
-    </button>
+    </Button>
   {/if}
-</SectionCard>
+</Card.Content></Card.Root>

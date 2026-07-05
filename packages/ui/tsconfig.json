@@ -1,9 +1,0 @@
-{
-  "extends": "@relayscope/tsconfig/svelte.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "noEmit": true
-  },
-  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.svelte.ts", "src/**/*.svelte"]
-}

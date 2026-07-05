@@ -19,6 +19,80 @@ All notable changes to Relay Scope are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Conventional Commits](https://conventionalcommits.org).
 
+## [Unreleased]
+
+### Added
+
+#### API (`@relayscope/api`)
+- **Phase 12: NIP-66 Passive Monitoring completed**
+  - Added `apps/api/src/jobs/nip66Ingestor.ts` — passive WebSocket subscriber for `kind:30166` events from NIP-66 monitor relays
+  - Added auto-reconnect with exponential backoff (1s → 30s max) on monitor disconnect
+  - Added auto-create relay records from monitor discovery events
+  - Rewrote `POST /api/relays/:id/check` to store in `relay_discoveries` with `monitorPubkey='self'`
+  - Removed `apps/api/src/jobs/relayMonitor.ts` (active `setInterval` probing loop)
+  - Removed `GET /api/relays/:id/history` endpoint (health check history)
+  - Removed `POST /api/relays/:id/discoveries` endpoint (server ingests directly)
+
+#### Database
+- Added migration to drop legacy `health_checks` and `monitoring_jobs` tables
+
+#### Web (`@relayscope/web`)
+- **Phase 13 shadcn-svelte migration completed**
+  - Added `apps/web/components.json` with `$lib`-based aliases and `utils` mapped to `$lib/shadcn/utils` (`style: rhea`)
+  - Added app-local shadcn primitive source under `apps/web/src/lib/components/ui/**`
+  - Added `apps/web/src/lib/shadcn/utils.ts` (`cn()` helper and utility types)
+  - Added shadcn-related dependencies (`bits-ui`, `svelte-sonner`, `clsx`, `tailwind-merge`, `tw-animate-css`, plus CLI-selected supporting deps)
+
+### Changed
+
+#### Web (`@relayscope/web`)
+- Added `$lib` alias support in `apps/web/vite.config.ts` and `apps/web/tsconfig.json` while preserving `@`
+- Merged shadcn semantic tokens into `apps/web/src/index.css` while preserving Relay Dog accessibility utilities, keyframes, `@source`, and legacy product tokens via non-cyclic `--relay-*` → `--color-*` mapping
+- Migrated initial isolated slice (`KeyConverter.svelte`) from `@relayscope/ui` primitives to shadcn primitives (`Card`, `Input`, `Label`, `Button`, `Badge`)
+- Migrated additional tool slices: `Nip05Checker.svelte`, `QRCodeGenerator.svelte`
+- Removed direct `@relayscope/ui` imports from `apps/web/src/**` by introducing web-local shared compatibility components (`apps/web/src/components/shared/**`) and switching existing consumers
+- Removed `@relayscope/ui` from `apps/web/package.json` dependencies
+- Re-implemented shared compatibility components to use shadcn primitives (`Card`, `Tabs`, `Spinner`, `Button`, `Empty`) while preserving Relay Dog behavior and accessibility
+- Reduced `@relayscope/ui` package exports to a minimal shared surface (`StatusDot`) and moved web-facing shared primitives to app-local ownership
+- Switched app-level toast delivery from custom component to shadcn Sonner host
+- Migrated additional core forms and actions to shadcn field/control primitives (`Field`, `Input`, `Textarea`, `Button`, `Progress`) for stronger visible Rhea-style consistency
+- Migrated directory/nav/event interaction controls to shadcn primitives (including `Checkbox` and semantic button variants)
+- Replaced shared `AccessibleTabs` wrapper usage with direct shadcn `Tabs` in core app surfaces and removed the wrapper file
+- Removed additional shared compatibility wrappers (`LoadingSpinner`, `ErrorMessage`) after switching call-sites to direct shadcn `Spinner`/`Alert` composition
+- Replaced `SectionCard` usage across web call-sites with direct shadcn `Card` composition and removed the wrapper file
+- **Design system hardening**: regenerated all 56 UI component groups from latest shadcn-svelte registry (`add --all --overwrite`)
+- **Design system hardening**: moved `StatusDot` from `@/components/shared/` to `$lib/components/ui/status-dot/` as proper shadcn-style open-code component
+- **Design system hardening**: inlined `EmptyState` wrapper directly into `App.svelte`, eliminated the entire `apps/web/src/components/shared/` directory
+- **Design system hardening**: removed `@source "../../../packages/ui/src"` from `index.css` (no longer needed)
+- **Design system hardening**: added 40 new shadcn primitives on-demand (dialog, dropdown-menu, tooltip, select, table, sheet, popover, alert-dialog, scroll-area, calendar, command, sidebar, drawer, etc.)
+- **Design system hardening**: added biome overrides for shadcn registry code lint compliance
+- **Full design system adoption**: replaced all 15 raw `<button>` elements with shadcn `Button` across 10 files
+- **Full design system adoption**: replaced raw `<input>`, `<textarea>` with shadcn `Input`/`Textarea`
+- **Full design system adoption**: replaced 6 raw status badge `<span>` patterns with `Badge` across 5 files
+- **Full design system adoption**: replaced 10 raw alert `<div>` patterns with `Alert` + added `warning`/`success` variants
+- **Full design system adoption**: replaced `<details>` with `Collapsible` component
+- **Full design system adoption**: added `Tooltip` wrappers to all icon-only buttons (8 files)
+- **Full design system adoption**: added `Skeleton` loading states for RelayDirectory
+- **Full design system adoption**: added `ScrollArea` to 4 overflow containers
+- **Full design system adoption**: added `DropdownMenu` action menus for relay cards
+- **Full design system adoption**: replaced `confirm()` with `AlertDialog` for event deletion
+- **Full design system adoption**: replaced manual Prev/Next with `Pagination` component
+- **Full design system adoption**: replaced kind/size selectors with `ToggleGroup`
+- **Full design system adoption**: replaced 4 raw empty states with `Empty` component
+- **Full design system adoption**: added reusable `TooltipWrap.svelte` shared component
+- **Full theme migration**: refined oklch dark theme values for better depth hierarchy (background 14%, card 21%, muted 19%, border 30%)
+- **Full theme migration**: replaced all 311+ legacy CSS class instances across 35 files with shadcn semantic tokens (`bg-card`, `text-foreground`, `border-border`, `bg-muted`, etc.)
+- **Full theme migration**: removed dead `.dark` block, legacy `--relay-*` variables, and `--color-dark-*` compatibility bridges from `index.css`
+- **Full theme migration**: promoted `--success`/`--warning`/`--error` status tokens to proper `:root` definitions with Tailwind `@theme inline` mapping
+
+### Documentation
+
+- Updated `docs/features/phase-13-shadcn-svelte-migration.md` status to **Complete** with verification snapshot and final migration notes
+- Updated `docs/README.md` feature map/doc status for Phase 13
+- Updated `docs/development/style-guide.md` with shadcn migration conventions
+- Updated `docs/development/testing.md` with Phase 13 UI migration slice checks
+- Updated `docs/features/phase-9-accessibility.md` with shadcn-specific accessibility expectations
+
 ## [0.9.1] - 2026-07-04
 
 ### Changed

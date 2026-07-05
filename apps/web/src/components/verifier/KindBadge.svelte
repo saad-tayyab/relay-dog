@@ -1,13 +1,16 @@
 <script lang="ts">
+import { Badge } from "$lib/components/ui/badge";
+
 let { kind }: { kind: number } = $props();
 
+// Theme-token-based colors that adapt to light/dark mode (matches EventCard pattern)
 const KIND_COLORS: Record<number, string> = {
-	0: "bg-purple-500/15 text-purple-400 border-purple-500/30",
-	1: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-	4: "bg-pink-500/15 text-pink-400 border-pink-500/30",
-	6: "bg-red-500/15 text-red-400 border-red-500/30",
-	7: "bg-green-500/15 text-green-400 border-green-500/30",
-	9734: "bg-orange-500/15 text-orange-400 border-orange-500/30",
+	0: "bg-kind-metadata-dim text-kind-metadata border-kind-metadata/30",
+	1: "bg-kind-note-dim text-kind-note border-kind-note/30",
+	4: "bg-kind-dm-dim text-kind-dm border-kind-dm/30",
+	6: "bg-kind-unknown-dim text-kind-unknown border-kind-unknown/30",
+	7: "bg-kind-note-dim text-kind-note border-kind-note/30",
+	9734: "bg-kind-metadata-dim text-kind-metadata border-kind-metadata/30",
 };
 
 const KIND_LABELS: Record<number, string> = {
@@ -19,15 +22,13 @@ const KIND_LABELS: Record<number, string> = {
 	9734: "Zap",
 };
 
-const DEFAULT_COLOR = "bg-gray-500/15 text-gray-400 border-gray-500/30";
+const DEFAULT_COLOR = "bg-kind-unknown-dim text-kind-unknown border-kind-unknown/30";
 
 const colorClass = $derived(KIND_COLORS[kind] ?? DEFAULT_COLOR);
 const label = $derived(KIND_LABELS[kind] ?? `Kind ${kind}`);
 </script>
 
-<span
-  class="text-xs font-medium px-2 py-0.5 rounded border {colorClass}"
->
+<Badge variant="outline" class={colorClass}>
   {label}
   <span class="opacity-60 ml-0.5">({kind})</span>
-</span>
+</Badge>

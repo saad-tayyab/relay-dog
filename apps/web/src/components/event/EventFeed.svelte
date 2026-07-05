@@ -1,11 +1,14 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
-import { SectionCard } from "@relayscope/ui";
+import * as Card from "$lib/components/ui/card";
+import * as Empty from "$lib/components/ui/empty";
+import * as Item from "$lib/components/ui/item";
+import * as ScrollArea from "$lib/components/ui/scroll-area";
 import EventCard from "./EventCard.svelte";
 
 let { events }: { events: NostrEvent[] } = $props();
 
-let scrollEl = $state<HTMLOListElement | null>(null);
+let scrollEl = $state<HTMLElement | null>(null);
 let shouldAutoScroll = $state(true);
 let prevLength = $state(0);
 
@@ -18,6 +21,14 @@ function handleScroll() {
 	shouldAutoScroll = isNearBottom;
 }
 
+// Attach scroll handler to track user scroll position
+$effect(() => {
+	const el = scrollEl;
+	if (!el) return;
+	el.addEventListener("scroll", handleScroll, { passive: true });
+	return () => el.removeEventListener("scroll", handleScroll);
+});
+
 // Auto-scroll when new events arrive
 $effect(() => {
 	const len = events.length;
@@ -28,29 +39,29 @@ $effect(() => {
 });
 </script>
 
-<SectionCard className="flex flex-col">
-  <!-- Event count header -->
-  <div class="flex items-center justify-between mb-3">
-    <h3 class="text-sm font-semibold text-text-primary">Event Feed</h3>
-    <span class="text-xs font-mono text-text-muted">
-      {events.length.toLocaleString()} events
-    </span>
-  </div>
-
-  <!-- Event list -->
-  {#if events.length === 0}
-    <div class="text-center py-10 text-text-muted text-xs">
-      No events yet. Subscribe with a filter to start receiving events.
-    </div>
-  {:else}
-    <ol
-      bind:this={scrollEl}
-      onscroll={handleScroll}
-      class="max-h-96 overflow-y-auto overflow-x-hidden"
-    >
-      {#each events as event (event.id)}
-        <li><EventCard {event} /></li>
-      {/each}
-    </ol>
-  {/if}
-</SectionCard>
+<Card.Root class="rounded-2xl">
+  <Card.Header class="pb-3">
+    <Card.Title>Event Feed</Card.Title>
+    <Card.Description>{events.length.toLocaleString()} events</Card.Description>
+  </Card.Header>
+  <Card.Content class="p-0">
+    {#if events.length === 0}
+      <div class="px-5 pb-5">
+        <Empty.Root class="py-8 text-center">
+          <Empty.Header>
+            <Empty.Title class="text-sm">No events yet</Empty.Title>
+            <Empty.Description class="text-xs">Connect to a relay and send a filter to see events.</Empty.Description>
+          </Empty.Header>
+        </Empty.Root>
+      </div>
+    {:else}
+      <ScrollArea.Root class="h-110" bind:viewportRef={scrollEl}>
+        <Item.Group class="px-1 py-1">
+          {#each events as event (event.id)}
+            <EventCard {event} />
+          {/each}
+        </Item.Group>
+      </ScrollArea.Root>
+    {/if}
+  </Card.Content>
+</Card.Root>

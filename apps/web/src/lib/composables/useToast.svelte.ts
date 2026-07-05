@@ -24,7 +24,6 @@ export function useToast() {
   let duration = $state(5000);
   let undoLabel = $state<string | undefined>(undefined);
   let onUndo = $state<(() => void) | undefined>(undefined);
-  let key = $state(0);
 
   let dismissTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -42,7 +41,6 @@ export function useToast() {
     duration = options.duration ?? 5000;
     undoLabel = options.undoLabel;
     onUndo = options.onUndo;
-    key++;
     visible = true;
 
     // Auto-dismiss
@@ -84,9 +82,6 @@ export function useToast() {
     },
     get onUndo() {
       return onUndo;
-    },
-    get key() {
-      return key;
     },
     show,
     hide,

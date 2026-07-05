@@ -2,7 +2,14 @@
 import { getHashSection, type Section, setHashSection } from "./utils/router";
 import "./index.css";
 
-import { EmptyState, Toast } from "@relayscope/ui";
+import MoonIcon from "@lucide/svelte/icons/moon";
+import SunIcon from "@lucide/svelte/icons/sun";
+import ZapIcon from "@lucide/svelte/icons/zap";
+import { ModeWatcher, toggleMode } from "mode-watcher";
+import { toast } from "svelte-sonner";
+import { Button } from "$lib/components/ui/button";
+import * as Empty from "$lib/components/ui/empty";
+import { Toaster } from "$lib/components/ui/sonner";
 // Components
 import InspectorSection from "./components/inspector/InspectorSection.svelte";
 import MobileNav from "./components/nav/MobileNav.svelte";
@@ -39,6 +46,27 @@ $effect(() => {
 	return () => window.removeEventListener("hashchange", onHashChange);
 });
 
+$effect(() => {
+	if (!inspector.toast.visible || !inspector.toast.message) return;
+
+	const id = toast(inspector.toast.message, {
+		duration: inspector.toast.duration,
+		action:
+			inspector.toast.undoLabel && inspector.toast.onUndo
+				? {
+					label: inspector.toast.undoLabel,
+					onClick: inspector.toast.onUndo,
+				}
+				: undefined,
+			description: undefined,
+	});
+
+	inspector.toast.hide();
+	return () => {
+		toast.dismiss(id);
+	};
+});
+
 function handleEditAndRepublish(event: unknown) {
 	prefilledEvent = event;
 	activeSection = "publisher";
@@ -46,28 +74,32 @@ function handleEditAndRepublish(event: unknown) {
 }
 </script>
 
-<div class="min-h-screen bg-dark-bg">
+<ModeWatcher defaultTheme="dark" />
+
+<div class="min-h-screen bg-background">
   <!-- Header -->
-  <header class="border-b border-dark-border bg-dark-card/50 backdrop-blur-sm sticky top-0 z-10">
+  <header class="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
     <div class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 py-5 flex items-center gap-3">
       <div
-        class="w-9 h-9 rounded-lg bg-accent-dim border border-accent-border flex items-center justify-center"
+        class="w-9 h-9 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center"
       >
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-accent"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
+        <ZapIcon class="size-5 text-primary" aria-hidden="true" />
       </div>
       <div>
-        <h1 class="text-lg font-bold text-text-primary leading-tight">Relay Dog</h1>
-        <p class="text-xs text-text-muted">Nostr relay inspector</p>
+        <h1 class="text-lg font-bold text-foreground leading-tight">Relay Dog</h1>
+        <p class="text-xs text-muted-foreground">Nostr relay inspector</p>
       </div>
+      <Button
+        onclick={toggleMode}
+        variant="ghost"
+        size="icon"
+        class="ml-auto min-h-[44px] min-w-[44px]"
+        aria-label="Toggle theme"
+      >
+        <SunIcon class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <MoonIcon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <span class="sr-only">Toggle theme</span>
+      </Button>
     </div>
   </header>
 
@@ -130,7 +162,27 @@ function handleEditAndRepublish(event: unknown) {
 
     <!-- Empty State -->
     {#if !inspector.loading && !inspector.error && !inspector.relayInfo && activeSection === 'inspector'}
-      <EmptyState />
+      <Empty.Root class="animate-fade-in py-20 text-center" aria-label="Welcome">
+        <Empty.Header class="items-center">
+          <Empty.Media class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-card">
+            <ZapIcon class="h-10 w-10 text-muted-foreground" aria-hidden="true" />
+          </Empty.Media>
+          <Empty.Title class="mb-2 text-xl text-foreground">Inspect a Nostr Relay</Empty.Title>
+          <Empty.Description class="mb-6 max-w-sm text-sm text-muted-foreground">Enter a relay URL above to fetch its NIP-11 info document, check connection status, and explore supported features.</Empty.Description>
+        </Empty.Header>
+        <Empty.Content class="!flex-row w-full max-w-none flex-wrap justify-center gap-2 text-xs text-muted-foreground">
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">NIP-11 Info</span>
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">Connection Checks</span>
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">Live Stream</span>
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">Event Verifier</span>
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">Event Publisher</span>
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">Key Converter</span>
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">NIP-05 Checker</span>
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">QR Code</span>
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">Backup & Restore</span>
+          <span class="rounded-lg border border-border bg-card px-3 py-1.5">Relay Directory</span>
+        </Empty.Content>
+      </Empty.Root>
     {/if}
   </main>
 
@@ -138,26 +190,14 @@ function handleEditAndRepublish(event: unknown) {
   <MobileNav {activeSection} onNavigate={handleNavigate} />
 
   <!-- Footer -->
-  <footer class="border-t border-dark-border mt-auto">
+  <footer class="border-t border-border mt-auto">
     <div
-      class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between text-xs text-text-muted"
+      class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between text-xs text-muted-foreground"
     >
       <span>Relay Dog · Nostr Relay Inspector</span>
       <span class="font-mono">v0.10.0</span>
     </div>
   </footer>
 
-  <!-- Toast notification -->
-  {#if inspector.toast.visible}
-    {#key inspector.toast.key}
-      <Toast
-        message={inspector.toast.message}
-        type={inspector.toast.type}
-        duration={inspector.toast.duration}
-        undoLabel={inspector.toast.undoLabel}
-        onUndo={inspector.toast.onUndo}
-        onDismiss={() => inspector.toast.hide()}
-      />
-    {/key}
-  {/if}
+  <Toaster richColors position="bottom-center" />
 </div>

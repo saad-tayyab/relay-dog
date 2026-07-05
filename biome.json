@@ -82,6 +82,33 @@
           }
         }
       }
+    },
+    {
+      "includes": ["apps/web/src/lib/components/ui/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noShadowRestrictedNames": "off",
+            "noExplicitAny": "off",
+            "noAssignInExpressions": "off",
+            "noDocumentCookie": "off"
+          },
+          "correctness": {
+            "useHookAtTopLevel": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          },
+          "a11y": {
+            "useSemanticElements": "off",
+            "useValidAnchor": "off",
+            "useFocusableInteractive": "off",
+            "useButtonType": "off",
+            "useKeyWithClickEvents": "off",
+            "useAriaPropsForRole": "off"
+          }
+        }
+      }
     }
   ],
   "html": {

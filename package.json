@@ -6,8 +6,7 @@
     "packages/config/*",
     "packages/shared",
     "packages/database",
-    "packages/auth",
-    "packages/ui"
+    "packages/auth"
   ],
   "scripts": {
     "dev": "turbo run dev",

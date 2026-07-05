@@ -2,14 +2,14 @@
 title: "📚 Documentation Hub"
 version: "0.10.0"
 status: "current"
-last_updated: "2026-07-04"
+last_updated: "2026-07-05"
 author: "Saad Tayyab"
 ---
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-0.10.0-blue?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/docs-32_files-purple?style=for-the-badge" alt="Files">
-  <img src="https://img.shields.io/badge/last_updated-2026--07--04-orange?style=for-the-badge" alt="Updated">
+  <img src="https://img.shields.io/badge/last_updated-2026--07--05-orange?style=for-the-badge" alt="Updated">
 </p>
 
 <h1 align="center">📚 Documentation Hub</h1>
@@ -123,7 +123,8 @@ mindmap
 | [Phase 9: Accessibility](features/phase-9-accessibility.md) | ✅ |
 | [Phase 10: Infra](features/phase-10-infrastructure-hardening.md) | ✅ |
 | [Phase 11: Deploy](features/phase-11-production-deployment.md) | 📋 |
-| [Phase 12: NIP-66](features/phase-12-nip66-passive-monitoring.md) | 📋 |
+| [Phase 12: NIP-66](features/phase-12-nip66-passive-monitoring.md) | ✅ |
+| [Phase 13: shadcn-svelte Migration](features/phase-13-shadcn-svelte-migration.md) | ✅ |
 
     </td>
   </tr>
@@ -196,6 +197,7 @@ mindmap
     <tr><td>phase-9-accessibility.md</td><td><code>v0.9.0</code></td><td>2026-07-01</td><td>WCAG 2.2 AA</td></tr>
     <tr><td>phase-10-infra.md</td><td><code>v0.9.0</code></td><td>2026-07-01</td><td>DevSecOps</td></tr>
     <tr><td>phase-11-deploy.md</td><td><code>v0.10.0</code></td><td>2026-07-04</td><td>Fly.io deployment</td></tr>
+    <tr><td>phase-13-shadcn-svelte-migration.md</td><td><code>v1.0.0</code></td><td>2026-07-05</td><td>Complete</td></tr>
     <tr><td colspan="4"><strong>Meta</strong></td></tr>
     <tr><td>changelog.md</td><td><code>v0.10.0</code></td><td>2026-07-04</td><td>v0.10.0 release</td></tr>
     <tr><td>roadmap.md</td><td><code>v0.10.0</code></td><td>2026-07-04</td><td>Fixed statuses</td></tr>

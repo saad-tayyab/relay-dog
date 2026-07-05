@@ -1,6 +1,9 @@
 <script lang="ts">
+import CheckIcon from "@lucide/svelte/icons/check";
+import XIcon from "@lucide/svelte/icons/x";
 import type { DirectoryRelay } from "@relayscope/shared";
-import { SectionCard } from "@relayscope/ui";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
 
 let {
 	relayA,
@@ -26,6 +29,12 @@ function winnerClass(winner: "A" | "B" | "tie", side: "A" | "B"): string {
 	return "text-error";
 }
 
+function winnerIcon(winner: "A" | "B" | "tie", side: "A" | "B"): "win" | "lose" | "tie" {
+	if (winner === "tie") return "tie";
+	if (winner === side) return "win";
+	return "lose";
+}
+
 function latencyDisplay(relay: DirectoryRelay): string {
 	return relay.lastDiscovery?.rttOpen != null
 		? `${relay.lastDiscovery.rttOpen}ms`
@@ -44,29 +53,30 @@ function healthStatus(relay: DirectoryRelay): string {
 }
 </script>
 
-<SectionCard>
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="flex items-center justify-between mb-4">
-    <h3 class="text-sm font-semibold text-text-primary">Relay Comparison</h3>
-    <button
-      type="button"
+    <h3 class="text-sm font-semibold text-foreground">Relay Comparison</h3>
+    <Button
+      variant="ghost"
+      size="icon"
       aria-label="Close comparison view"
       onclick={onClose}
-      class="min-h-[44px] min-w-[44px] text-xs px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary transition-all"
+      class="bg-muted text-muted-foreground hover:text-foreground transition-all"
     >
       <span aria-hidden="true">✕</span> Close
-    </button>
+    </Button>
   </div>
 
   <!-- Relay Headers -->
   <div class="grid grid-cols-[1fr_auto_1fr] gap-4 mb-4">
     <div class="text-center">
-      <h4 class="text-sm font-semibold text-text-primary">{relayA.name || 'Unknown'}</h4>
-      <p class="text-xs text-text-muted font-mono truncate" title={relayA.url}>{relayA.url}</p>
+      <h4 class="text-sm font-semibold text-foreground">{relayA.name || 'Unknown'}</h4>
+      <p class="text-xs text-muted-foreground font-mono truncate" title={relayA.url}>{relayA.url}</p>
     </div>
-    <div class="text-text-muted text-xs self-center">vs</div>
+    <div class="text-muted-foreground text-xs self-center">vs</div>
     <div class="text-center">
-      <h4 class="text-sm font-semibold text-text-primary">{relayB.name || 'Unknown'}</h4>
-      <p class="text-xs text-text-muted font-mono truncate" title={relayB.url}>{relayB.url}</p>
+      <h4 class="text-sm font-semibold text-foreground">{relayB.name || 'Unknown'}</h4>
+      <p class="text-xs text-muted-foreground font-mono truncate" title={relayB.url}>{relayB.url}</p>
     </div>
   </div>
 
@@ -82,43 +92,55 @@ function healthStatus(relay: DirectoryRelay): string {
     </thead>
     <tbody>
       <!-- Health -->
-      <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
+      <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-muted border border-border">
         <td class="text-xs text-center {winnerClass(diff.healthWinner, 'A')}">
-          {healthStatus(relayA)}
+          <span class="inline-flex items-center gap-1">
+            {#if winnerIcon(diff.healthWinner, 'A') === 'win'}<CheckIcon class="size-3" aria-hidden="true" />{:else if winnerIcon(diff.healthWinner, 'A') === 'lose'}<XIcon class="size-3" aria-hidden="true" />{/if}
+            {healthStatus(relayA)}
+          </span>
         </td>
-        <th scope="row" class="text-xs text-text-muted text-center font-normal">Health</th>
+        <th scope="row" class="text-xs text-muted-foreground text-center font-normal">Health</th>
         <td class="text-xs text-center {winnerClass(diff.healthWinner, 'B')}">
-          {healthStatus(relayB)}
+          <span class="inline-flex items-center gap-1">
+            {#if winnerIcon(diff.healthWinner, 'B') === 'win'}<CheckIcon class="size-3" aria-hidden="true" />{:else if winnerIcon(diff.healthWinner, 'B') === 'lose'}<XIcon class="size-3" aria-hidden="true" />{/if}
+            {healthStatus(relayB)}
+          </span>
         </td>
       </tr>
 
       <!-- Latency -->
-      <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
+      <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-muted border border-border">
         <td class="text-xs text-center font-mono {winnerClass(diff.latencyWinner, 'A')}">
-          {latencyDisplay(relayA)}
+          <span class="inline-flex items-center gap-1">
+            {#if winnerIcon(diff.latencyWinner, 'A') === 'win'}<CheckIcon class="size-3" aria-hidden="true" />{:else if winnerIcon(diff.latencyWinner, 'A') === 'lose'}<XIcon class="size-3" aria-hidden="true" />{/if}
+            {latencyDisplay(relayA)}
+          </span>
         </td>
-        <th scope="row" class="text-xs text-text-muted text-center font-normal">Latency</th>
+        <th scope="row" class="text-xs text-muted-foreground text-center font-normal">Latency</th>
         <td class="text-xs text-center font-mono {winnerClass(diff.latencyWinner, 'B')}">
-          {latencyDisplay(relayB)}
+          <span class="inline-flex items-center gap-1">
+            {#if winnerIcon(diff.latencyWinner, 'B') === 'win'}<CheckIcon class="size-3" aria-hidden="true" />{:else if winnerIcon(diff.latencyWinner, 'B') === 'lose'}<XIcon class="size-3" aria-hidden="true" />{/if}
+            {latencyDisplay(relayB)}
+          </span>
         </td>
       </tr>
 
       <!-- NIP Count -->
-      <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-dark-surface border border-dark-border">
-        <td class="text-xs text-center font-mono text-text-primary">
+      <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-muted border border-border">
+        <td class="text-xs text-center font-mono text-foreground">
           {relayA.supportedNips.length}
         </td>
-        <th scope="row" class="text-xs text-text-muted text-center font-normal">NIPs</th>
-        <td class="text-xs text-center font-mono text-text-primary">
+        <th scope="row" class="text-xs text-muted-foreground text-center font-normal">NIPs</th>
+        <td class="text-xs text-center font-mono text-foreground">
           {relayB.supportedNips.length}
         </td>
       </tr>
 
       <!-- Shared NIPs -->
       <tr>
-        <td colspan="3" class="py-2 px-3 rounded-lg bg-dark-surface border border-dark-border block text-center">
-          <span class="text-xs text-text-muted block mb-1">Shared NIPs</span>
-          <span class="text-xs text-text-secondary font-mono">
+        <td colspan="3" class="py-2 px-3 rounded-lg bg-muted border border-border block text-center">
+          <span class="text-xs text-muted-foreground block mb-1">Shared NIPs</span>
+          <span class="text-xs text-muted-foreground font-mono">
             {diff.sharedNips.length > 0 ? diff.sharedNips.join(', ') : 'None'}
           </span>
         </td>
@@ -127,9 +149,9 @@ function healthStatus(relay: DirectoryRelay): string {
       <!-- NIPs only in A -->
       {#if diff.nipsOnlyInA.length > 0}
         <tr>
-          <td colspan="3" class="py-2 px-3 rounded-lg bg-accent-dim border border-accent-border block text-center">
-            <span class="text-xs text-accent block mb-1">Only in {relayA.name || 'A'}</span>
-            <span class="text-xs text-accent font-mono">
+          <td colspan="3" class="py-2 px-3 rounded-lg bg-primary/15 border border-primary/30 block text-center">
+            <span class="text-xs text-primary block mb-1">Only in {relayA.name || 'A'}</span>
+            <span class="text-xs text-primary font-mono">
               {diff.nipsOnlyInA.join(', ')}
             </span>
           </td>
@@ -139,9 +161,9 @@ function healthStatus(relay: DirectoryRelay): string {
       <!-- NIPs only in B -->
       {#if diff.nipsOnlyInB.length > 0}
         <tr>
-          <td colspan="3" class="py-2 px-3 rounded-lg bg-accent-dim border border-accent-border block text-center">
-            <span class="text-xs text-accent block mb-1">Only in {relayB.name || 'B'}</span>
-            <span class="text-xs text-accent font-mono">
+          <td colspan="3" class="py-2 px-3 rounded-lg bg-primary/15 border border-primary/30 block text-center">
+            <span class="text-xs text-primary block mb-1">Only in {relayB.name || 'B'}</span>
+            <span class="text-xs text-primary font-mono">
               {diff.nipsOnlyInB.join(', ')}
             </span>
           </td>
@@ -149,4 +171,4 @@ function healthStatus(relay: DirectoryRelay): string {
       {/if}
     </tbody>
   </table>
-</SectionCard>
+</Card.Content></Card.Root>

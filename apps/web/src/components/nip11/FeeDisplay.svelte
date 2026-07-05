@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { RelayFees } from "@relayscope/shared";
-import { SectionCard } from "@relayscope/ui";
+import * as Card from "$lib/components/ui/card";
 
 let { fees }: { fees: RelayFees | null } = $props();
 
@@ -13,20 +13,20 @@ function formatAmount(amount: number, unit: string): string {
 </script>
 
 {#if fees}
-  <SectionCard>
-    <h3 class="text-sm font-semibold text-text-primary mb-3">Fees</h3>
-    <div class="space-y-2">
+  <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
+    <h3 class="text-sm font-semibold text-foreground mb-3">Fees</h3>
+    <div class="flex flex-col gap-2">
       {#if fees.admission && fees.admission.length > 0}
         <div>
-          <p class="text-xs text-text-muted mb-1">Admission Fee</p>
+          <p class="text-xs text-muted-foreground mb-1">Admission Fee</p>
           {#each fees.admission as entry (entry.amount)}
             <div
-              class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-dark-surface border border-dark-border"
+              class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-muted border border-border"
             >
-              <span class="text-xs text-text-primary">{formatAmount(entry.amount, entry.unit)}</span
+              <span class="text-xs text-foreground">{formatAmount(entry.amount, entry.unit)}</span
               >
               {#if entry.period}
-                <span class="text-xs text-text-muted">/ {entry.period}s</span>
+                <span class="text-xs text-muted-foreground">/ {entry.period}s</span>
               {/if}
             </div>
           {/each}
@@ -35,15 +35,15 @@ function formatAmount(amount: number, unit: string): string {
 
       {#if fees.subscription && fees.subscription.length > 0}
         <div>
-          <p class="text-xs text-text-muted mb-1">Subscription Fee</p>
+          <p class="text-xs text-muted-foreground mb-1">Subscription Fee</p>
           {#each fees.subscription as entry (entry.amount)}
             <div
-              class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-dark-surface border border-dark-border"
+              class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-muted border border-border"
             >
-              <span class="text-xs text-text-primary">{formatAmount(entry.amount, entry.unit)}</span
+              <span class="text-xs text-foreground">{formatAmount(entry.amount, entry.unit)}</span
               >
               {#if entry.period}
-                <span class="text-xs text-text-muted">/ {entry.period}s</span>
+                <span class="text-xs text-muted-foreground">/ {entry.period}s</span>
               {/if}
             </div>
           {/each}
@@ -52,20 +52,20 @@ function formatAmount(amount: number, unit: string): string {
 
       {#if fees.publication && fees.publication.length > 0}
         <div>
-          <p class="text-xs text-text-muted mb-1">Publication Fee</p>
+          <p class="text-xs text-muted-foreground mb-1">Publication Fee</p>
           {#each fees.publication as entry (entry.amount)}
             <div
-              class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-dark-surface border border-dark-border"
+              class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-muted border border-border"
             >
-              <span class="text-xs text-text-primary">{formatAmount(entry.amount, entry.unit)}</span
+              <span class="text-xs text-foreground">{formatAmount(entry.amount, entry.unit)}</span
               >
               {#if entry.kinds}
-                <span class="text-xs text-text-muted">(kinds: {entry.kinds.join(', ')})</span>
+                <span class="text-xs text-muted-foreground">(kinds: {entry.kinds.join(', ')})</span>
               {/if}
             </div>
           {/each}
         </div>
       {/if}
     </div>
-  </SectionCard>
+  </Card.Content></Card.Root>
 {/if}

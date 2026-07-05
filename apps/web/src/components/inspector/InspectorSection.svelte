@@ -1,8 +1,17 @@
 <script lang="ts">
+
 // 1. Internal packages (stores, utils)
 
-import { AccessibleTabs, ErrorMessage, LoadingSpinner, SectionCard } from "@relayscope/ui";
+import AlertTriangleIcon from "@lucide/svelte/icons/alert-triangle";
+import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
+import * as Alert from "$lib/components/ui/alert";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import * as Collapsible from "$lib/components/ui/collapsible";
+import { Spinner } from "$lib/components/ui/spinner";
+import * as Tabs from "$lib/components/ui/tabs";
 import type { relaySocket } from "../../lib/stores/relaySocket.svelte";
+import { jsonHighlight } from "../../utils/jsonHighlight";
 import type { ConnectionStatus, RelayInfo } from "../../utils/relay";
 import AuthStatusBadge from "../auth/AuthStatusBadge.svelte";
 import ConnectionPanel from "../connection/ConnectionPanel.svelte";
@@ -69,6 +78,7 @@ let {
 } = $props();
 
 let activeTab = $state<"nip11" | "stream">("nip11");
+let jsonOpen = $state(false);
 
 const tabs = $derived([
 	{ id: "nip11" as const, label: "NIP-11 Info" },
@@ -81,25 +91,47 @@ const tabs = $derived([
 ]);
 </script>
 
-<div class="space-y-5">
-  <AccessibleTabs
-    ariaLabel="Inspector views"
-    {tabs}
-    activeTab={activeTab}
-    onTabChange={(id) => (activeTab = id as typeof activeTab)}
-  >
+      <div class="flex flex-col gap-5">
+  <Tabs.Root value={activeTab} onValueChange={(id) => (activeTab = id as typeof activeTab)} aria-label="Inspector views">
+    <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0">
+      {#each tabs as tab (tab.id)}
+        <Tabs.Trigger value={tab.id} class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary">
+          {tab.label}
+          {#if tab.badge}
+            <span class="ml-2 rounded-full bg-primary/15 px-1.5 py-0.5 font-mono text-xs text-primary">
+              {tab.badge}
+            </span>
+          {/if}
+        </Tabs.Trigger>
+      {/each}
+    </Tabs.List>
+
+    <Tabs.Content value={activeTab} class="pt-5 focus:outline-none">
     {#if activeTab === 'nip11'}
       <!-- NIP-11 Info View -->
       {#if loading}
-        <LoadingSpinner />
+        <div role="status" aria-label="Loading" class="flex items-center justify-center py-16">
+          <Spinner class="size-12 text-primary" />
+        </div>
       {/if}
 
       {#if !loading && error && !relayInfo}
-        <ErrorMessage message={error} {onRetry} />
+        <div class="animate-fade-in py-10">
+          <Alert.Root variant="destructive" class="mx-auto max-w-xl">
+            <AlertTriangleIcon class="size-4" aria-hidden="true" />
+            <Alert.Title>Failed to fetch relay info</Alert.Title>
+            <Alert.Description>{error}</Alert.Description>
+            <Alert.Action>
+              <Button type="button" variant="outline" onclick={onRetry} class="min-h-[44px]">
+                Try again
+              </Button>
+            </Alert.Action>
+          </Alert.Root>
+        </div>
       {/if}
 
       {#if !loading && relayInfo}
-<div class="space-y-7">
+<div class="flex flex-col gap-7">
           <RelayProfile relayId={dbRelayId ?? undefined} relay={{ url }} info={relayInfo} />
 
           <!-- Add to Directory — shows prompt after inspect, or status when already in directory -->
@@ -137,31 +169,20 @@ const tabs = $derived([
           {/if}
 
           <!-- Raw JSON toggle -->
-          <SectionCard>
-            <details class="group">
-              <summary
-                class="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2"
+          <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
+            <Collapsible.Root bind:open={jsonOpen}>
+              <Collapsible.Trigger
+                class="cursor-pointer text-sm text-muted-foreground hover:text-muted-foreground transition-colors flex items-center gap-2 py-2"
               >
-                <svg
-                  aria-hidden="true"
-                  class="w-4 h-4 transition-transform group-open:rotate-90"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
+                <ChevronRightIcon class="size-4 transition-transform data-[state=open]:rotate-90" aria-hidden="true" />
                 Raw NIP-11 JSON
-              </summary>
-              <pre
-                class="mt-2 p-4 rounded-xl bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
-                  relayInfo,
-                  null,
-                  2,
-                )}</pre>
-            </details>
-          </SectionCard>
+              </Collapsible.Trigger>
+              <Collapsible.Content>
+                <pre
+                  class="mt-2 p-4 rounded-xl bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono leading-relaxed">{@html jsonHighlight(JSON.stringify(relayInfo, null, 2))}</pre>
+              </Collapsible.Content>
+            </Collapsible.Root>
+          </Card.Content></Card.Root>
 
           <!-- Error details if connection had issues -->
           {#if !loading && error && relayInfo}
@@ -176,7 +197,7 @@ const tabs = $derived([
       {/if}
     {:else}
       <!-- Live Stream View -->
-      <div class="space-y-5">
+<div class="flex flex-col gap-5">
         <!-- Auth Status -->
         {#if socket.status === 'connected' || socket.authStatus !== 'anonymous'}
           <AuthStatusBadge status={socket.authStatus} onAuthenticate={socket.authenticate} />
@@ -201,5 +222,6 @@ const tabs = $derived([
         <EventFeed events={socket.events} />
       </div>
     {/if}
-  </AccessibleTabs>
+    </Tabs.Content>
+  </Tabs.Root>
 </div>

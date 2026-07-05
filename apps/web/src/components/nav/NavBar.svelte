@@ -1,4 +1,6 @@
 <script lang="ts">
+import { Button } from "$lib/components/ui/button";
+import { cn } from "$lib/shadcn/utils";
 import { hasBackend } from "../../utils/api";
 import type { Section } from "../../utils/router";
 
@@ -21,22 +23,26 @@ const sections: { id: Section; label: string; icon: string }[] = [
 ];
 </script>
 
-<nav aria-label="Section navigation" class="flex gap-1 p-1 mb-6 rounded-xl bg-dark-surface border border-dark-border">
+<nav aria-label="Section navigation" class="mb-6 flex gap-1 rounded-xl border border-border bg-card p-1">
   {#each sections as section (section.id)}
-    <button
+    <Button
       type="button"
+      variant="ghost"
       aria-current={activeSection === section.id ? 'page' : undefined}
       onclick={() => onNavigate(section.id)}
-      class="flex-1 min-h-[44px] py-2 px-4 rounded-lg text-sm font-medium transition-all {activeSection === section.id
-        ? 'bg-accent-dim text-accent border border-accent-border'
-        : 'text-text-muted hover:text-text-secondary hover:bg-dark-card'}"
+      class={cn(
+        "min-h-[44px] flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all",
+        activeSection === section.id
+          ? "border border-primary/30 bg-primary/15 text-primary"
+          : "text-muted-foreground hover:bg-background hover:text-foreground",
+      )}
     >
       <span aria-hidden="true">{section.icon}</span> {section.label}
       {#if section.id === 'inspector' && eventCount > 0}
-        <span class="ml-2 text-xs font-mono px-1.5 py-0.5 rounded-full bg-accent-dim text-accent">
+        <span class="ml-2 rounded-full bg-primary/15 px-1.5 py-0.5 font-mono text-xs text-primary">
           {eventCount.toLocaleString()}
         </span>
       {/if}
-    </button>
+    </Button>
   {/each}
 </nav>

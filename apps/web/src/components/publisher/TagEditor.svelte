@@ -1,4 +1,8 @@
 <script lang="ts">
+import { Button } from "$lib/components/ui/button";
+import { Input } from "$lib/components/ui/input";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
+
 let {
 	tags,
 	onAdd,
@@ -37,26 +41,29 @@ function handlePreset(key: string) {
 }
 </script>
 
-<div class="space-y-3">
-  <p class="block text-xs text-text-muted font-medium" id="tags-heading">Tags</p>
+<div class="flex flex-col gap-3">
+  <p class="block text-xs text-muted-foreground font-medium" id="tags-heading">Tags</p>
 
   <!-- Existing Tags -->
   {#if tags.length > 0}
-    <div class="space-y-1">
+    <div class="flex flex-col gap-1">
       {#each tags as tag, i (i)}
-        <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-dark-surface border border-dark-border">
-          <span class="text-xs font-mono text-accent">{tag[0]}</span>
+        <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-muted border border-border">
+          <span class="text-xs font-mono text-primary">{tag[0]}</span>
           {#if tag.length > 1 && tag[1]}
-            <span class="text-xs font-mono text-text-secondary truncate flex-1">{tag[1]}</span>
+            <span class="text-xs font-mono text-muted-foreground truncate flex-1">{tag[1]}</span>
           {/if}
-          <button
-            type="button"
-            aria-label="Remove tag"
-            onclick={() => onRemove(i)}
-            class="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-muted hover:text-error transition-colors"
-          >
-            <span aria-hidden="true">✕</span>
-          </button>
+          <TooltipWrap label="Remove tag">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Remove tag"
+              onclick={() => onRemove(i)}
+              class="size-6 text-muted-foreground hover:text-error transition-colors"
+            >
+              <span aria-hidden="true">✕</span>
+            </Button>
+          </TooltipWrap>
         </div>
       {/each}
     </div>
@@ -65,41 +72,43 @@ function handlePreset(key: string) {
   <!-- Preset Buttons -->
   <div class="flex flex-wrap gap-1">
     {#each presetTags as preset (preset.key)}
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="sm"
         onclick={() => handlePreset(preset.key)}
-        class="min-h-[44px] px-3 py-2 rounded text-xs bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
+        class="transition-all {tagKey === preset.key ? 'text-primary border-primary/30 font-semibold' : 'text-muted-foreground hover:text-muted-foreground hover:bg-transparent hover:border-border dark:hover:bg-transparent'}"
       >
         {preset.label}
-      </button>
+      </Button>
     {/each}
   </div>
 
   <!-- Add Custom Tag -->
   <div class="flex gap-2">
     <label for="tag-key" class="sr-only">Tag Key</label>
-    <input
+    <Input
       id="tag-key"
       type="text"
       bind:value={tagKey}
       placeholder="Key"
-      class="w-24 px-2 py-1.5 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+      class="w-24 px-2 py-1.5 text-xs font-mono text-foreground placeholder:text-muted-foreground"
     />
     <label for="tag-value" class="sr-only">Tag Value</label>
-    <input
+    <Input
       id="tag-value"
       type="text"
       bind:value={tagValue}
       placeholder="Value (optional)"
-      class="flex-1 px-2 py-1.5 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+      class="flex-1 px-2 py-1.5 text-xs font-mono text-foreground placeholder:text-muted-foreground"
     />
-    <button
-      type="button"
+    <Button
+      variant="default"
+      size="sm"
       onclick={handleAdd}
       disabled={!tagKey.trim()}
-      class="min-h-[44px] px-3 py-2 rounded-lg bg-accent text-white text-xs font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      class="bg-accent text-accent-foreground hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
     >
       Add
-    </button>
+    </Button>
   </div>
 </div>

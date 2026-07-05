@@ -1,7 +1,15 @@
 <script lang="ts">
+import EllipsisVerticalIcon from "@lucide/svelte/icons/ellipsis-vertical";
+import ExternalLinkIcon from "@lucide/svelte/icons/external-link";
+import SearchIcon from "@lucide/svelte/icons/search";
 import type { DirectoryRelay } from "@relayscope/shared";
-import { SectionCard } from "@relayscope/ui";
+import * as Avatar from "$lib/components/ui/avatar";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { Checkbox } from "$lib/components/ui/checkbox";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 import { safeHttpsIconUrl } from "../../utils/relay";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
 
 let {
 	relay,
@@ -16,11 +24,6 @@ let {
 } = $props();
 
 const iconUrl = $derived(safeHttpsIconUrl(relay.icon));
-
-function handleImageError(e: Event) {
-	const img = e.target as HTMLImageElement;
-	img.style.display = "none";
-}
 
 function handleUrlClick(e: MouseEvent) {
 	e.stopPropagation();
@@ -57,88 +60,92 @@ function softwareHref(raw: string): string {
 function isSoftwareUrl(raw: string): boolean {
 	return /^git\+https?:\/\//.test(raw) || /^https?:\/\//.test(raw);
 }
+
+/** Derive a deterministic color from the relay name for avatar fallback.
+ *  Uses 33% lightness in OKLCH to guarantee ≥4.5:1 contrast with white text (SC 1.4.3). */
+function relayColor(name: string | null): string {
+	if (!name) return "oklch(0.33 0.12 250)";
+	let hash = 0;
+	for (const ch of name) {
+		hash = (hash * 31 + ch.charCodeAt(0)) | 0;
+	}
+	const hue = Math.abs(hash) % 360;
+	return `oklch(0.33 0.12 ${hue})`;
+}
 </script>
 
 <button
   type="button"
   onclick={() => onSelect(relay.id)}
   class="group w-full text-left transition-all relative cursor-pointer outline-none {selected
-    ? 'ring-2 ring-accent border-accent-border'
-    : 'hover:border-accent-border/50'}"
+    ? 'ring-2 ring-primary border-primary/30'
+    : 'hover:border-primary/15'}"
 >
-  <SectionCard>
+  <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
     <div class="flex items-start gap-3">
-      {#if iconUrl}
-        <img
-          src={iconUrl}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          class="w-10 h-10 rounded-lg border border-dark-border object-cover shrink-0"
-          referrerpolicy="no-referrer"
-          onerror={handleImageError}
-        />
-      {:else}
-        <div
-          class="w-10 h-10 rounded-lg bg-dark-surface border border-dark-border flex items-center justify-center shrink-0"
+      <Avatar.Root class="size-10 shrink-0 rounded-lg">
+        {#if iconUrl}
+          <Avatar.Image
+            src={iconUrl}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            class="rounded-lg object-cover"
+          />
+        {/if}
+        <Avatar.Fallback
+          class="rounded-lg text-sm font-semibold text-white"
+          style="background-color: {relayColor(relay.name)}"
         >
-          <span class="text-text-muted text-sm">⚡</span>
-        </div>
-      {/if}
+          {(relay.name || '⚡').slice(0, 2).toUpperCase()}
+        </Avatar.Fallback>
+      </Avatar.Root>
 
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
-          <h3 class="text-sm font-semibold text-text-primary truncate">
+          <h3 class="text-sm font-semibold text-foreground truncate">
             {relay.name || 'Unknown Relay'}
           </h3>
           {#if isOnline}
-            <span class="w-2 h-2 rounded-full bg-success shrink-0"></span>
+            <span class="size-2 rounded-full bg-success shrink-0" aria-hidden="true"></span>
+            <span class="sr-only">Online</span>
           {:else}
-            <span class="w-2 h-2 rounded-full bg-error shrink-0"></span>
+            <span class="size-2 rounded-full bg-error shrink-0" aria-hidden="true"></span>
+            <span class="sr-only">Offline</span>
           {/if}
         </div>
 
-        <button
+        <Button
           type="button"
-          class="text-xs text-text-muted font-mono truncate mb-2 cursor-pointer hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors inline-flex items-center gap-1 text-left"
+          variant="ghost"
+          size="sm"
+          class="text-xs text-muted-foreground font-mono truncate mb-2 cursor-pointer hover:text-primary hover:underline decoration-dotted underline-offset-2 transition-colors inline-flex items-center gap-1 text-left"
           onclick={handleUrlClick}
           onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); const httpUrl = relay.url.replace(/^wss:\/\//i, 'https://').replace(/^ws:\/\//i, 'http://'); window.open(httpUrl, '_blank', 'noopener,noreferrer'); } }}
           title="Open relay URL"
         >
           {relay.url}
-          <svg
-            aria-hidden="true"
-            class="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            />
-          </svg>
-        </button>
+          <ExternalLinkIcon class="size-3 opacity-0 group-hover:opacity-60 transition-opacity shrink-0" aria-hidden="true" />
+        </Button>
 
         {#if relay.description}
-          <p class="text-xs text-text-secondary line-clamp-2 mb-2">{relay.description}</p>
+          <p class="text-xs text-muted-foreground line-clamp-2 mb-2">{relay.description}</p>
         {/if}
 
-        <div class="flex items-center gap-3 text-xs text-text-muted">
+        <div class="flex items-center gap-3 text-xs text-muted-foreground">
           <span>{nipCount} NIPs</span>
-          <span>·</span>
+          <span aria-hidden="true">·</span>
           <span>{latencyDisplay}</span>
           {#if relay.software}
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             {#if isSoftwareUrl(relay.software)}
               <a
                 href={softwareHref(relay.software)}
                 target="_blank"
                 rel="noopener noreferrer"
                 onclick={(e) => e.stopPropagation()}
-                class="hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors"
+                class="hover:text-primary hover:underline decoration-dotted underline-offset-2 transition-colors"
               >{relay.software}</a>
             {:else}
               <span>{relay.software}</span>
@@ -149,43 +156,58 @@ function isSoftwareUrl(raw: string): boolean {
 
       <!-- Actions — always visible on mobile, hover-reveal on desktop -->
       <div class="shrink-0 flex flex-col items-center gap-1">
-        <button
-          type="button"
-          onclick={handleInspect}
-          aria-label="Inspect relay"
-          class="sm:opacity-0 sm:group-hover:opacity-100 transition-all p-2 rounded-lg hover:bg-accent-dim hover:text-accent text-text-muted"
-        >
-          <svg
-            aria-hidden="true"
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
+        <TooltipWrap label="Inspect relay">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onclick={handleInspect}
+            aria-label="Inspect relay"
+            class="text-muted-foreground transition-all hover:text-primary sm:opacity-0 sm:group-hover:opacity-100"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
+            <SearchIcon class="size-5" aria-hidden="true" />
+          </Button>
+        </TooltipWrap>
 
         <!-- biome-ignore lint/a11y/noLabelWithoutControl: label wraps input, valid association -->
         <label class="relative flex items-center justify-center p-1 cursor-pointer">
-          <input
-            type="checkbox"
+          <Checkbox
             checked={selected}
             aria-label="Select {relay.name || 'relay'} for comparison"
-            class="peer w-5 h-5 rounded border-dark-border text-accent focus:ring-accent-border cursor-pointer"
-            onclick={(e) => {
+            class="peer"
+            onclick={(e: MouseEvent) => {
               e.stopPropagation();
               onSelect(relay.id);
             }}
           />
-          <span class="absolute w-5 h-5 rounded border border-dark-border peer-checked:border-accent peer-checked:bg-accent/20 pointer-events-none transition-all"></span>
         </label>
+
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger
+            type="button"
+            aria-label="Relay actions"
+            onclick={(e: MouseEvent) => e.stopPropagation()}
+            onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+            class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors sm:opacity-0 sm:group-hover:opacity-100"
+          >
+            <EllipsisVerticalIcon class="size-4" aria-hidden="true" />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end">
+            <DropdownMenu.Group>
+              <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); onInspect(relay.url); }}>
+                Inspect
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); navigator.clipboard.writeText(relay.url); }}>
+                Copy URL
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); window.open(relay.url, '_blank', 'noopener,noreferrer'); }}>
+                Open in new tab
+              </DropdownMenu.Item>
+            </DropdownMenu.Group>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
       </div>
     </div>
-  </SectionCard>
+  </Card.Content></Card.Root>
 </button>

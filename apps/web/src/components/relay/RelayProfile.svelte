@@ -1,6 +1,8 @@
 <script lang="ts">
+import ServerIcon from "@lucide/svelte/icons/server";
+import TagIcon from "@lucide/svelte/icons/tag";
 import type { RelayPopularity } from "@relayscope/shared";
-import { SectionCard } from "@relayscope/ui";
+import * as Card from "$lib/components/ui/card";
 import { useRelayDiscovery } from "../../lib/composables/useRelayDiscovery.svelte";
 import { apiFetch } from "../../utils/api";
 import type { RelayInfo } from "../../utils/relay";
@@ -59,8 +61,8 @@ $effect(() => {
 });
 </script>
 
-<div class="space-y-5">
-  <SectionCard className="animate-fade-in">
+<div class="flex flex-col gap-5">
+  <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md animate-fade-in"><Card.Content class="p-5 lg:p-6">
     <div class="flex items-start gap-5">
       {#if iconUrl}
         <img
@@ -68,41 +70,28 @@ $effect(() => {
           alt="Relay icon"
           loading="lazy"
           decoding="async"
-          class="w-16 h-16 rounded-xl border border-dark-border object-cover shrink-0"
+          class="size-16 rounded-xl border border-border object-cover shrink-0"
           referrerpolicy="no-referrer"
           onerror={handleImageError}
         />
       {/if}
       <div class="flex-1 min-w-0">
-        <h2 class="text-2xl font-bold text-text-primary mb-1">
+        <h2 class="text-2xl font-bold text-foreground mb-1">
           {info.name || 'Unknown Relay'}
         </h2>
         {#if info.description}
-          <p class="text-sm text-text-secondary leading-relaxed mb-3">{info.description}</p>
+          <p class="text-sm text-muted-foreground leading-relaxed mb-3">{info.description}</p>
         {/if}
-        <div class="flex flex-wrap gap-3 text-sm text-text-muted">
+        <div class="flex flex-wrap gap-3 text-sm text-muted-foreground">
           {#if info.software}
             <span class="flex items-center gap-1.5">
-              <svg
-                aria-hidden="true"
-                class="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
+              <ServerIcon class="size-3.5" aria-hidden="true" />
               {#if isSoftwareUrl(info.software)}
                 <a
                   href={softwareHref(info.software)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors"
+                  class="hover:text-primary hover:underline decoration-dotted underline-offset-2 transition-colors"
                 >{info.software}</a>
               {:else}
                 {info.software}
@@ -111,27 +100,14 @@ $effect(() => {
           {/if}
           {#if info.version}
             <span class="flex items-center gap-1.5">
-              <svg
-                aria-hidden="true"
-                class="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                />
-              </svg>
+              <TagIcon class="size-3.5" aria-hidden="true" />
               v{info.version}
             </span>
           {/if}
         </div>
       </div>
     </div>
-  </SectionCard>
+  </Card.Content></Card.Root>
 
   <!-- Fees -->
   {#if info.fees}
@@ -140,15 +116,15 @@ $effect(() => {
 
   <!-- Popularity -->
   {#if popularity && (popularity.readCount > 0 || popularity.writeCount > 0)}
-    <SectionCard>
+    <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
       <RelayListBadge readCount={popularity.readCount} writeCount={popularity.writeCount} />
-    </SectionCard>
+    </Card.Content></Card.Root>
   {/if}
 
   <!-- Monitor Data -->
   {#if discovery.stats}
-    <SectionCard>
+    <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
       <MonitorDataPanel discoveries={discovery.discoveries} stats={discovery.stats} />
-    </SectionCard>
+    </Card.Content></Card.Root>
   {/if}
 </div>

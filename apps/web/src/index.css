@@ -8,26 +8,31 @@
 :root {
   --radius: 0.625rem;
 
-  /* ─── shadcn semantic tokens — light mode (zinc + blue accent) ─── */
+  /* ─── shadcn semantic tokens — light mode (zinc + blue accent, WCAG AA) ─── */
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285);
-  --card: oklch(1 0 0);
+  /* Card: subtle off-white to separate from pure-white page background */
+  --card: oklch(0.985 0 0);
   --card-foreground: oklch(0.141 0.005 285);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285);
-  --primary: oklch(0.55 0.18 250);
+  /* Primary: darkened blue so white text achieves 4.5:1 */
+  --primary: oklch(0.45 0.18 250);
   --primary-foreground: oklch(100% 0 0);
-  --secondary: oklch(0.967 0.001 286);
+  --secondary: oklch(0.955 0.001 286);
   --secondary-foreground: oklch(0.21 0.006 285);
-  --muted: oklch(0.967 0.001 286);
-  --muted-foreground: oklch(0.552 0.016 285);
-  --accent: oklch(0.967 0.001 286);
+  /* Muted: darker inset surface for tabs, stat boxes, secondary content */
+  --muted: oklch(0.955 0.001 286);
+  /* Muted-foreground: darkened to ~4.6:1 on white */
+  --muted-foreground: oklch(0.455 0.016 285);
+  --accent: oklch(0.955 0.001 286);
   --accent-foreground: oklch(0.21 0.006 285);
-  --destructive: oklch(0.577 0.245 27);
+  --destructive: oklch(0.52 0.245 27);
   --destructive-foreground: oklch(100% 0 0);
-  --border: oklch(0.92 0.004 286);
-  --input: oklch(0.92 0.004 286);
-  --ring: oklch(0.55 0.18 250);
+  /* Border: darkened for 3.2:1 visibility on white */
+  --border: oklch(0.82 0.004 286);
+  --input: oklch(0.82 0.004 286);
+  --ring: oklch(0.45 0.18 250);
 
   /* ─── Chart colors ─── */
   --chart-1: oklch(0.646 0.222 41);
@@ -39,20 +44,20 @@
   /* ─── Sidebar tokens ─── */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.141 0.005 285);
-  --sidebar-primary: oklch(0.55 0.18 250);
+  --sidebar-primary: oklch(0.45 0.18 250);
   --sidebar-primary-foreground: oklch(100% 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286);
+  --sidebar-accent: oklch(0.955 0.001 286);
   --sidebar-accent-foreground: oklch(0.21 0.006 285);
-  --sidebar-border: oklch(0.92 0.004 286);
-  --sidebar-ring: oklch(0.55 0.18 250);
+  --sidebar-border: oklch(0.82 0.004 286);
+  --sidebar-ring: oklch(0.45 0.18 250);
 
-  /* ─── Domain-specific status tokens ─── */
-  --success: oklch(0.52 0.14 155);
-  --success-dim: oklch(0.52 0.14 155 / 0.1);
-  --warning: oklch(0.68 0.16 75);
-  --warning-dim: oklch(0.68 0.16 75 / 0.1);
-  --error: oklch(0.55 0.22 25);
-  --error-dim: oklch(0.55 0.22 25 / 0.1);
+  /* ─── Domain-specific status tokens (light — darkened for AA on white) ─── */
+  --success: oklch(0.4 0.14 155);
+  --success-dim: oklch(0.4 0.14 155 / 0.1);
+  --warning: oklch(0.48 0.16 75);
+  --warning-dim: oklch(0.48 0.16 75 / 0.1);
+  --error: oklch(0.5 0.22 25);
+  --error-dim: oklch(0.5 0.22 25 / 0.1);
 
   --width-content: 48rem;
   --width-content-xl: 64rem;
@@ -77,8 +82,8 @@
   --accent-foreground: oklch(100% 0 0);
   --destructive: oklch(67% 0.2 25);
   --destructive-foreground: oklch(100% 0 0);
-  --border: oklch(28% 0.02 284);
-  --input: oklch(22% 0.015 284);
+  --border: oklch(35% 0.02 284);
+  --input: oklch(30% 0.015 284);
   --ring: oklch(74% 0.16 250);
 
   /* ─── Chart colors ─── */
@@ -95,7 +100,7 @@
   --sidebar-primary-foreground: oklch(100% 0 0);
   --sidebar-accent: oklch(15.5% 0.012 284);
   --sidebar-accent-foreground: oklch(80% 0.01 256);
-  --sidebar-border: oklch(28% 0.02 284);
+  --sidebar-border: oklch(35% 0.02 284);
   --sidebar-ring: oklch(74% 0.16 250);
 
   /* ─── Domain-specific status tokens (dark) ─── */

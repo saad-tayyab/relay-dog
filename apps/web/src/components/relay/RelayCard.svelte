@@ -1,6 +1,8 @@
 <script lang="ts">
 import type { DirectoryRelay } from "@relayscope/shared";
-import { SectionCard } from "@/components/shared/ui";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { Checkbox } from "$lib/components/ui/checkbox";
 import { safeHttpsIconUrl } from "../../utils/relay";
 
 let {
@@ -66,7 +68,7 @@ function isSoftwareUrl(raw: string): boolean {
     ? 'ring-2 ring-accent border-accent-border'
     : 'hover:border-accent-border/50'}"
 >
-  <SectionCard>
+  <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
     <div class="flex items-start gap-3">
       {#if iconUrl}
         <img
@@ -98,8 +100,10 @@ function isSoftwareUrl(raw: string): boolean {
           {/if}
         </div>
 
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           class="text-xs text-text-muted font-mono truncate mb-2 cursor-pointer hover:text-accent hover:underline decoration-dotted underline-offset-2 transition-colors inline-flex items-center gap-1 text-left"
           onclick={handleUrlClick}
           onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); const httpUrl = relay.url.replace(/^wss:\/\//i, 'https://').replace(/^ws:\/\//i, 'http://'); window.open(httpUrl, '_blank', 'noopener,noreferrer'); } }}
@@ -120,7 +124,7 @@ function isSoftwareUrl(raw: string): boolean {
               d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
             />
           </svg>
-        </button>
+        </Button>
 
         {#if relay.description}
           <p class="text-xs text-text-secondary line-clamp-2 mb-2">{relay.description}</p>
@@ -149,11 +153,13 @@ function isSoftwareUrl(raw: string): boolean {
 
       <!-- Actions — always visible on mobile, hover-reveal on desktop -->
       <div class="shrink-0 flex flex-col items-center gap-1">
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onclick={handleInspect}
           aria-label="Inspect relay"
-          class="sm:opacity-0 sm:group-hover:opacity-100 transition-all p-2 rounded-lg hover:bg-accent-dim hover:text-accent text-text-muted"
+          class="text-muted-foreground transition-all hover:text-primary sm:opacity-0 sm:group-hover:opacity-100"
         >
           <svg
             aria-hidden="true"
@@ -169,23 +175,21 @@ function isSoftwareUrl(raw: string): boolean {
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
-        </button>
+        </Button>
 
         <!-- biome-ignore lint/a11y/noLabelWithoutControl: label wraps input, valid association -->
         <label class="relative flex items-center justify-center p-1 cursor-pointer">
-          <input
-            type="checkbox"
+          <Checkbox
             checked={selected}
             aria-label="Select {relay.name || 'relay'} for comparison"
-            class="peer w-5 h-5 rounded border-dark-border text-accent focus:ring-accent-border cursor-pointer"
-            onclick={(e) => {
+            class="peer"
+            onclick={(e: MouseEvent) => {
               e.stopPropagation();
               onSelect(relay.id);
             }}
           />
-          <span class="absolute w-5 h-5 rounded border border-dark-border peer-checked:border-accent peer-checked:bg-accent/20 pointer-events-none transition-all"></span>
         </label>
       </div>
     </div>
-  </SectionCard>
+  </Card.Content></Card.Root>
 </button>

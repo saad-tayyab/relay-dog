@@ -1392,6 +1392,18 @@ bun run build
 - [x] `bun run --filter @relayscope/web type-check` — pass after full import migration
 - [x] `bun run --filter @relayscope/web lint` — pass after full import migration
 - [x] `bun run type-check && bun run lint && bun run build` — pass after full import migration
+- [x] Restyle pass: switched app toast to shadcn Sonner and removed custom `Toast` wrapper
+- [x] Restyle pass: migrated additional high-traffic forms to shadcn field stack (`SearchBar`, `FilterBuilder`, `EventComposer`, `EventDeleter`, `AddRelay`, `EventBackup`)
+- [x] Restyle pass: updated shared wrappers (`SectionCard`, `AccessibleTabs`, `ErrorMessage`, `EmptyState`) to semantic shadcn token classes
+- [x] Restyle pass: migrated directory/nav/event controls to shadcn actions (`FilterBar`, `RelayDirectory`, `RelayCard`, `AddToDirectory`, `EventCard`, `NavBar`, `MobileNav`)
+- [x] `bun run --filter @relayscope/web type-check && bun run --filter @relayscope/web lint` — pass after controls migration
+- [x] `bun run type-check && bun run lint && bun run build` — pass after controls migration
+- [x] Removed `AccessibleTabs` wrapper usage in app surfaces (`InspectorSection`, `ToolsSection`, `PublisherSection`, `EventBackup`) in favour of direct shadcn `Tabs`
+- [x] Removed `AccessibleTabs.svelte` compatibility file from web shared components
+- [x] Removed `LoadingSpinner` and `ErrorMessage` wrapper usage from web surfaces by replacing with direct shadcn `Spinner`/`Alert` composition where used
+- [x] Deleted obsolete shared compatibility files: `AccessibleTabs.svelte`, `LoadingSpinner.svelte`, `ErrorMessage.svelte`
+- [x] Removed `SectionCard` wrapper usage from web surfaces by replacing call-sites with direct shadcn `Card.Root` + `Card.Content`
+- [x] Deleted `SectionCard.svelte` compatibility file after migration
 
 ### Full Migration — Final Verification
 
@@ -1434,8 +1446,14 @@ Final implementation files:
 | `apps/web/src/components/tools/QRCodeGenerator.svelte` | Modified | Third isolated migration slice for QR form/preview/actions with shadcn primitives |
 | `apps/web/src/lib/components/ui/textarea/**` | **New** | Added textarea primitive for tool form migration |
 | `apps/web/src/components/shared/**` | **New** | Web-local shared compatibility components (`SectionCard`, `AccessibleTabs`, `Toast`, etc.) used to remove direct `@relayscope/ui` coupling |
+| `apps/web/src/components/shared/Toast.svelte` | Deleted | Replaced by shadcn Sonner host in app shell |
 | `apps/web/src/**/*.svelte` | Modified | Imports switched from `@relayscope/ui` to `@/components/shared/ui` |
 | `apps/web/package.json` | Modified | Removed `@relayscope/ui` dependency from web app |
+| `apps/web/src/lib/components/ui/progress/**` | **New** | Added progress primitive for restore progress UI |
+| `apps/web/src/lib/components/ui/checkbox/**` | **New** | Added checkbox primitive for directory card selection |
+| `apps/web/src/lib/components/ui/tabs/**` | **New** | Directly used across feature sections after removing `AccessibleTabs` wrapper usage |
+| `apps/web/src/components/shared/{AccessibleTabs,LoadingSpinner,ErrorMessage}.svelte` | Deleted | Compatibility wrappers removed after direct shadcn replacements |
+| `apps/web/src/components/shared/SectionCard.svelte` | Deleted | Compatibility wrapper removed after direct `Card` migration |
 | `packages/ui/src/index.ts` | Modified | Reduced to minimal shared export surface (`StatusDot`) |
 | `bun.lock` | Modified | Lock dependency changes from Bun |
 

@@ -1,7 +1,12 @@
 <script lang="ts">
+
 // 1. Internal packages (stores, utils)
 
-import { AccessibleTabs, ErrorMessage, LoadingSpinner, SectionCard } from "@/components/shared/ui";
+import * as Alert from "$lib/components/ui/alert";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { Spinner } from "$lib/components/ui/spinner";
+import * as Tabs from "$lib/components/ui/tabs";
 import type { relaySocket } from "../../lib/stores/relaySocket.svelte";
 import type { ConnectionStatus, RelayInfo } from "../../utils/relay";
 import AuthStatusBadge from "../auth/AuthStatusBadge.svelte";
@@ -82,20 +87,55 @@ const tabs = $derived([
 </script>
 
 <div class="space-y-5">
-  <AccessibleTabs
-    ariaLabel="Inspector views"
-    {tabs}
-    activeTab={activeTab}
-    onTabChange={(id) => (activeTab = id as typeof activeTab)}
-  >
+  <Tabs.Root value={activeTab} onValueChange={(id) => (activeTab = id as typeof activeTab)} aria-label="Inspector views">
+    <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0">
+      {#each tabs as tab (tab.id)}
+        <Tabs.Trigger value={tab.id} class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary">
+          {tab.label}
+          {#if tab.badge}
+            <span class="ml-2 rounded-full bg-primary/15 px-1.5 py-0.5 font-mono text-xs text-primary">
+              {tab.badge}
+            </span>
+          {/if}
+        </Tabs.Trigger>
+      {/each}
+    </Tabs.List>
+
+    <Tabs.Content value={activeTab} class="pt-5 focus:outline-none">
     {#if activeTab === 'nip11'}
       <!-- NIP-11 Info View -->
       {#if loading}
-        <LoadingSpinner />
+        <div role="status" aria-label="Loading" class="flex items-center justify-center py-16">
+          <Spinner class="size-12 text-primary" />
+        </div>
       {/if}
 
       {#if !loading && error && !relayInfo}
-        <ErrorMessage message={error} {onRetry} />
+        <div class="animate-fade-in py-10">
+          <Alert.Root variant="destructive" class="mx-auto max-w-xl">
+            <svg
+              aria-hidden="true"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+              />
+            </svg>
+            <Alert.Title>Failed to fetch relay info</Alert.Title>
+            <Alert.Description>{error}</Alert.Description>
+            <Alert.Action>
+              <Button type="button" variant="outline" onclick={onRetry} class="min-h-[44px]">
+                Try again
+              </Button>
+            </Alert.Action>
+          </Alert.Root>
+        </div>
       {/if}
 
       {#if !loading && relayInfo}
@@ -137,7 +177,7 @@ const tabs = $derived([
           {/if}
 
           <!-- Raw JSON toggle -->
-          <SectionCard>
+          <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
             <details class="group">
               <summary
                 class="cursor-pointer text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-2 py-2"
@@ -161,7 +201,7 @@ const tabs = $derived([
                   2,
                 )}</pre>
             </details>
-          </SectionCard>
+          </Card.Content></Card.Root>
 
           <!-- Error details if connection had issues -->
           {#if !loading && error && relayInfo}
@@ -201,5 +241,6 @@ const tabs = $derived([
         <EventFeed events={socket.events} />
       </div>
     {/if}
-  </AccessibleTabs>
+    </Tabs.Content>
+  </Tabs.Root>
 </div>

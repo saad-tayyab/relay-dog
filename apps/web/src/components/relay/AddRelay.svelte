@@ -1,5 +1,11 @@
 <script lang="ts">
-import { SectionCard } from "@/components/shared/ui";
+import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import * as Field from "$lib/components/ui/field";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { Spinner } from "$lib/components/ui/spinner";
 import { apiFetch } from "../../utils/api";
 
 let { onAdded }: { onAdded?: () => void } = $props();
@@ -78,108 +84,107 @@ function cancel() {
 <div class="space-y-3">
   <!-- Success message -->
   {#if success}
-    <div
-      role="status"
-      class="px-3 py-2 rounded-lg bg-success-dim border border-success/20 text-xs text-success flex items-center gap-2"
-    >
-      <span aria-hidden="true">✓</span> {success}
-    </div>
+    <Alert role="status">
+      <AlertTitle>Relay added</AlertTitle>
+      <AlertDescription><span aria-hidden="true">✓</span> {success}</AlertDescription>
+    </Alert>
   {/if}
 
   <!-- Toggle Button -->
   {#if !showForm}
-    <button
+    <Button
       type="button"
+      variant="outline"
       onclick={() => (showForm = true)}
-      class="w-full min-h-[44px] px-4 py-2.5 rounded-lg border border-dashed border-dark-border text-sm text-text-muted hover:text-accent hover:border-accent-border transition-all flex items-center justify-center gap-2"
+      class="w-full min-h-[44px] border-dashed text-sm text-muted-foreground"
     >
       <span aria-hidden="true">+</span> Add Relay
-    </button>
+    </Button>
   {/if}
 
   <!-- Add Relay Form -->
   {#if showForm}
-    <SectionCard>
+    <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
       <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-3">
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-semibold text-text-primary">Add Relay</h3>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onclick={cancel}
-            class="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
             aria-label="Cancel"
           >
             <span aria-hidden="true">✕</span>
-          </button>
+          </Button>
         </div>
 
         <!-- Error -->
         {#if error}
-          <div
-            role="alert"
-            class="px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-xs text-error"
-          >
-            <span aria-hidden="true">⚠</span> {error}
-          </div>
+          <Alert variant="destructive">
+            <AlertTitle>Add relay failed</AlertTitle>
+            <AlertDescription><span aria-hidden="true">⚠</span> {error}</AlertDescription>
+          </Alert>
         {/if}
 
         <!-- URL -->
-        <div>
-          <label for="add-relay-url" class="block text-xs text-text-muted mb-1">
+        <Field.Field>
+          <Label for="add-relay-url" class="mb-1 block text-xs text-muted-foreground">
             Relay URL <span class="text-error">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             id="add-relay-url"
             type="text"
             bind:value={url}
             placeholder="wss://relay.example.com"
             required
-            class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+            class="h-11 border-border bg-card px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground"
           />
-        </div>
+        </Field.Field>
 
         <!-- Name -->
-        <div>
-          <label for="add-relay-name" class="block text-xs text-text-muted mb-1">
+        <Field.Field>
+          <Label for="add-relay-name" class="mb-1 block text-xs text-muted-foreground">
             Name <span class="text-text-muted">(optional)</span>
-          </label>
-          <input
+          </Label>
+          <Input
             id="add-relay-name"
             type="text"
             bind:value={name}
             placeholder="My Relay"
-            class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+            class="h-11 border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground"
           />
-        </div>
+        </Field.Field>
 
         <!-- API Key -->
-        <div>
-          <label for="add-relay-apikey" class="block text-xs text-text-muted mb-1">
+        <Field.Field>
+          <Label for="add-relay-apikey" class="mb-1 block text-xs text-muted-foreground">
             API Key <span class="text-text-muted">(saved locally)</span>
-          </label>
-          <input
+          </Label>
+          <Input
             id="add-relay-apikey"
             type="password"
             bind:value={apiKey}
             placeholder="Required for production"
-            class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+            class="h-11 border-border bg-card px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground"
           />
-        </div>
+        </Field.Field>
 
         <!-- Submit -->
-        <button
+        <Button
           type="submit"
+          variant="default"
           disabled={submitting || !url.trim()}
-          class="w-full min-h-[44px] px-4 py-2.5 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          class="w-full min-h-[44px] px-4 py-2.5 text-sm font-semibold"
         >
           {#if submitting}
-            <div class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
+            <Spinner class="size-4" />
             Adding…
           {:else}
             Add Relay
           {/if}
-        </button>
+        </Button>
       </form>
-    </SectionCard>
+    </Card.Content></Card.Root>
   {/if}
 </div>

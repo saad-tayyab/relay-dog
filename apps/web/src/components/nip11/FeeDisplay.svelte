@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { RelayFees } from "@relayscope/shared";
-import { SectionCard } from "@/components/shared/ui";
+import * as Card from "$lib/components/ui/card";
 
 let { fees }: { fees: RelayFees | null } = $props();
 
@@ -13,7 +13,7 @@ function formatAmount(amount: number, unit: string): string {
 </script>
 
 {#if fees}
-  <SectionCard>
+  <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
     <h3 class="text-sm font-semibold text-text-primary mb-3">Fees</h3>
     <div class="space-y-2">
       {#if fees.admission && fees.admission.length > 0}
@@ -67,5 +67,5 @@ function formatAmount(amount: number, unit: string): string {
         </div>
       {/if}
     </div>
-  </SectionCard>
+  </Card.Content></Card.Root>
 {/if}

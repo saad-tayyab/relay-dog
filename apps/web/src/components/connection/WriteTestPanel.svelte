@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { WriteTestStatus } from "@relayscope/shared";
-import { SectionCard } from "@/components/shared/ui";
+import * as Card from "$lib/components/ui/card";
 
 let {
 	status,
@@ -50,7 +50,7 @@ const statusDisplay = $derived.by(() => {
 });
 </script>
 
-<SectionCard>
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="flex items-center justify-between mb-3">
     <h3 class="text-sm font-semibold text-text-primary">Write Test</h3>
     {#if onRunTest}
@@ -88,4 +88,4 @@ const statusDisplay = $derived.by(() => {
   {#if error}
     <p class="mt-2 text-xs text-error">{error}</p>
   {/if}
-</SectionCard>
+</Card.Content></Card.Root>

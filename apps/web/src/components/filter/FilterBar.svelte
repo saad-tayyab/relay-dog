@@ -1,5 +1,7 @@
 <script lang="ts">
 import type { DirectoryFilters } from "@relayscope/shared";
+import { Button } from "$lib/components/ui/button";
+import { Input } from "$lib/components/ui/input";
 
 let {
 	filters,
@@ -66,7 +68,7 @@ function handleCountryChange() {
 }
 </script>
 
-<div class="flex flex-wrap items-center gap-3 p-4 rounded-xl bg-dark-card border border-dark-border">
+<div class="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4">
   <!-- Search -->
   <div class="relative flex-1 min-w-[200px]">
     <div class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
@@ -86,39 +88,39 @@ function handleCountryChange() {
       </svg>
     </div>
     <label for="dir-search" class="sr-only">Search relays</label>
-    <input
+    <Input
       id="dir-search"
       type="text"
       bind:value={searchInput}
       oninput={handleSearchInput}
       placeholder={supportsNip50 ? "Search relays (NIP-50)…" : "Search relays…"}
-      class="w-full pl-9 pr-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+      class="h-10 w-full border-border bg-background pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground"
     />
   </div>
 
   <!-- NIP Filter -->
   <div class="relative">
     <label for="dir-nips" class="sr-only">Filter by NIPs</label>
-    <input
+    <Input
       id="dir-nips"
       type="text"
       bind:value={nipInput}
       onblur={handleNipBlur}
       placeholder="NIPs (e.g. 42, 11)"
-      class="w-36 px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all font-mono"
+      class="h-10 w-36 border-border bg-background px-3 font-mono text-xs text-foreground placeholder:text-muted-foreground"
     />
   </div>
 
   <!-- Country Filter -->
   <div class="relative">
     <label for="dir-country" class="sr-only">Filter by country</label>
-    <input
+    <Input
       id="dir-country"
       type="text"
       bind:value={countryInput}
       onblur={handleCountryChange}
       placeholder="Country (e.g. US)"
-      class="w-28 px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all font-mono"
+      class="h-10 w-28 border-border bg-background px-3 font-mono text-xs text-foreground placeholder:text-muted-foreground"
     />
   </div>
 
@@ -128,7 +130,7 @@ function handleCountryChange() {
     id="dir-sort"
     bind:value={sortLocal}
     onchange={() => onSort(sortLocal, sortDirection)}
-    class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary focus:outline-none focus:border-accent-border transition-all"
+    class="h-10 rounded-lg border border-border bg-background px-3 text-xs text-foreground"
   >
     <option value="name">Name</option>
     <option value="url">URL</option>
@@ -136,12 +138,14 @@ function handleCountryChange() {
     <option value="latency">Latency</option>
   </select>
 
-  <button
+  <Button
     type="button"
+    variant="outline"
+    size="icon"
     onclick={() => onSort(sortLocal, sortDirection === 'asc' ? 'desc' : 'asc')}
     aria-label="Toggle sort order (currently {sortDirection === 'asc' ? 'ascending' : 'descending'})"
-    class="min-h-[44px] min-w-[44px] p-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary transition-all"
+    class="min-h-[44px] min-w-[44px] border-border bg-background text-muted-foreground hover:text-foreground"
   >
     {sortDirection === 'asc' ? '↑' : '↓'}
-  </button>
+  </Button>
 </div>

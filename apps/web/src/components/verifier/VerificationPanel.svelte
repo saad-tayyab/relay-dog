@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
-import { SectionCard } from "@/components/shared/ui";
+import * as Card from "$lib/components/ui/card";
 import {
 	eventIdMatches,
 	toNpub,
@@ -23,7 +23,7 @@ function truncateHex(hex: string, chars = 8): string {
 }
 </script>
 
-<SectionCard className="space-y-4">
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md space-y-4"><Card.Content class="p-5 lg:p-6">
   <h3 class="text-sm font-semibold text-text-primary">Verification</h3>
 
   <!-- Signature check -->
@@ -144,4 +144,4 @@ function truncateHex(hex: string, chars = 8): string {
       <span aria-hidden="true">✍️</span> Edit & Re-publish
     </button>
   {/if}
-</SectionCard>
+</Card.Content></Card.Root>

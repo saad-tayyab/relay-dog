@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { DirectoryRelay } from "@relayscope/shared";
-import { SectionCard } from "@/components/shared/ui";
+import * as Card from "$lib/components/ui/card";
 
 let {
 	relayA,
@@ -44,7 +44,7 @@ function healthStatus(relay: DirectoryRelay): string {
 }
 </script>
 
-<SectionCard>
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-sm font-semibold text-text-primary">Relay Comparison</h3>
     <button
@@ -149,4 +149,4 @@ function healthStatus(relay: DirectoryRelay): string {
       {/if}
     </tbody>
   </table>
-</SectionCard>
+</Card.Content></Card.Root>

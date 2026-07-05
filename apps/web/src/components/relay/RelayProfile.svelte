@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { RelayPopularity } from "@relayscope/shared";
-import { SectionCard } from "@/components/shared/ui";
+import * as Card from "$lib/components/ui/card";
 import { useRelayDiscovery } from "../../lib/composables/useRelayDiscovery.svelte";
 import { apiFetch } from "../../utils/api";
 import type { RelayInfo } from "../../utils/relay";
@@ -60,7 +60,7 @@ $effect(() => {
 </script>
 
 <div class="space-y-5">
-  <SectionCard className="animate-fade-in">
+  <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md animate-fade-in"><Card.Content class="p-5 lg:p-6">
     <div class="flex items-start gap-5">
       {#if iconUrl}
         <img
@@ -131,7 +131,7 @@ $effect(() => {
         </div>
       </div>
     </div>
-  </SectionCard>
+  </Card.Content></Card.Root>
 
   <!-- Fees -->
   {#if info.fees}
@@ -140,15 +140,15 @@ $effect(() => {
 
   <!-- Popularity -->
   {#if popularity && (popularity.readCount > 0 || popularity.writeCount > 0)}
-    <SectionCard>
+    <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
       <RelayListBadge readCount={popularity.readCount} writeCount={popularity.writeCount} />
-    </SectionCard>
+    </Card.Content></Card.Root>
   {/if}
 
   <!-- Monitor Data -->
   {#if discovery.stats}
-    <SectionCard>
+    <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
       <MonitorDataPanel discoveries={discovery.discoveries} stats={discovery.stats} />
-    </SectionCard>
+    </Card.Content></Card.Root>
   {/if}
 </div>

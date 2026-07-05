@@ -55,7 +55,7 @@ $effect(() => {
         </Empty.Root>
       </div>
     {:else}
-      <ScrollArea.Root class="h-96" bind:viewportRef={scrollEl}>
+      <ScrollArea.Root class="h-110" bind:viewportRef={scrollEl}>
         <Item.Group class="px-1 py-1">
           {#each events as event (event.id)}
             <EventCard {event} />

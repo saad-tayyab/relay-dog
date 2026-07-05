@@ -3,10 +3,6 @@
 # Exclude API app (needs Bun runtime, not available on Vercel)
 apps/api/
 
-# Exclude packages the web app does NOT need
-packages/database/
-packages/auth/
-
 # Exclude non-essential files
 docs/
 infra/
@@ -17,9 +13,11 @@ docker-compose.yml
 biome.json
 CONTRIBUTING.md
 AGENTS.md
-turbo.json
-bun.lock
-bun.lockb
+
+# NOTE: Do NOT exclude packages/ subdirectories here — they are workspace
+# members listed in root package.json and Bun needs them for workspace
+# resolution. Also do NOT exclude bun.lock/bun.lockb — the install command
+# uses --frozen-lockfile which requires the lockfile to exist.
 
 # Keep these (web app workspace dependencies):
 # packages/shared/       — types + schemas imported by web

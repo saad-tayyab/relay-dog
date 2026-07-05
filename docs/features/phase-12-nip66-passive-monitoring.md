@@ -1,7 +1,7 @@
 ---
 title: "🔄 Phase 12: NIP-66 Passive Monitoring"
 version: "0.10.0"
-status: "planned"
+status: "complete"
 last_updated: "2026-07-04"
 author: "Saad Tayyab"
 ---
@@ -17,7 +17,7 @@ author: "Saad Tayyab"
 
 ## Status
 
-**Planned** 📋
+**Complete** ✅ (2026-07-05)
 
 ## Overview
 

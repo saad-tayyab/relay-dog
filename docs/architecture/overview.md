@@ -42,7 +42,7 @@ graph TB
 
     WEB <-->|"REST API<br/>localhost:3001"| API
     API <-->|"SQL Queries"| DB
-    MON <-->|"Periodic Health Checks"| RELAY
+    MON <-->|"kind:30166 Subscription"| RELAY
     MON -->|"Store Results"| DB
     WEB -->|"WebSocket"| RELAY
 ```

@@ -31,7 +31,7 @@ Phase 8  ████████████████████  Developer
 Phase 9  ████████████████████  WCAG 2.2 AA Accessibility          ✅ Done
 Phase 10 ████████████████████  Infrastructure Hardening             ✅ Done
 Phase 11 ░░░░░░░░░░░░░░░░░░░░  Production Deployment (Fly.io)      📋 Planned
-Phase 12 ░░░░░░░░░░░░░░░░░░░░  NIP-66 Passive Monitoring           📋 Planned
+Phase 12 ████████████████████  NIP-66 Passive Monitoring           ✅ Done
 ```
 
 ## Phase 1: NIP-11 Viewer (MVP) ✅
@@ -258,6 +258,29 @@ Deploy Relay Dog to production on Fly.io. Two separate Fly apps — API (Hono + 
 
 ---
 
+## Phase 12: NIP-66 Passive Monitoring ✅
+
+> *Day 18*
+
+Replace the active `setInterval`-based relay probing with a passive NIP-66 ingestor that subscribes to known monitor relays via WebSocket and ingests `kind:30166` events. Eliminates recurring API budget costs while providing richer, multi-vantage-point health data.
+
+**What ships:**
+- **NIP-66 Ingestor** — WebSocket subscriber that parses `kind:30166` events from monitor relays
+- **Auto-reconnect** — exponential backoff (1s → 30s max) on monitor disconnect
+- **Auto-create relays** — new relay URLs from monitor events are automatically added to the directory
+- **On-demand checks** — `POST /api/relays/:id/check` writes to `relay_discoveries` with `monitorPubkey='self'`
+- **Legacy table drop** — removed `health_checks` and `monitoring_jobs` tables
+- **Retention cleanup** — daily cleanup of old `relay_events` (30d), `relay_info_snapshots` (180d), `relay_discoveries` (180d)
+
+**NIPs**: NIP-66 (Relay Liveness Monitoring)
+
+**Deleted:** `apps/api/src/jobs/relayMonitor.ts` (active probing loop)
+**New:** `apps/api/src/jobs/nip66Ingestor.ts` (passive WebSocket subscriber)
+
+**Feature doc**: [phase-12-nip66-passive-monitoring.md](features/phase-12-nip66-passive-monitoring.md)
+
+---
+
 ## Effort Summary
 
 | Phase | Duration | Difficulty | API Changes | DB Changes |
@@ -273,6 +296,7 @@ Deploy Relay Dog to production on Fly.io. Two separate Fly apps — API (Hono + 
 | 9 | 1 day | Easy | None | None |
 | 10 | 1 day | Medium | Health check, retention | None |
 | 11 | 0.5 day | Easy | None | None |
+| 12 | 1 day | Medium | Ingestor job, route updates | Drop health_checks + monitoring_jobs |
 
 ---
 

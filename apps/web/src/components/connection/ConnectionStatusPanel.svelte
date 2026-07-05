@@ -11,8 +11,8 @@ interface ConnectionStatus {
 	latencyMs?: number;
 }
 
-import { StatusDot } from "@/components/shared/ui";
 import * as Card from "$lib/components/ui/card";
+import { StatusDot } from '$lib/components/ui/status-dot';
 
 let { status }: { status: ConnectionStatus | null } = $props();
 

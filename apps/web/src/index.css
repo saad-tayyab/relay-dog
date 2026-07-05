@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";
 @import "@fontsource-variable/inter";
-@source "../../../packages/ui/src";
 
 @custom-variant dark (&:is(.dark *));
 

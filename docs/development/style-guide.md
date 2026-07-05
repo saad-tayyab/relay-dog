@@ -151,7 +151,80 @@ import { checkHealth } from './utils'
 
 ### Tailwind Rules
 
-Same as before — use Tailwind utility classes, use custom theme tokens from index.css, avoid inline styles, avoid CSS files for components.
+Use Tailwind utility classes for all styling. Reference theme tokens from `index.css` — never hardcode raw color values.
+
+#### Theme Tokens Reference
+
+The project uses a **two-tier token system**: shadcn standard tokens for structural UI, and custom domain tokens for status semantics.
+
+**Text tokens:**
+
+| Token | Use For | Example |
+|-------|---------|---------|
+| `text-foreground` | Primary text (headings, body, labels) | `<h2 class="text-foreground">` |
+| `text-muted-foreground` | Secondary/tertiary text (descriptions, placeholders, helpers) | `<p class="text-muted-foreground text-sm">` |
+| `text-primary` | Accent/brand color (links, active states, highlights) | `<a class="text-primary">` |
+| `text-card-foreground` | Card content text | `<Card.Root>` uses this automatically |
+| `text-primary-foreground` | Text on primary-colored backgrounds | Button default variant |
+| `text-destructive` | Destructive action text | Shadcn destructive button/badge |
+| `text-success` | Success states (online relays, valid sigs) | `<span class="text-success">✓ Verified</span>` |
+| `text-warning` | Warning states (EOSE incomplete, auth-required) | `<span class="text-warning">⚠ More events</span>` |
+| `text-error` | Error states (failed checks, unreachable) | `<div class="text-error">Connection failed</div>` |
+
+**Background tokens:**
+
+| Token | Use For | Example |
+|-------|---------|---------|
+| `bg-background` | Page root background | Applied to `<body>` via base layer |
+| `bg-card` | Card/tab surfaces | `<SectionCard>` uses this |
+| `bg-muted` | Inset surfaces (stat boxes, code blocks, input groups) | `<div class="bg-muted rounded-lg">` |
+| `bg-primary` | Active indicators, selected states | `<span class="bg-primary">` dot |
+| `bg-popover` | Dropdown/overlay backgrounds | Shadcn dropdowns use this |
+| `bg-success-dim` | Success background (low opacity) | `bg-success-dim border border-success/20 text-success` |
+| `bg-warning-dim` | Warning background (low opacity) | `bg-warning-dim border border-warning/20 text-warning` |
+| `bg-error-dim` | Error background (low opacity) | `bg-error-dim border border-error/20 text-error` |
+
+**Border tokens:**
+
+| Token | Use For | Example |
+|-------|---------|---------|
+| `border-border` | Universal borders (cards, dividers, inputs) | `<div class="border border-border">` |
+| `border-primary` | Active/selected borders | `<div class="border-2 border-primary">` |
+| `border-success` | Success state borders | Combined with `bg-success-dim` |
+| `border-warning` | Warning state borders | Combined with `bg-warning-dim` |
+| `border-error` | Error state borders | Combined with `bg-error-dim` |
+
+**Event kind tokens** (used in `EventCard`, `TagDecoder`):
+
+| Token | Color | Event Kind |
+|-------|-------|------------|
+| `text-kind-metadata` / `bg-kind-metadata` | Blue | kind 0 (metadata) |
+| `text-kind-note` / `bg-kind-note` | Green | kind 1 (notes) |
+| `text-kind-dm` / `bg-kind-dm` | Purple | kind 4 (DMs) |
+| `text-kind-channel` / `bg-kind-channel` | Cyan | kind 40-49 (channels) |
+| `text-kind-unknown` / `bg-kind-unknown` | Gray | Unrecognized kinds |
+
+**Status pattern** — always use the trio for status badges:
+
+```svelte
+<!-- ✅ Correct: dim background + border + text -->
+<div class="bg-success-dim border border-success/20 text-success px-3 py-2 rounded-lg">
+  ✓ Verified
+</div>
+<div class="bg-warning-dim border border-warning/20 text-warning px-3 py-2 rounded-lg">
+  ⚠ More events available
+</div>
+<div class="bg-error-dim border border-error/20 text-error px-3 py-2 rounded-lg">
+  ✗ Connection failed
+</div>
+```
+
+**Rules:**
+- Never hardcode raw colors (`bg-blue-500`, `text-gray-400`) — always use tokens
+- `text-muted-foreground` is the default for secondary text — use it liberally
+- `bg-muted` is for inset surfaces that need to be visually distinct from cards
+- The `-dim` variants are always used with `border-{status}/20` for a subtle tinted look
+- shadcn components handle their own token usage — don't override shadcn primitive colors
 
 ### shadcn-svelte Migration Conventions (Phase 13)
 
@@ -160,10 +233,9 @@ Same as before — use Tailwind utility classes, use custom theme tokens from in
 - Use `cn()` only from `$lib/shadcn/utils` (never from `$lib/utils`).
 - Preserve existing `@` alias for app code while supporting `$lib` for shadcn-style imports.
 - Token mapping must remain non-cyclic:
-  - backing tokens like `--relay-success`
-  - mapped utility tokens like `--color-success: var(--relay-success)`
+  - backing tokens like `--success`, `--warning`, `--error`
+  - mapped utility tokens like `--color-success: var(--success)`
 - Preserve Relay Dog accessibility/global CSS behavior in `apps/web/src/index.css`:
-  - `@source "../../../packages/ui/src"`
   - keyframes (`pulse-dot`, `fade-in`, `slide-up`)
   - `:focus-visible` styles
   - `prefers-reduced-motion` handling
@@ -290,7 +362,7 @@ Never implement tabs manually — always use `AccessibleTabs`. It provides:
 ```css
 /* ✅ Already in index.css — :focus-visible ring */
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 ```

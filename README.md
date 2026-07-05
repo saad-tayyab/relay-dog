@@ -151,12 +151,12 @@ graph LR
     SHARED["@relayscope/shared"]
     DB["@relayscope/database"]
     AUTH["@relayscope/auth"]
-    UI["@relayscope/ui"]
+    UI["@relayscope/ui (minimal)"]
     WEB["@relayscope/web"]
     API["@relayscope/api"]
 
     WEB --> SHARED
-    WEB --> UI
+    WEB -.-> UI
     API --> SHARED
     API --> DB
     API --> AUTH
@@ -179,7 +179,7 @@ relayscope/
 │   │       │   ├── inspector/  # InspectorSection
 │   │       │   ├── publisher/  # EventComposer, EventDeleter, TagEditor
 │   │       │   ├── tools/      # KeyConverter, Nip05Checker, QRCode, Backup
-│   │       │   ├── shared/     # AccessibleTabs, Toast (WCAG 2.2 AA)
+│   │       │   ├── shared/     # App-local shared wrappers + compatibility components
 │   │       │   └── verifier/   # EventVerifier, VerificationPanel
 │   │       ├── lib/composables/ # Svelte 5 runes composables
 │   │       └── utils/          # router, keys, nip05, backup, nostrVerify
@@ -192,7 +192,7 @@ relayscope/
 │   ├── database/               # Drizzle schema, queries, relations, migrations
 │   ├── shared/                 # TypeScript types & Zod schemas
 │   ├── auth/                   # API key middleware
-│   ├── ui/                     # Shared Svelte components
+│   ├── ui/                     # Minimal shared Svelte components (StatusDot)
 │   └── config/
 │       ├── env/                # Environment validation
 │       └── tsconfig/           # Shared TypeScript configs
@@ -435,5 +435,4 @@ The API server (Hono + Bun) runs separately from the frontend. Add the API's `CO
 ## 📜 License
 
 MIT
-
 

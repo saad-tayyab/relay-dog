@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://img.shields.io/badge/version-0.10.0-blue?style=for-the-badge" alt="Version">
-  <img src="https://img.shields.io/badge/phase-10%2F12%20complete-brightgreen?style=for-the-badge" alt="Phase">
+  <img src="https://img.shields.io/badge/phase-12%2F13%20complete-brightgreen?style=for-the-badge" alt="Phase">
   <img src="https://img.shields.io/badge/WCAG-2.2%20AA-brightgreen?style=for-the-badge" alt="WCAG">
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License">
   <img src="https://img.shields.io/badge/typescript-6.0-blue?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
@@ -151,12 +151,10 @@ graph LR
     SHARED["@relayscope/shared"]
     DB["@relayscope/database"]
     AUTH["@relayscope/auth"]
-    UI["@relayscope/ui (minimal)"]
     WEB["@relayscope/web"]
     API["@relayscope/api"]
 
     WEB --> SHARED
-    WEB -.-> UI
     API --> SHARED
     API --> DB
     API --> AUTH
@@ -175,24 +173,34 @@ relayscope/
 │   ├── web/                    # Svelte 5 + Vite + Tailwind v4
 │   │   └── src/
 │   │       ├── components/     # UI components by feature domain
-│   │       │   ├── nav/        # NavBar, MobileNav
+│   │       │   ├── auth/       # Auth status, NIP-42 challenge
+│   │       │   ├── connection/ # ConnectionPanel, ConnectionStatus
+│   │       │   ├── event/      # EventCard, EventFeed, TagDecoder
+│   │       │   ├── filter/     # FilterBar, FilterBuilder
 │   │       │   ├── inspector/  # InspectorSection
+│   │       │   ├── monitoring/ # MonitorDataPanel
+│   │       │   ├── nav/        # NavBar, MobileNav
+│   │       │   ├── nip11/      # NipBadgeGrid, LimitationsPanel
 │   │       │   ├── publisher/  # EventComposer, EventDeleter, TagEditor
-│   │       │   ├── tools/      # KeyConverter, Nip05Checker, QRCode, Backup
-│   │       │   ├── shared/     # App-local shared wrappers + compatibility components
+│   │       │   ├── relay/      # RelayProfile, RelayCard, RelayDirectory
+│   │       │   ├── search/     # Nip05Checker
+│   │       │   ├── tools/      # KeyConverter, QRCodeGenerator, EventBackup
 │   │       │   └── verifier/   # EventVerifier, VerificationPanel
-│   │       ├── lib/composables/ # Svelte 5 runes composables
+│   │       ├── lib/
+│   │       │   ├── components/ui/  # shadcn-svelte primitives (42 groups)
+│   │       │   ├── composables/    # Svelte 5 runes composables
+│   │       │   ├── shadcn/         # cn() utility, shadcn config
+│   │       │   └── stores/         # relaySocket.svelte.ts
 │   │       └── utils/          # router, keys, nip05, backup, nostrVerify
 │   └── api/                    # Hono + Bun REST API
 │       └── src/
 │           ├── routes/         # API route modules
-│           ├── jobs/           # Background ingestors
+│           ├── jobs/           # NIP-66 ingestor
 │           └── lib/            # SSRF, validation, errors
 ├── packages/
 │   ├── database/               # Drizzle schema, queries, relations, migrations
 │   ├── shared/                 # TypeScript types & Zod schemas
 │   ├── auth/                   # API key middleware
-│   ├── ui/                     # Minimal shared Svelte components (StatusDot)
 │   └── config/
 │       ├── env/                # Environment validation
 │       └── tsconfig/           # Shared TypeScript configs
@@ -319,8 +327,8 @@ The API server (Hono + Bun) runs separately from the frontend. Add the API's `CO
 | `PUT` | `/api/relays/:id` | ✅ | Update relay |
 | `DELETE` | `/api/relays/:id` | ✅ | Remove relay |
 | `GET` | `/api/relays/:id/nip11` | — | NIP-11 snapshot history |
+| `POST` | `/api/relays/:id/check` | ✅ | On-demand health check |
 | `GET` | `/api/relays/:id/discoveries` | — | NIP-66 monitor observations |
-| `POST` | `/api/relays/:id/discoveries` | ✅ | Upsert discovery |
 | `GET` | `/api/relays/:id/popularity` | — | NIP-65 read/write counts |
 | `POST` | `/api/relays/:id/popularity` | ✅ | Upsert relay list entry |
 | `GET` | `/api/directory` | — | Browse directory with filters |
@@ -340,37 +348,43 @@ The API server (Hono + Bun) runs separately from the frontend. Add the API's `CO
     <td align="center" width="8%">✅</td>
     <td><strong>Phase 1</strong> — NIP-11 Viewer (MVP)</td>
     <td align="center" width="8%">✅</td>
-    <td><strong>Phase 7</strong> — NIP Compliance</td>
+    <td><strong>Phase 8</strong> — Developer Toolkit</td>
   </tr>
   <tr>
     <td align="center">✅</td>
     <td><strong>Phase 2</strong> — Live Event Stream</td>
     <td align="center">✅</td>
-    <td><strong>Phase 8</strong> — Developer Toolkit</td>
+    <td><strong>Phase 9</strong> — WCAG 2.2 AA Accessibility</td>
   </tr>
   <tr>
     <td align="center">✅</td>
     <td><strong>Phase 3</strong> — Event Verifier</td>
     <td align="center">✅</td>
-    <td><strong>Phase 9</strong> — WCAG 2.2 AA Accessibility</td>
-  </tr>
-  <tr>
-    <td align="center">✅</td>
-    <td><strong>Phase 4</strong> — Auth & Health</td>
-    <td align="center">✅</td>
     <td><strong>Phase 10</strong> — Infrastructure Hardening</td>
   </tr>
   <tr>
     <td align="center">✅</td>
-    <td><strong>Phase 5</strong> — Relay Directory</td>
+    <td><strong>Phase 4</strong> — Auth & Health</td>
     <td align="center">📋</td>
     <td><strong>Phase 11</strong> — Production Deployment</td>
   </tr>
   <tr>
     <td align="center">✅</td>
-    <td><strong>Phase 6</strong> — Security Hardening</td>
-    <td align="center">📋</td>
+    <td><strong>Phase 5</strong> — Relay Directory</td>
+    <td align="center">✅</td>
     <td><strong>Phase 12</strong> — NIP-66 Passive Monitoring</td>
+  </tr>
+  <tr>
+    <td align="center">✅</td>
+    <td><strong>Phase 6</strong> — Security Hardening</td>
+    <td align="center">✅</td>
+    <td><strong>Phase 13</strong> — shadcn-svelte Migration</td>
+  </tr>
+  <tr>
+    <td align="center">✅</td>
+    <td><strong>Phase 7</strong> — NIP Compliance</td>
+    <td></td>
+    <td></td>
   </tr>
 </table>
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+import CheckIcon from "@lucide/svelte/icons/check";
+import AlertCircleIcon from "@lucide/svelte/icons/circle-alert";
 import type { NostrEvent } from "@relayscope/shared";
 import { Button } from "$lib/components/ui/button";
 import { Textarea } from "$lib/components/ui/textarea";
@@ -141,7 +143,7 @@ $effect(() => {
 });
 </script>
 
-<div class="space-y-2">
+<div class="flex flex-col gap-2">
   <div class="flex items-center justify-between">
     <label for="event-json-input" class="text-sm font-medium text-muted-foreground">
       Event JSON
@@ -176,31 +178,12 @@ $effect(() => {
   </div>
   {#if error}
     <p class="text-xs text-error flex items-center gap-1.5">
-      <svg
-        aria-hidden="true"
-        class="w-3.5 h-3.5 shrink-0"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" />
-      </svg>
+      <AlertCircleIcon class="size-3.5 shrink-0" aria-hidden="true" />
       {error}
     </p>
   {:else if isValid}
     <p class="text-xs text-success flex items-center gap-1.5">
-      <svg
-        aria-hidden="true"
-        class="w-3.5 h-3.5 shrink-0"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
+      <CheckIcon class="size-3.5 shrink-0" aria-hidden="true" />
       Valid event JSON
     </p>
   {/if}

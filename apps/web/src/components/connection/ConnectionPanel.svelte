@@ -1,4 +1,5 @@
 <script lang="ts">
+import LinkIcon from "@lucide/svelte/icons/link";
 import type { EoseResult } from "@relayscope/shared";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
@@ -48,7 +49,7 @@ let {
 </script>
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
-  <div class="space-y-3">
+  <div class="flex flex-col gap-3">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <StatusDot status={STATUS_MAP[status]} />
@@ -76,25 +77,7 @@ let {
 
     <!-- Relay URL -->
     <div class="flex items-center gap-2 text-xs text-muted-foreground">
-      <svg
-        aria-hidden="true"
-        class="w-3.5 h-3.5 shrink-0"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"
-        />
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101"
-        />
-      </svg>
+      <LinkIcon class="size-3.5 shrink-0" aria-hidden="true" />
       <span class="font-mono truncate" title={relayUrl}>{relayUrl || 'No relay URL'}</span>
     </div>
 
@@ -133,7 +116,7 @@ let {
 
     <!-- Notices -->
     {#if notices.length > 0}
-      <div role="status" aria-live="polite" class="space-y-1.5">
+      <div role="status" aria-live="polite" class="flex flex-col gap-1.5">
         {#each notices as notice, i (`notice-${i}`)}
           <div
             class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs"

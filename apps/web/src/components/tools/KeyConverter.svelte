@@ -41,7 +41,7 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
 </script>
 
 <Card.Root class="rounded-xl border-border bg-card">
-  <Card.Content class="space-y-4 p-4">
+  <Card.Content class="flex flex-col gap-4 p-4">
     <!-- Screen reader live region for copy feedback -->
     <div aria-live="polite" class="sr-only">
       {clipboard.copied ? 'Copied to clipboard' : ''}
@@ -83,9 +83,9 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
 
     <!-- Results -->
     {#if result}
-      <dl class="space-y-3">
+      <dl class="flex flex-col gap-3">
         <!-- npub -->
-        <div class="space-y-1">
+        <div class="flex flex-col gap-1">
           <div class="flex items-center justify-between">
             <dt class="text-xs text-muted-foreground">npub</dt>
             <dd>
@@ -107,7 +107,7 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
 
         <!-- nsec (with safety warning) -->
         {#if result.nsec}
-          <div class="space-y-1">
+          <div class="flex flex-col gap-1">
             <div class="flex items-center justify-between">
               <dt class="text-xs text-muted-foreground">nsec</dt>
               <dd class="flex items-center gap-2">
@@ -149,7 +149,7 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
         {/if}
 
         <!-- hex -->
-        <div class="space-y-1">
+        <div class="flex flex-col gap-1">
           <div class="flex items-center justify-between">
             <dt class="text-xs text-muted-foreground">hex</dt>
             <dd>

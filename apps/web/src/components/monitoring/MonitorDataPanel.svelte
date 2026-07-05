@@ -18,7 +18,7 @@ let {
 } = $props();
 </script>
 
-<div class="space-y-3">
+<div class="flex flex-col gap-3">
   <div class="flex items-center justify-between">
     <h4 class="text-sm font-semibold text-foreground">Monitor Observations</h4>
     <span class="text-xs text-muted-foreground">
@@ -51,7 +51,7 @@ let {
   <!-- Individual Observations -->
   {#if discoveries.length > 0}
     <ScrollArea.Root class="max-h-48">
-      <div class="space-y-1">
+      <div class="flex flex-col gap-1">
         {#each discoveries.slice(0, 5) as discovery (discovery.id)}
           <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-muted/50 text-xs">
             <span class="text-muted-foreground font-mono truncate max-w-[120px]">

@@ -57,7 +57,7 @@ const clipboard = useClipboard();
 </script>
 
 <Card.Root class="rounded-xl border-border bg-card">
-  <Card.Content class="space-y-4 p-4">
+  <Card.Content class="flex flex-col gap-4 p-4">
     <!-- Screen reader live region for copy feedback -->
     <div aria-live="polite" class="sr-only">
       {clipboard.copied ? 'Copied to clipboard' : ''}
@@ -121,7 +121,7 @@ const clipboard = useClipboard();
 
     <!-- Result -->
     {#if result}
-      <div class="space-y-3">
+      <div class="flex flex-col gap-3">
         <!-- Status -->
         <div
           role="status"
@@ -139,7 +139,7 @@ const clipboard = useClipboard();
         </div>
 
         <!-- Details -->
-        <div class="space-y-2 text-xs">
+        <div class="flex flex-col gap-2 text-xs">
           <div class="flex justify-between">
             <span class="text-muted-foreground">Domain</span>
             <span class="text-foreground font-mono">{result.domain}</span>
@@ -156,7 +156,7 @@ const clipboard = useClipboard();
 
         <!-- Resolved Pubkey -->
         {#if result.resolvedPubkey}
-          <div class="space-y-1">
+          <div class="flex flex-col gap-1">
             <div class="flex items-center justify-between">
               <span class="text-xs text-muted-foreground">Resolved pubkey (hex)</span>
               <Button
@@ -175,7 +175,7 @@ const clipboard = useClipboard();
           </div>
 
           {#if result.npub}
-            <div class="space-y-1">
+            <div class="flex flex-col gap-1">
               <div class="flex items-center justify-between">
                 <span class="text-xs text-muted-foreground">npub</span>
                 <Button
@@ -219,7 +219,7 @@ const clipboard = useClipboard();
     {#if history.length > 0}
       <div class="border-t border-border pt-3">
         <p class="text-xs text-muted-foreground mb-2">Recent checks</p>
-      <ul class="space-y-1">
+      <ul class="flex flex-col gap-1">
         {#each history as item (item.identifier)}
           <li>
             <Button

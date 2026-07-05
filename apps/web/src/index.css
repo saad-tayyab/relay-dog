@@ -59,6 +59,18 @@
   --error: oklch(0.5 0.22 25);
   --error-dim: oklch(0.5 0.22 25 / 0.1);
 
+  /* ─── Event kind color tokens (light mode) ─── */
+  --kind-metadata: oklch(0.55 0.15 250);
+  --kind-metadata-dim: oklch(0.55 0.15 250 / 0.12);
+  --kind-note: oklch(0.5 0.15 155);
+  --kind-note-dim: oklch(0.5 0.15 155 / 0.12);
+  --kind-dm: oklch(0.5 0.15 300);
+  --kind-dm-dim: oklch(0.5 0.15 300 / 0.12);
+  --kind-channel: oklch(0.55 0.12 200);
+  --kind-channel-dim: oklch(0.55 0.12 200 / 0.12);
+  --kind-unknown: oklch(0.5 0.02 260);
+  --kind-unknown-dim: oklch(0.5 0.02 260 / 0.12);
+
   --width-content: 48rem;
   --width-content-xl: 64rem;
   --width-content-2xl: 72rem;
@@ -110,6 +122,18 @@
   --warning-dim: oklch(78% 0.16 75 / 0.12);
   --error: oklch(67% 0.2 25);
   --error-dim: oklch(67% 0.19 25 / 0.12);
+
+  /* ─── Event kind color tokens (dark mode) ─── */
+  --kind-metadata: oklch(72% 0.15 250);
+  --kind-metadata-dim: oklch(72% 0.15 250 / 0.15);
+  --kind-note: oklch(70% 0.15 155);
+  --kind-note-dim: oklch(70% 0.15 155 / 0.15);
+  --kind-dm: oklch(70% 0.15 300);
+  --kind-dm-dim: oklch(70% 0.15 300 / 0.15);
+  --kind-channel: oklch(72% 0.12 200);
+  --kind-channel-dim: oklch(72% 0.12 200 / 0.15);
+  --kind-unknown: oklch(70% 0.02 260);
+  --kind-unknown-dim: oklch(70% 0.02 260 / 0.15);
 }
 
 @theme inline {
@@ -157,6 +181,17 @@
   --color-warning-dim: var(--warning-dim);
   --color-error: var(--error);
   --color-error-dim: var(--error-dim);
+
+  --color-kind-metadata: var(--kind-metadata);
+  --color-kind-metadata-dim: var(--kind-metadata-dim);
+  --color-kind-note: var(--kind-note);
+  --color-kind-note-dim: var(--kind-note-dim);
+  --color-kind-dm: var(--kind-dm);
+  --color-kind-dm-dim: var(--kind-dm-dim);
+  --color-kind-channel: var(--kind-channel);
+  --color-kind-channel-dim: var(--kind-channel-dim);
+  --color-kind-unknown: var(--kind-unknown);
+  --color-kind-unknown-dim: var(--kind-unknown-dim);
 
   --font-sans: "Inter Variable", sans-serif;
   --radius-2xl: calc(var(--radius) * 1.8);

@@ -41,12 +41,12 @@ function handlePreset(key: string) {
 }
 </script>
 
-<div class="space-y-3">
+<div class="flex flex-col gap-3">
   <p class="block text-xs text-muted-foreground font-medium" id="tags-heading">Tags</p>
 
   <!-- Existing Tags -->
   {#if tags.length > 0}
-    <div class="space-y-1">
+    <div class="flex flex-col gap-1">
       {#each tags as tag, i (i)}
         <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-muted border border-border">
           <span class="text-xs font-mono text-primary">{tag[0]}</span>
@@ -59,7 +59,7 @@ function handlePreset(key: string) {
               size="icon"
               aria-label="Remove tag"
               onclick={() => onRemove(i)}
-              class="h-6 w-6 text-muted-foreground hover:text-error transition-colors"
+              class="size-6 text-muted-foreground hover:text-error transition-colors"
             >
               <span aria-hidden="true">✕</span>
             </Button>

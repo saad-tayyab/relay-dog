@@ -17,7 +17,7 @@ const tools = [
 ];
 </script>
 
-<div class="space-y-7">
+<div class="flex flex-col gap-7">
   <Tabs.Root value={activeTool} onValueChange={(id) => (activeTool = id as typeof activeTool)} aria-label="Developer tools">
     <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0">
       {#each tools as tool (tool.id)}

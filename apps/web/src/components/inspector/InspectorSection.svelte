@@ -2,6 +2,8 @@
 
 // 1. Internal packages (stores, utils)
 
+import AlertTriangleIcon from "@lucide/svelte/icons/alert-triangle";
+import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
 import * as Alert from "$lib/components/ui/alert";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
@@ -88,7 +90,7 @@ const tabs = $derived([
 ]);
 </script>
 
-<div class="space-y-5">
+      <div class="flex flex-col gap-5">
   <Tabs.Root value={activeTab} onValueChange={(id) => (activeTab = id as typeof activeTab)} aria-label="Inspector views">
     <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0">
       {#each tabs as tab (tab.id)}
@@ -115,20 +117,7 @@ const tabs = $derived([
       {#if !loading && error && !relayInfo}
         <div class="animate-fade-in py-10">
           <Alert.Root variant="destructive" class="mx-auto max-w-xl">
-            <svg
-              aria-hidden="true"
-              class="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
-              />
-            </svg>
+            <AlertTriangleIcon class="size-4" aria-hidden="true" />
             <Alert.Title>Failed to fetch relay info</Alert.Title>
             <Alert.Description>{error}</Alert.Description>
             <Alert.Action>
@@ -141,7 +130,7 @@ const tabs = $derived([
       {/if}
 
       {#if !loading && relayInfo}
-<div class="space-y-7">
+<div class="flex flex-col gap-7">
           <RelayProfile relayId={dbRelayId ?? undefined} relay={{ url }} info={relayInfo} />
 
           <!-- Add to Directory — shows prompt after inspect, or status when already in directory -->
@@ -184,16 +173,7 @@ const tabs = $derived([
               <Collapsible.Trigger
                 class="cursor-pointer text-sm text-muted-foreground hover:text-muted-foreground transition-colors flex items-center gap-2 py-2"
               >
-                <svg
-                  aria-hidden="true"
-                  class="w-4 h-4 transition-transform data-[state=open]:rotate-90"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
+                <ChevronRightIcon class="size-4 transition-transform data-[state=open]:rotate-90" aria-hidden="true" />
                 Raw NIP-11 JSON
               </Collapsible.Trigger>
               <Collapsible.Content>
@@ -220,7 +200,7 @@ const tabs = $derived([
       {/if}
     {:else}
       <!-- Live Stream View -->
-      <div class="space-y-5">
+<div class="flex flex-col gap-5">
         <!-- Auth Status -->
         {#if socket.status === 'connected' || socket.authStatus !== 'anonymous'}
           <AuthStatusBadge status={socket.authStatus} onAuthenticate={socket.authenticate} />

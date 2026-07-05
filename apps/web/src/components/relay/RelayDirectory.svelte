@@ -85,7 +85,7 @@ function closeComparison() {
 }
 </script>
 
-<div class="space-y-7">
+<div class="flex flex-col gap-7">
   <!-- Filter Bar -->
   <FilterBar
     filters={directory.filters}
@@ -136,12 +136,12 @@ function closeComparison() {
 
   <!-- Loading -->
   {#if directory.loading}
-    <div role="status" aria-label="Loading relays" class="space-y-2">
+    <div role="status" aria-label="Loading relays" class="flex flex-col gap-2">
       {#each Array(5) as _, i (i)}
         <div class="p-4 rounded-xl bg-card border border-border">
           <div class="flex items-start gap-3">
-            <Skeleton class="w-10 h-10 rounded-lg shrink-0" />
-            <div class="flex-1 space-y-2">
+            <Skeleton class="size-10 rounded-lg shrink-0" />
+            <div class="flex-1 flex flex-col gap-2">
               <Skeleton class="h-4 w-[200px]" />
               <Skeleton class="h-3 w-[300px]" />
               <Skeleton class="h-3 w-[150px]" />
@@ -173,7 +173,7 @@ function closeComparison() {
 
   <!-- Relay List -->
   {#if !directory.loading && !directory.error}
-    <div class="space-y-4">
+    <div class="flex flex-col gap-4">
       {#each directory.relays as relay (relay.id)}
         <RelayCard
           {relay}

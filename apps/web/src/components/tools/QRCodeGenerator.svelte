@@ -84,7 +84,7 @@ async function copyImage() {
 </script>
 
 <Card.Root class="rounded-xl border-border bg-card">
-  <Card.Content class="space-y-4 p-4">
+  <Card.Content class="flex flex-col gap-4 p-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-foreground">QR Code Generator</h3>
       <Badge variant="outline" class="border-border bg-muted text-muted-foreground">{detectedType}</Badge>

@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
-import { AccessibleTabs, SectionCard } from "@relayscope/ui";
 import { SimplePool } from "nostr-tools/pool";
+import { AccessibleTabs, SectionCard } from "@/components/shared/ui";
 import {
 	type BackupOptions,
 	exportToFile,

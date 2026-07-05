@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
-import { SectionCard } from "@relayscope/ui";
+import { SectionCard } from "@/components/shared/ui";
 import {
 	eventIdMatches,
 	toNpub,

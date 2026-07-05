@@ -2,7 +2,7 @@
 import { getHashSection, type Section, setHashSection } from "./utils/router";
 import "./index.css";
 
-import { EmptyState, Toast } from "@relayscope/ui";
+import { EmptyState, Toast } from "@/components/shared/ui";
 // Components
 import InspectorSection from "./components/inspector/InspectorSection.svelte";
 import MobileNav from "./components/nav/MobileNav.svelte";

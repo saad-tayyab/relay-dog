@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { ComparisonDiff, DirectoryRelay } from "@relayscope/shared";
-import { LoadingSpinner, SectionCard } from "@relayscope/ui";
+import { LoadingSpinner, SectionCard } from "@/components/shared/ui";
 import { useDirectory } from "../../lib/composables/useDirectory.svelte";
 import { apiFetch } from "../../utils/api";
 import FilterBar from "../filter/FilterBar.svelte";

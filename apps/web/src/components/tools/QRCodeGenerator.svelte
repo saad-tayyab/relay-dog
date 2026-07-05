@@ -1,6 +1,11 @@
 <script lang="ts">
-import { SectionCard } from "@relayscope/ui";
 import QRCode from "qrcode";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { Label } from "$lib/components/ui/label";
+import { Spinner } from "$lib/components/ui/spinner";
+import { Textarea } from "$lib/components/ui/textarea";
 import { detectKeyFormat } from "../../utils/keys";
 
 let input = $state("");
@@ -70,42 +75,41 @@ async function copyImage() {
 }
 </script>
 
-<SectionCard>
-  <div class="space-y-4">
+<Card.Root class="rounded-xl border-dark-border bg-dark-card">
+  <Card.Content class="space-y-4 p-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">QR Code Generator</h3>
-      <span class="text-xs text-text-muted">{detectedType}</span>
+      <Badge variant="outline" class="border-dark-border bg-dark-surface text-text-muted">{detectedType}</Badge>
     </div>
 
     <!-- Input -->
     <div>
-      <label for="qr-input" class="block text-xs text-text-muted mb-1">
+      <Label for="qr-input" class="mb-1 block text-xs text-text-muted">
         Enter npub, relay URL, event JSON, or any text
-      </label>
-      <textarea
+      </Label>
+      <Textarea
         id="qr-input"
         bind:value={input}
         oninput={handleInput}
         placeholder={"npub1... or wss://relay.example.com or event json"}
-        rows="3"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all font-mono resize-none"
-      ></textarea>
+        rows={3}
+        class="border-dark-border bg-dark-surface px-3 font-mono text-sm text-text-primary placeholder:text-text-muted"
+      />
     </div>
 
     <!-- Size Selector -->
     <div class="flex items-center gap-2">
       <span class="text-xs text-text-muted">Size:</span>
       {#each [200, 300, 500] as s (s)}
-        <button
-          type="button"
+        <Button
+          variant={size === s ? 'default' : 'outline'}
+          size="sm"
           aria-pressed={size === s}
           onclick={() => { size = s as 200 | 300 | 500; generateQR(); }}
-          class="min-h-[44px] px-3 py-2 rounded-lg text-xs transition-all {size === s
-            ? 'bg-accent text-white'
-            : 'bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary'}"
+          class="min-h-[44px] text-xs {size === s ? '' : 'border-dark-border bg-dark-surface text-text-muted hover:text-text-primary'}"
         >
           {s}px
-        </button>
+        </Button>
       {/each}
     </div>
 
@@ -113,7 +117,7 @@ async function copyImage() {
     {#if generating}
       <div class="flex items-center justify-center py-12 text-text-muted text-xs">
         <span class="flex items-center gap-2">
-          <span class="w-4 h-4 rounded-full border-2 border-text-muted/30 border-t-text-muted animate-spin"></span>
+          <Spinner class="text-text-muted" />
           Generating QR code...
         </span>
       </div>
@@ -125,22 +129,24 @@ async function copyImage() {
 
         <!-- Actions -->
         <div class="flex gap-2">
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="sm"
             aria-label="Download QR code as PNG"
             onclick={downloadQR}
-            class="min-h-[44px] px-4 py-2.5 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent transition-all"
+            class="min-h-[44px] border-dark-border bg-dark-surface text-xs text-text-primary hover:text-accent"
           >
             Download PNG
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             aria-label="Copy QR code image to clipboard"
             onclick={copyImage}
-            class="min-h-[44px] px-4 py-2.5 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent transition-all"
+            class="min-h-[44px] border-dark-border bg-dark-surface text-xs text-text-primary hover:text-accent"
           >
             Copy Image
-          </button>
+          </Button>
         </div>
       </div>
     {:else}
@@ -148,5 +154,5 @@ async function copyImage() {
         Enter content above to generate QR code
       </div>
     {/if}
-  </div>
-</SectionCard>
+  </Card.Content>
+</Card.Root>

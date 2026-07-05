@@ -1,5 +1,9 @@
 <script lang="ts">
-import { SectionCard } from "@relayscope/ui";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
 import { useClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
 import { type Nip05Result, verifyNip05 } from "../../utils/nip05";
 
@@ -50,8 +54,8 @@ async function handleCheck() {
 const clipboard = useClipboard();
 </script>
 
-<SectionCard>
-  <div class="space-y-4">
+<Card.Root class="rounded-xl border-dark-border bg-dark-card">
+  <Card.Content class="space-y-4 p-4">
     <!-- Screen reader live region for copy feedback -->
     <div aria-live="polite" class="sr-only">
       {clipboard.copied ? 'Copied to clipboard' : ''}
@@ -60,52 +64,52 @@ const clipboard = useClipboard();
 
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">NIP-05 Checker</h3>
-      <span class="text-xs text-text-muted">NIP-05</span>
+      <Badge variant="outline" class="border-dark-border bg-dark-surface text-text-muted">NIP-05</Badge>
     </div>
 
     <!-- Input -->
     <div>
-      <label for="nip05-input" class="block text-xs text-text-muted mb-1">
+      <Label for="nip05-input" class="mb-1 block text-xs text-text-muted">
         NIP-05 Identifier
-      </label>
-      <input
+      </Label>
+      <Input
         id="nip05-input"
         type="text"
         bind:value={identifier}
         placeholder="alice@example.com"
         aria-describedby="nip05-hint"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+        class="h-11 border-dark-border bg-dark-surface px-3 text-sm text-text-primary placeholder:text-text-muted"
       />
     </div>
 
     <!-- Optional expected pubkey -->
     <div>
-      <label for="expected-pubkey" class="block text-xs text-text-muted mb-1">
+      <Label for="expected-pubkey" class="mb-1 block text-xs text-text-muted">
         Expected pubkey (optional)
-      </label>
-      <input
+      </Label>
+      <Input
         id="expected-pubkey"
         type="text"
         bind:value={expectedPubkey}
         placeholder="64-char hex pubkey to verify against"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+        class="h-11 border-dark-border bg-dark-surface px-3 font-mono text-xs text-text-primary placeholder:text-text-muted"
       />
     </div>
 
     <!-- Check Button -->
-    <button
-      type="button"
+    <Button
+      variant="default"
       onclick={handleCheck}
       disabled={checking || !identifier.includes('@')}
       aria-describedby={identifier.length > 0 && !identifier.includes('@') ? 'nip05-hint' : undefined}
-      class="w-full px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      class="min-h-[44px] w-full"
     >
       {#if checking}
         Checking...
       {:else}
         Verify NIP-05
       {/if}
-    </button>
+    </Button>
 
     {#if !identifier.includes('@') && identifier.length > 0}
       <p id="nip05-hint" class="text-xs text-warning" role="status">
@@ -152,14 +156,15 @@ const clipboard = useClipboard();
           <div class="space-y-1">
             <div class="flex items-center justify-between">
               <span class="text-xs text-text-muted">Resolved pubkey (hex)</span>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 aria-label="Copy to clipboard"
                 onclick={() => result?.resolvedPubkey && clipboard.copy(result.resolvedPubkey)}
-                class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
+                class="min-h-[44px] text-xs text-accent"
               >
                 {clipboard.copied ? '✓ Copied' : 'Copy'}
-              </button>
+              </Button>
             </div>
             <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
               {result.resolvedPubkey}
@@ -170,14 +175,15 @@ const clipboard = useClipboard();
             <div class="space-y-1">
               <div class="flex items-center justify-between">
                 <span class="text-xs text-text-muted">npub</span>
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="sm"
                   aria-label="Copy to clipboard"
                   onclick={() => result?.npub && clipboard.copy(result.npub)}
-                  class="min-h-[44px] text-xs px-2 py-1 text-accent hover:underline"
+                  class="min-h-[44px] text-xs text-accent"
                 >
                   {clipboard.copied ? '✓ Copied' : 'Copy'}
-                </button>
+                </Button>
               </div>
               <div class="px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-secondary break-all">
                 {result.npub}
@@ -217,7 +223,7 @@ const clipboard = useClipboard();
                 identifier = item.identifier;
                 handleCheck();
               }}
-              class="flex items-center justify-between w-full px-2 py-1.5 rounded text-xs hover:bg-dark-surface transition-all"
+              class="touch-target flex items-center justify-between w-full rounded px-2 py-1.5 text-xs transition-all hover:bg-dark-surface"
             >
               <span class="text-text-secondary font-mono truncate">{item.identifier}</span>
               <span class={item.verified ? 'text-success' : 'text-error'}>
@@ -229,5 +235,5 @@ const clipboard = useClipboard();
       </ul>
       </div>
     {/if}
-  </div>
-</SectionCard>
+  </Card.Content>
+</Card.Root>

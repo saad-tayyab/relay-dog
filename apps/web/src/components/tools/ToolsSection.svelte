@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AccessibleTabs } from "@relayscope/ui";
+import { AccessibleTabs } from "@/components/shared/ui";
 import EventBackup from "./EventBackup.svelte";
 import KeyConverter from "./KeyConverter.svelte";
 import Nip05Checker from "./Nip05Checker.svelte";

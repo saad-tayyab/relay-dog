@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AccessibleTabs } from "@relayscope/ui";
+import { AccessibleTabs } from "@/components/shared/ui";
 import EventComposer from "./EventComposer.svelte";
 import EventDeleter from "./EventDeleter.svelte";
 

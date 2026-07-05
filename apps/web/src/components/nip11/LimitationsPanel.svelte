@@ -1,5 +1,5 @@
 <script lang="ts">
-import { SectionCard } from "@relayscope/ui";
+import { SectionCard } from "@/components/shared/ui";
 
 let { limitation }: { limitation?: Record<string, unknown> } = $props();
 

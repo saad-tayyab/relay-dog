@@ -11,7 +11,7 @@ interface ConnectionStatus {
 	latencyMs?: number;
 }
 
-import { SectionCard, StatusDot } from "@relayscope/ui";
+import { SectionCard, StatusDot } from "@/components/shared/ui";
 
 let { status }: { status: ConnectionStatus | null } = $props();
 

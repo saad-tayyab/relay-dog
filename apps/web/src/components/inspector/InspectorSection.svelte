@@ -1,7 +1,7 @@
 <script lang="ts">
 // 1. Internal packages (stores, utils)
 
-import { AccessibleTabs, ErrorMessage, LoadingSpinner, SectionCard } from "@relayscope/ui";
+import { AccessibleTabs, ErrorMessage, LoadingSpinner, SectionCard } from "@/components/shared/ui";
 import type { relaySocket } from "../../lib/stores/relaySocket.svelte";
 import type { ConnectionStatus, RelayInfo } from "../../utils/relay";
 import AuthStatusBadge from "../auth/AuthStatusBadge.svelte";

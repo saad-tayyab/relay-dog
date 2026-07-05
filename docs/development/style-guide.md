@@ -153,6 +153,30 @@ import { checkHealth } from './utils'
 
 Same as before — use Tailwind utility classes, use custom theme tokens from index.css, avoid inline styles, avoid CSS files for components.
 
+### shadcn-svelte Migration Conventions (Phase 13)
+
+- Keep generated/open-code UI primitives under `apps/web/src/lib/components/ui/**`.
+- Use `$lib` imports for shadcn primitives (e.g. `import { Button } from '$lib/components/ui/button'`).
+- Use `cn()` only from `$lib/shadcn/utils` (never from `$lib/utils`).
+- Preserve existing `@` alias for app code while supporting `$lib` for shadcn-style imports.
+- Token mapping must remain non-cyclic:
+  - backing tokens like `--relay-success`
+  - mapped utility tokens like `--color-success: var(--relay-success)`
+- Preserve Relay Dog accessibility/global CSS behavior in `apps/web/src/index.css`:
+  - `@source "../../../packages/ui/src"`
+  - keyframes (`pulse-dot`, `fade-in`, `slide-up`)
+  - `:focus-visible` styles
+  - `prefers-reduced-motion` handling
+  - `.touch-target` and `.sr-only` utilities
+- Density target is **Rhea-like compact UI**; if CLI schema does not expose `rhea`, keep config schema-valid and apply compact class choices during component migrations.
+- Preferred primitives during migration:
+  - Actions: `Button`
+  - Containers: `Card`
+  - Fields: `Field`, `Label`, `Input`, `Textarea`, `Select`
+  - Feedback: `Alert`, `Badge`, `Spinner`, `Skeleton`, `Empty`
+  - Overlays: `Dialog`, `Sheet`, `AlertDialog`, `Popover`, `Tooltip`
+  - Toasts: `Sonner` (`svelte-sonner`)
+
 ### Stores
 
 ```typescript

@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { RelayPopularity } from "@relayscope/shared";
-import { SectionCard } from "@relayscope/ui";
+import { SectionCard } from "@/components/shared/ui";
 import { useRelayDiscovery } from "../../lib/composables/useRelayDiscovery.svelte";
 import { apiFetch } from "../../utils/api";
 import type { RelayInfo } from "../../utils/relay";

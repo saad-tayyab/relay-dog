@@ -2,6 +2,7 @@
 import { Badge } from "$lib/components/ui/badge";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
+import { DateTimePicker } from "$lib/components/ui/date-time-picker";
 import * as Field from "$lib/components/ui/field";
 import { Input } from "$lib/components/ui/input";
 import { Label } from "$lib/components/ui/label";
@@ -17,8 +18,8 @@ let {
 let kinds = $state("1");
 let authors = $state("");
 let limit = $state(50);
-let since = $state("");
-let until = $state("");
+let since = $state<number | null>(null);
+let until = $state<number | null>(null);
 let subId = $state<string | null>(null);
 
 function generateSubId(): string {
@@ -45,15 +46,13 @@ function handleSubscribe() {
 	// Limit
 	if (limit > 0) filter.limit = limit;
 
-	// Time range
-	if (since) {
-		const sinceTs = Math.floor(new Date(since).getTime() / 1000);
-		if (!Number.isNaN(sinceTs)) filter.since = sinceTs;
-	}
-	if (until) {
-		const untilTs = Math.floor(new Date(until).getTime() / 1000);
-		if (!Number.isNaN(untilTs)) filter.until = untilTs;
-	}
+  // Time range
+  if (since) {
+    filter.since = since;
+  }
+  if (until) {
+    filter.until = until;
+  }
 
 	const id = generateSubId();
 	subId = id;
@@ -110,23 +109,19 @@ function handleUnsubscribe() {
 
     <!-- Since -->
     <Field.Field>
-      <Label for="filter-since" class="text-xs text-muted-foreground">Since</Label>
-      <Input
-        id="filter-since"
-        type="datetime-local"
+      <DateTimePicker
         bind:value={since}
-        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground"
+        onChange={(ts) => { since = ts; }}
+        label="Since"
       />
     </Field.Field>
 
     <!-- Until -->
     <Field.Field>
-      <Label for="filter-until" class="text-xs text-muted-foreground">Since</Label>
-      <Input
-        id="filter-until"
-        type="datetime-local"
+      <DateTimePicker
         bind:value={until}
-        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground"
+        onChange={(ts) => { until = ts; }}
+        label="Until"
       />
     </Field.Field>
   </fieldset>

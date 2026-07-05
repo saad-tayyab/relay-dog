@@ -21,7 +21,7 @@
 </script>
 
 <script lang="ts">
-	import type { HTMLFieldsetAttributes } from "svelte/elements";
+	import type { HTMLAttributes } from "svelte/elements";
 	import { cn, type WithElementRef } from "$lib/shadcn/utils.js";
 
 	let {
@@ -30,17 +30,18 @@
 		orientation = "vertical",
 		children,
 		...restProps
-	}: WithElementRef<HTMLFieldsetAttributes, HTMLFieldSetElement> & {
+	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		orientation?: FieldOrientation;
 	} = $props();
 </script>
 
-<fieldset
+<div
 	bind:this={ref}
+	role="group"
 	data-slot="field"
 	data-orientation={orientation}
 	class={cn(fieldVariants({ orientation }), className)}
 	{...restProps}
 >
 	{@render children?.()}
-</fieldset>
+</div>

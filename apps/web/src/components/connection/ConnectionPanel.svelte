@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { EoseResult } from "@relayscope/shared";
-import { StatusDot } from "@/components/shared/ui";
 import * as Card from "$lib/components/ui/card";
+import { StatusDot } from '$lib/components/ui/status-dot';
 import type { EoseState } from "../../lib/stores/relaySocket.svelte";
 import type { CheckStatus } from "../../utils/relay";
 import AuthPrefixDisplay from "../auth/AuthPrefixDisplay.svelte";

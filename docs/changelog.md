@@ -47,6 +47,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Con
 - Replaced shared `AccessibleTabs` wrapper usage with direct shadcn `Tabs` in core app surfaces and removed the wrapper file
 - Removed additional shared compatibility wrappers (`LoadingSpinner`, `ErrorMessage`) after switching call-sites to direct shadcn `Spinner`/`Alert` composition
 - Replaced `SectionCard` usage across web call-sites with direct shadcn `Card` composition and removed the wrapper file
+- **Design system hardening**: regenerated all 56 UI component groups from latest shadcn-svelte registry (`add --all --overwrite`)
+- **Design system hardening**: moved `StatusDot` from `@/components/shared/` to `$lib/components/ui/status-dot/` as proper shadcn-style open-code component
+- **Design system hardening**: inlined `EmptyState` wrapper directly into `App.svelte`, eliminated the entire `apps/web/src/components/shared/` directory
+- **Design system hardening**: removed `@source "../../../packages/ui/src"` from `index.css` (no longer needed)
+- **Design system hardening**: added 40 new shadcn primitives on-demand (dialog, dropdown-menu, tooltip, select, table, sheet, popover, alert-dialog, scroll-area, calendar, command, sidebar, drawer, etc.)
+- **Design system hardening**: added biome overrides for shadcn registry code lint compliance
 
 ### Documentation
 

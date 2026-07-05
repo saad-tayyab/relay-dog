@@ -1404,6 +1404,14 @@ bun run build
 - [x] Deleted obsolete shared compatibility files: `AccessibleTabs.svelte`, `LoadingSpinner.svelte`, `ErrorMessage.svelte`
 - [x] Removed `SectionCard` wrapper usage from web surfaces by replacing call-sites with direct shadcn `Card.Root` + `Card.Content`
 - [x] Deleted `SectionCard.svelte` compatibility file after migration
+- [x] **Design system hardening**: regenerated all 56 UI component groups from latest shadcn-svelte registry (`add --all --overwrite`)
+- [x] **Design system hardening**: moved `StatusDot` from `@/components/shared/` to `$lib/components/ui/status-dot/` as proper shadcn-style open-code component
+- [x] **Design system hardening**: inlined `EmptyState` wrapper content directly into `App.svelte`, eliminating the last shared wrapper
+- [x] **Design system hardening**: deleted entire `apps/web/src/components/shared/` directory (no wrappers remain)
+- [x] **Design system hardening**: removed `@source "../../../packages/ui/src"` from `index.css` (no longer needed)
+- [x] **Design system hardening**: added biome overrides for shadcn registry code (chart, data-table, sidebar, menubar, etc.)
+- [x] **Design system hardening**: added 40 new shadcn primitives on-demand (dialog, dropdown-menu, tooltip, select, table, sheet, popover, alert-dialog, scroll-area, calendar, command, sidebar, drawer, etc.)
+- [x] `bun run type-check && bun run lint && bun run build` — all pass after full hardening
 
 ### Full Migration — Final Verification
 
@@ -1455,6 +1463,11 @@ Final implementation files:
 | `apps/web/src/components/shared/{AccessibleTabs,LoadingSpinner,ErrorMessage}.svelte` | Deleted | Compatibility wrappers removed after direct shadcn replacements |
 | `apps/web/src/components/shared/SectionCard.svelte` | Deleted | Compatibility wrapper removed after direct `Card` migration |
 | `packages/ui/src/index.ts` | Modified | Reduced to minimal shared export surface (`StatusDot`) |
+| `apps/web/src/lib/components/ui/status-dot/**` | **New** | StatusDot moved from shared wrapper to proper shadcn-style open-code component |
+| `apps/web/src/components/shared/**` | Deleted | Entire shared wrapper directory removed — all consumers now use direct shadcn primitives |
+| `apps/web/src/index.css` | Modified | Removed `@source "../../../packages/ui/src"` directive (no longer needed) |
+| `apps/web/src/lib/components/ui/{accordion,alert-dialog,avatar,breadcrumb,button-group,calendar,carousel,chart,collapsible,command,context-menu,data-table,dialog,drawer,dropdown-menu,form,hover-card,input-group,input-otp,item,kbd,menubar,native-select,navigation-menu,pagination,popover,radio-group,range-calendar,resizable,scroll-area,select,sheet,sidebar,slider,switch,table,toggle,toggle-group,tooltip}/**` | **New** | Full shadcn-svelte registry — 40 new component groups added |
+| `apps/web/src/lib/composables/is-mobile.svelte.ts` | **New** | shadcn sidebar mobile detection hook |
 | `bun.lock` | Modified | Lock dependency changes from Bun |
 
 ## 20. Effort

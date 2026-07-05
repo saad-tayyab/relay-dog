@@ -103,6 +103,7 @@ const expirationInfo = $derived(parseExpiration(event.tags));
       type="button"
       variant="ghost"
       size="sm"
+      aria-expanded={expanded}
       onclick={() => (expanded = !expanded)}
       class="h-auto px-0 text-xs text-muted-foreground hover:text-primary"
     >

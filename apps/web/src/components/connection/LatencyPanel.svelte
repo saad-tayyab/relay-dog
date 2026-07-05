@@ -38,7 +38,7 @@ function formatMs(ms: number | null): string {
         class="bg-muted text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-40 transition-all"
       >
         {#if measuring}
-          <span class="animate-pulse">Measuring…</span>
+          <span class="animate-pulse" role="status">Measuring…</span>
         {:else}
           Measure
         {/if}

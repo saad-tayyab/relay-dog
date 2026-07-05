@@ -56,7 +56,7 @@ const displayConfig = $derived.by(() => {
 
 <div class="flex items-center gap-2">
   <Badge variant="outline" class="{displayConfig.color} {displayConfig.bg} {displayConfig.border}">
-    <span>{displayConfig.icon}</span>
+    <span aria-hidden="true">{displayConfig.icon}</span>
     {displayConfig.label}
   </Badge>
 

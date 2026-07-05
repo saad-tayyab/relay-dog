@@ -110,7 +110,7 @@ function closeComparison() {
 
   {#if comparisonError}
     <div role="alert" class="px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-sm text-error">
-      ⚠ {comparisonError}
+      <span aria-hidden="true">⚠</span> {comparisonError}
     </div>
   {/if}
 
@@ -154,7 +154,7 @@ function closeComparison() {
 
   <!-- Error -->
   {#if directory.error}
-    <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
+    <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md" role="alert"><Card.Content class="p-5 lg:p-6">
       <div class="text-center py-6">
         <p class="text-sm text-error mb-2">Failed to load directory</p>
         <p class="text-xs text-muted-foreground">{directory.error}</p>

@@ -86,6 +86,6 @@ const statusDisplay = $derived.by(() => {
   </div>
 
   {#if error}
-    <p class="mt-2 text-xs text-error">{error}</p>
+    <p role="alert" class="mt-2 text-xs text-error">{error}</p>
   {/if}
 </Card.Content></Card.Root>

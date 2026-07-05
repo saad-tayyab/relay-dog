@@ -8,6 +8,7 @@ import { Badge } from "$lib/components/ui/badge";
 import { Button } from "$lib/components/ui/button";
 import * as Item from "$lib/components/ui/item";
 import * as ScrollArea from "$lib/components/ui/scroll-area";
+import { jsonHighlight } from "../../utils/jsonHighlight";
 import { parseExpiration } from "../../utils/relay";
 import TooltipWrap from "../shared/TooltipWrap.svelte";
 import ExpiredBadge from "./ExpiredBadge.svelte";
@@ -195,11 +196,7 @@ const remainingTagCount = $derived(event.tags.length - 5);
   <div class="ml-10.5 mr-3.5 mt-1.5">
     <ScrollArea.Root class="h-64">
       <pre
-        class="p-4 rounded-lg bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
-          event,
-          null,
-          2,
-        )}</pre>
+        class="p-4 rounded-lg bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono leading-relaxed">{@html jsonHighlight(JSON.stringify(event, null, 2))}</pre>
     </ScrollArea.Root>
   </div>
 {/if}

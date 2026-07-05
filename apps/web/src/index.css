@@ -450,3 +450,42 @@ html {
 :focus:not(:focus-visible) {
   outline: none;
 }
+
+/* ─── JSON Syntax Highlighting ───
+ * Used by jsonHighlight() utility for <pre> blocks displaying JSON.
+ * Each token type uses a distinct hue for easy visual scanning:
+ *   keys = purple, strings = green, numbers = blue, keywords = amber */
+
+/* Light mode — all pass WCAG AA on bg-muted */
+.json-key {
+  color: oklch(0.42 0.16 300); /* purple — object keys */
+}
+.json-string {
+  color: oklch(0.38 0.12 155); /* green — string values */
+}
+.json-number {
+  color: oklch(0.45 0.15 250); /* blue — numeric values */
+}
+.json-keyword {
+  color: oklch(0.48 0.16 75); /* amber — true/false/null */
+}
+.json-punct {
+  color: oklch(0.455 0.016 285); /* muted-foreground */
+}
+
+/* Dark mode overrides — chroma reduced ~20% for eye comfort */
+.dark .json-key {
+  color: oklch(72% 0.12 300); /* purple */
+}
+.dark .json-string {
+  color: oklch(72% 0.12 155); /* green */
+}
+.dark .json-number {
+  color: oklch(72% 0.12 250); /* blue */
+}
+.dark .json-keyword {
+  color: oklch(78% 0.12 75); /* amber */
+}
+.dark .json-punct {
+  color: oklch(65% 0.01 260); /* muted-foreground */
+}

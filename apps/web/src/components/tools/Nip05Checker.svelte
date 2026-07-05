@@ -6,6 +6,7 @@ import * as Collapsible from "$lib/components/ui/collapsible";
 import { Input } from "$lib/components/ui/input";
 import { Label } from "$lib/components/ui/label";
 import { useClipboard } from "../../lib/composables/useCopyToClipboard.svelte";
+import { jsonHighlight } from "../../utils/jsonHighlight";
 import { type Nip05Result, verifyNip05 } from "../../utils/nip05";
 
 let identifier = $state("");
@@ -204,11 +205,7 @@ const clipboard = useClipboard();
               Raw JSON Response
             </Collapsible.Trigger>
              <Collapsible.Content>
-               <pre class="mt-2 p-4 rounded-lg bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono">{JSON.stringify(
-                  result.rawResponse,
-                  null,
-                  2,
-                )}</pre>
+               <pre class="mt-2 p-4 rounded-lg bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono">{@html jsonHighlight(JSON.stringify(result.rawResponse, null, 2))}</pre>
             </Collapsible.Content>
           </Collapsible.Root>
         {/if}

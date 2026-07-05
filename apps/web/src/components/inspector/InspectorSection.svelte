@@ -11,6 +11,7 @@ import * as Collapsible from "$lib/components/ui/collapsible";
 import { Spinner } from "$lib/components/ui/spinner";
 import * as Tabs from "$lib/components/ui/tabs";
 import type { relaySocket } from "../../lib/stores/relaySocket.svelte";
+import { jsonHighlight } from "../../utils/jsonHighlight";
 import type { ConnectionStatus, RelayInfo } from "../../utils/relay";
 import AuthStatusBadge from "../auth/AuthStatusBadge.svelte";
 import ConnectionPanel from "../connection/ConnectionPanel.svelte";
@@ -178,11 +179,7 @@ const tabs = $derived([
               </Collapsible.Trigger>
               <Collapsible.Content>
                 <pre
-                  class="mt-2 p-4 rounded-xl bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
-                    relayInfo,
-                    null,
-                    2,
-                  )}</pre>
+                  class="mt-2 p-4 rounded-xl bg-muted border border-border text-xs text-muted-foreground overflow-x-auto font-mono leading-relaxed">{@html jsonHighlight(JSON.stringify(relayInfo, null, 2))}</pre>
               </Collapsible.Content>
             </Collapsible.Root>
           </Card.Content></Card.Root>

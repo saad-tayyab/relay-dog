@@ -389,33 +389,6 @@ The API server (Hono + Bun) runs separately from the frontend. Add the API's `CO
 
 ---
 
-## 🌐 The Decentralized Social Landscape
-
-Relay Dog is built for **Nostr**, but it's part of a broader movement toward decentralized social protocols. Here's where Nostr fits:
-
-| Protocol | Founded | Architecture | Users | Best For |
-|----------|---------|--------------|-------|----------|
-| **[Nostr](https://nostr.com)** | 2020 | Minimal (keypair + relays) | Growing | Censorship resistance, simplicity |
-| **[AT Protocol (Bluesky)](https://atproto.com)** | 2022 | Modular (PDS + AppView + Relay) | 20M+ | Account portability, algorithmic choice |
-| **[Farcaster](https://www.farcaster.xyz)** | 2020 | P2P hubs + Ethereum | 800K+ | Crypto native, mini-apps (Frames) |
-| **[ActivityPub (Mastodon)](https://activitypub.rocks)** | 2018 | Federated servers | 100M+ | Largest community, mature ecosystem |
-| **[Matrix](https://matrix.org)** | 2014 | Federated messaging | 115M+ addresses | E2E encryption, bridges |
-| **[Scuttlebutt](https://scuttlebutt.nz)** | 2016 | Peer-to-peer | Niche | Offline-first, no servers |
-
-### Why Nostr?
-
-| Advantage | Detail |
-|-----------|--------|
-| **Simplest protocol** | ~100 lines of spec — anyone can build a client in an afternoon |
-| **True key-based identity** | No email, no phone, no company — just a keypair |
-| **Censorship resistant** | Can't ban keys, only relay operators can block |
-| **Browser-native** | WebSocket connections, no special infrastructure |
-| **Growing fast** | 500+ projects, active dev community |
-
-> **Relay Dog's philosophy**: Build tools for the simplest protocol. Nostr's minimalism makes it the fastest protocol to build on.
-
----
-
 ## 📄 Documentation
 
 | Doc | Description |

@@ -236,7 +236,7 @@ const importedKindsBreakdown = $derived.by(() => {
               type="file"
               accept=".json"
               onchange={handleFileImport}
-              class="h-11 border-border bg-muted px-3 text-sm text-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-accent file:px-3 file:py-1 file:text-sm file:text-white file:cursor-pointer"
+              class="h-11 border-border bg-muted px-3 text-sm text-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-accent file:px-3 file:py-1 file:text-sm file:text-accent-foreground file:cursor-pointer"
             />
           </Field.Field>
 

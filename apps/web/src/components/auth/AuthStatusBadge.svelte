@@ -65,7 +65,7 @@ const displayConfig = $derived.by(() => {
       variant="default"
       size="sm"
       onclick={onAuthenticate}
-      class="bg-accent text-white hover:opacity-90 transition-all"
+      class="bg-accent text-accent-foreground hover:opacity-90 transition-all"
     >
       Authenticate
     </Button>

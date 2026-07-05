@@ -106,7 +106,7 @@ function handlePreset(key: string) {
       size="sm"
       onclick={handleAdd}
       disabled={!tagKey.trim()}
-      class="bg-accent text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      class="bg-accent text-accent-foreground hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
     >
       Add
     </Button>

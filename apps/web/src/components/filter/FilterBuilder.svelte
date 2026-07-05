@@ -115,18 +115,18 @@ function handleUnsubscribe() {
         id="filter-since"
         type="datetime-local"
         bind:value={since}
-        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground [color-scheme:dark]"
+        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground"
       />
     </Field.Field>
 
     <!-- Until -->
     <Field.Field>
-      <Label for="filter-until" class="text-xs text-muted-foreground">Until</Label>
+      <Label for="filter-until" class="text-xs text-muted-foreground">Since</Label>
       <Input
         id="filter-until"
         type="datetime-local"
         bind:value={until}
-        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground [color-scheme:dark]"
+        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground"
       />
     </Field.Field>
   </fieldset>

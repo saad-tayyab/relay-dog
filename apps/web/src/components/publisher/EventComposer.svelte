@@ -124,7 +124,7 @@ async function handlePublish() {
           const val = (e.target as HTMLInputElement).value;
           composer.setCreatedAt(Math.floor(new Date(val).getTime() / 1000));
         }}
-        class="h-11 border-border bg-card px-3 text-sm text-foreground [color-scheme:dark]"
+        class="h-11 border-border bg-card px-3 text-sm text-foreground"
       />
     </div>
 

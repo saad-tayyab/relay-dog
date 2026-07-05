@@ -25,7 +25,7 @@ const POPULAR_RELAYS = [
 ];
 </script>
 
-<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-accent focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">
+<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">
   Skip to main content
 </a>
 <search onsubmit={onSubmit} class="mb-8 animate-fade-in" aria-label="Inspect a relay">
@@ -65,7 +65,7 @@ const POPULAR_RELAYS = [
       {#if loading}
         <div role="status" class="flex items-center gap-2">
           <div
-            class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
+            class="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin"
           ></div>
           Inspecting
         </div>

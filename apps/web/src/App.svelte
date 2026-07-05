@@ -2,7 +2,9 @@
 import { getHashSection, type Section, setHashSection } from "./utils/router";
 import "./index.css";
 
-import { EmptyState, Toast } from "@/components/shared/ui";
+import { toast } from "svelte-sonner";
+import { EmptyState } from "@/components/shared/ui";
+import { Toaster } from "$lib/components/ui/sonner";
 // Components
 import InspectorSection from "./components/inspector/InspectorSection.svelte";
 import MobileNav from "./components/nav/MobileNav.svelte";
@@ -37,6 +39,27 @@ $effect(() => {
 	}
 	window.addEventListener("hashchange", onHashChange);
 	return () => window.removeEventListener("hashchange", onHashChange);
+});
+
+$effect(() => {
+	if (!inspector.toast.visible || !inspector.toast.message) return;
+
+	const id = toast(inspector.toast.message, {
+		duration: inspector.toast.duration,
+		action:
+			inspector.toast.undoLabel && inspector.toast.onUndo
+				? {
+					label: inspector.toast.undoLabel,
+					onClick: inspector.toast.onUndo,
+				}
+				: undefined,
+			description: undefined,
+	});
+
+	inspector.toast.hide();
+	return () => {
+		toast.dismiss(id);
+	};
 });
 
 function handleEditAndRepublish(event: unknown) {
@@ -147,17 +170,5 @@ function handleEditAndRepublish(event: unknown) {
     </div>
   </footer>
 
-  <!-- Toast notification -->
-  {#if inspector.toast.visible}
-    {#key inspector.toast.key}
-      <Toast
-        message={inspector.toast.message}
-        type={inspector.toast.type}
-        duration={inspector.toast.duration}
-        undoLabel={inspector.toast.undoLabel}
-        onUndo={inspector.toast.onUndo}
-        onDismiss={() => inspector.toast.hide()}
-      />
-    {/key}
-  {/if}
+  <Toaster richColors position="bottom-center" />
 </div>

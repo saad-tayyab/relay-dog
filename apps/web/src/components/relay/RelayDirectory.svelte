@@ -1,6 +1,8 @@
 <script lang="ts">
 import type { ComparisonDiff, DirectoryRelay } from "@relayscope/shared";
-import { LoadingSpinner, SectionCard } from "@/components/shared/ui";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { Spinner } from "$lib/components/ui/spinner";
 import { useDirectory } from "../../lib/composables/useDirectory.svelte";
 import { apiFetch } from "../../utils/api";
 import FilterBar from "../filter/FilterBar.svelte";
@@ -118,37 +120,42 @@ function closeComparison() {
       <span class="text-xs text-accent">
         {selectedIds.size} relays selected — ready to compare
       </span>
-      <button
+      <Button
         type="button"
+        variant="default"
         onclick={handleCompare}
         disabled={comparisonLoading}
-        class="min-h-[44px] text-xs px-3 py-2 rounded-lg bg-accent text-white hover:opacity-90 disabled:opacity-50 transition-all"
+        class="min-h-[44px] px-3 py-2 text-xs"
       >
         {comparisonLoading ? 'Comparing…' : 'Compare →'}
-      </button>
+      </Button>
     </div>
   {/if}
 
   <!-- Loading -->
   {#if directory.loading}
-    <LoadingSpinner />
+    <div role="status" aria-label="Loading" class="flex items-center justify-center py-16">
+      <Spinner class="size-12 text-primary" />
+    </div>
   {/if}
 
   <!-- Error -->
   {#if directory.error}
-    <SectionCard>
+    <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
       <div class="text-center py-6">
         <p class="text-sm text-error mb-2">Failed to load directory</p>
         <p class="text-xs text-text-muted">{directory.error}</p>
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
           onclick={() => directory.fetchRelays()}
-          class="mt-3 text-xs px-3 py-1 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary transition-all"
+          class="mt-3 text-xs"
         >
           Retry
-        </button>
+        </Button>
       </div>
-    </SectionCard>
+    </Card.Content></Card.Root>
   {/if}
 
   <!-- Relay List -->
@@ -165,36 +172,40 @@ function closeComparison() {
     </div>
 
     {#if directory.relays.length === 0}
-      <SectionCard>
+      <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
         <div class="text-center py-8">
           <p class="text-sm text-text-muted">No relays found matching your filters.</p>
         </div>
-      </SectionCard>
+      </Card.Content></Card.Root>
     {/if}
   {/if}
 
   <!-- Pagination -->
   {#if directory.totalPages > 1}
     <div class="flex items-center justify-center gap-2">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         onclick={() => directory.setPage(directory.page - 1)}
         disabled={directory.page <= 1}
-        class="min-h-[44px] px-3 py-2 rounded-lg text-xs bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary disabled:opacity-40 transition-all"
+        class="min-h-[44px] px-3 py-2 text-xs"
       >
         ← Prev
-      </button>
+      </Button>
       <span class="text-xs text-text-muted">
         Page {directory.page} of {directory.totalPages}
       </span>
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         onclick={() => directory.setPage(directory.page + 1)}
         disabled={directory.page >= directory.totalPages}
-        class="min-h-[44px] px-3 py-2 rounded-lg text-xs bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary disabled:opacity-40 transition-all"
+        class="min-h-[44px] px-3 py-2 text-xs"
       >
         Next →
-      </button>
+      </Button>
     </div>
   {/if}
 

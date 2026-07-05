@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AccessibleTabs } from "@/components/shared/ui";
+import * as Tabs from "$lib/components/ui/tabs";
 import EventBackup from "./EventBackup.svelte";
 import KeyConverter from "./KeyConverter.svelte";
 import Nip05Checker from "./Nip05Checker.svelte";
@@ -18,12 +18,17 @@ const tools = [
 </script>
 
 <div class="space-y-7">
-  <AccessibleTabs
-    ariaLabel="Developer tools"
-    tabs={tools}
-    activeTab={activeTool}
-    onTabChange={(id) => (activeTool = id as typeof activeTool)}
-  >
+  <Tabs.Root value={activeTool} onValueChange={(id) => (activeTool = id as typeof activeTool)} aria-label="Developer tools">
+    <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0">
+      {#each tools as tool (tool.id)}
+        <Tabs.Trigger value={tool.id} class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary">
+          <span aria-hidden="true">{tool.icon}</span>
+          {tool.label}
+        </Tabs.Trigger>
+      {/each}
+    </Tabs.List>
+
+    <Tabs.Content value={activeTool} class="pt-5 focus:outline-none">
     {#if activeTool === 'key-converter'}
       <KeyConverter />
     {:else if activeTool === 'nip05-checker'}
@@ -33,5 +38,6 @@ const tools = [
     {:else if activeTool === 'event-backup'}
       <EventBackup />
     {/if}
-  </AccessibleTabs>
+    </Tabs.Content>
+  </Tabs.Root>
 </div>

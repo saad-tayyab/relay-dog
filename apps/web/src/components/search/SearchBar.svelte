@@ -1,4 +1,7 @@
 <script lang="ts">
+import { Button } from "$lib/components/ui/button";
+import { Input } from "$lib/components/ui/input";
+
 let {
 	url = $bindable(""),
 	loading,
@@ -45,18 +48,19 @@ const POPULAR_RELAYS = [
         </svg>
       </div>
       <label for="relay-url" class="sr-only">Relay URL</label>
-      <input
+      <Input
         id="relay-url"
         type="text"
         bind:value={url}
         placeholder="wss://relay.damus.io"
-        class="w-full pl-10 pr-4 py-3 rounded-xl bg-dark-card border border-dark-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border focus:ring-1 focus:ring-accent-border transition-all font-mono text-sm"
+        class="h-12 w-full border-border bg-card pl-10 pr-4 font-mono text-sm text-foreground placeholder:text-muted-foreground"
       />
     </div>
-    <button
+    <Button
       type="submit"
+      variant="default"
       disabled={loading || !url.trim()}
-      class="px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+      class="h-12 px-6 text-sm font-semibold"
     >
       {#if loading}
         <div
@@ -80,20 +84,22 @@ const POPULAR_RELAYS = [
         </svg>
         Inspect
       {/if}
-    </button>
+    </Button>
   </div>
 
   <!-- Quick pick relays -->
   <div class="mt-4 flex flex-wrap gap-2">
     <span class="text-xs text-text-muted mr-1 py-1">Try:</span>
     {#each POPULAR_RELAYS as relay (relay)}
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         onclick={() => onQuickPick(relay)}
-        class="text-xs min-h-[44px] px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-accent hover:border-accent-border transition-all"
+        class="min-h-[44px] border-border bg-card text-xs text-muted-foreground hover:text-primary"
       >
         {relay}
-      </button>
+      </Button>
     {/each}
   </div>
 </search>

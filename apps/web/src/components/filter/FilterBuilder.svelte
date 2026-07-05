@@ -1,5 +1,10 @@
 <script lang="ts">
-import { SectionCard } from "@/components/shared/ui";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import * as Field from "$lib/components/ui/field";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
 
 let {
 	connected,
@@ -65,15 +70,13 @@ function handleUnsubscribe() {
 }
 </script>
 
-<SectionCard>
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-sm font-semibold text-text-primary">Subscription Filter</h3>
     {#if subId}
-      <span
-        class="text-xs font-mono px-2 py-0.5 rounded-full bg-accent-dim border border-accent-border text-accent"
-      >
+      <Badge variant="outline" class="px-2 py-0.5 text-xs font-mono">
         {subId}
-      </span>
+      </Badge>
     {/if}
   </div>
 
@@ -81,90 +84,92 @@ function handleUnsubscribe() {
     <legend class="sr-only">Filter parameters</legend>
 
     <!-- Kinds -->
-    <div>
-      <label for="filter-kinds" class="block text-xs text-text-muted mb-1">Kinds</label>
-      <input
+    <Field.Field>
+      <Label for="filter-kinds" class="text-xs text-muted-foreground">Kinds</Label>
+      <Input
         id="filter-kinds"
         type="text"
         bind:value={kinds}
         placeholder="0, 1, 4, 42"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground placeholder:text-muted-foreground"
       />
-    </div>
+    </Field.Field>
 
     <!-- Limit -->
-    <div>
-      <label for="filter-limit" class="block text-xs text-text-muted mb-1">Limit</label>
-      <input
+    <Field.Field>
+      <Label for="filter-limit" class="text-xs text-muted-foreground">Limit</Label>
+      <Input
         id="filter-limit"
         type="number"
         bind:value={limit}
         min="1"
         max="500"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono focus:outline-none focus:border-accent-border transition-all"
+        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground"
       />
-    </div>
+    </Field.Field>
 
     <!-- Since -->
-    <div>
-      <label for="filter-since" class="block text-xs text-text-muted mb-1">Since</label>
-      <input
+    <Field.Field>
+      <Label for="filter-since" class="text-xs text-muted-foreground">Since</Label>
+      <Input
         id="filter-since"
         type="datetime-local"
         bind:value={since}
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono focus:outline-none focus:border-accent-border focus:ring-1 focus:ring-accent-border transition-all [color-scheme:dark]"
+        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground [color-scheme:dark]"
       />
-    </div>
+    </Field.Field>
 
     <!-- Until -->
-    <div>
-      <label for="filter-until" class="block text-xs text-text-muted mb-1">Until</label>
-      <input
+    <Field.Field>
+      <Label for="filter-until" class="text-xs text-muted-foreground">Until</Label>
+      <Input
         id="filter-until"
         type="datetime-local"
         bind:value={until}
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono focus:outline-none focus:border-accent-border focus:ring-1 focus:ring-accent-border transition-all [color-scheme:dark]"
+        class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground [color-scheme:dark]"
       />
-    </div>
+    </Field.Field>
   </fieldset>
 
   <!-- Authors (full width) -->
   <fieldset class="mb-4 border-0 p-0 m-0">
     <legend class="sr-only">Authors filter</legend>
-    <label for="filter-authors" class="block text-xs text-text-muted mb-1">
+    <Label for="filter-authors" class="mb-1 block text-xs text-muted-foreground">
       Authors (hex pubkeys, comma-separated)
-    </label>
-    <input
+    </Label>
+    <Input
       id="filter-authors"
       type="text"
       bind:value={authors}
       placeholder="abc123..., def456..."
-      class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-primary text-xs font-mono placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+      class="h-11 border-border bg-card px-3 font-mono text-xs text-foreground placeholder:text-muted-foreground"
     />
   </fieldset>
 
   <!-- Actions -->
   <div class="flex items-center gap-2">
     {#if !subId}
-      <button
+      <Button
         type="button"
+        variant="default"
         onclick={handleSubscribe}
         disabled={!connected}
-        class="min-h-[44px] px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        class="min-h-[44px] px-4 py-2 text-sm font-medium"
       >
         Subscribe
-      </button>
+      </Button>
     {:else}
-      <button
+      <Button
         type="button"
+        variant="destructive"
         onclick={handleUnsubscribe}
-        class="min-h-[44px] px-4 py-2 rounded-lg bg-error-dim border border-error/20 text-error text-sm font-medium hover:bg-error/25 transition-all"
+        class="min-h-[44px] px-4 py-2 text-sm font-medium"
       >
         Unsubscribe
-      </button>
+      </Button>
     {/if}
     {#if !connected}
       <span class="text-xs text-text-muted">Connect to a relay first</span>
     {/if}
   </div>
-</SectionCard>
+</Card.Content></Card.Root>

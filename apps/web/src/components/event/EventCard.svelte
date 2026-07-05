@@ -1,5 +1,7 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
 import { parseExpiration } from "../../utils/relay";
 import ExpiredBadge from "./ExpiredBadge.svelte";
 
@@ -71,9 +73,9 @@ const expirationInfo = $derived(parseExpiration(event.tags));
 <article class="border-b border-dark-border last:border-b-0 py-3 px-2">
   <!-- Header row -->
   <div class="flex items-center gap-2 mb-1.5">
-    <span class="text-xs font-medium px-1.5 py-0.5 rounded border {kindColor}">
+    <Badge class="text-xs font-medium px-1.5 py-0.5 border {kindColor}">
       {kindLabel}
-    </span>
+    </Badge>
     <ExpiredBadge expirationInfo={expirationInfo} />
     <span class="text-xs font-mono text-text-muted" title={event.pubkey}>
       {truncatePubkey(event.pubkey)}
@@ -95,10 +97,12 @@ const expirationInfo = $derived(parseExpiration(event.tags));
 
   <!-- Actions -->
   <div class="flex items-center gap-2 mt-2">
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="sm"
       onclick={() => (expanded = !expanded)}
-      class="text-xs text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+      class="h-auto px-0 text-xs text-muted-foreground hover:text-primary"
     >
       <svg
         aria-hidden="true"
@@ -111,11 +115,13 @@ const expirationInfo = $derived(parseExpiration(event.tags));
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
       </svg>
       {expanded ? 'Collapse' : 'Raw JSON'}
-    </button>
-    <button
+    </Button>
+    <Button
       type="button"
+      variant="ghost"
+      size="sm"
       onclick={handleCopy}
-      class="text-xs text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+      class="h-auto px-0 text-xs text-muted-foreground hover:text-primary"
     >
       {#if copied}
         <svg
@@ -146,7 +152,7 @@ const expirationInfo = $derived(parseExpiration(event.tags));
         </svg>
         Copy
       {/if}
-    </button>
+    </Button>
   </div>
 
   <!-- Expanded JSON -->

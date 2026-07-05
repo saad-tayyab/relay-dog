@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
-import { SectionCard } from "@/components/shared/ui";
+import * as Card from "$lib/components/ui/card";
 import { toNpub } from "../../utils/nostrVerify";
 import KindBadge from "./KindBadge.svelte";
 
@@ -61,7 +61,7 @@ async function copyToClipboard(
 }
 </script>
 
-<SectionCard className="space-y-4">
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md space-y-4"><Card.Content class="p-5 lg:p-6">
   <h3 class="text-sm font-semibold text-text-primary">Event Details</h3>
 
   <!-- Screen reader live region for copy feedback -->
@@ -205,4 +205,4 @@ async function copyToClipboard(
       {/if}
     </div>
   </dl>
-</SectionCard>
+</Card.Content></Card.Root>

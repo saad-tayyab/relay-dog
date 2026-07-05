@@ -41,6 +41,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Con
 - Removed `@relayscope/ui` from `apps/web/package.json` dependencies
 - Re-implemented shared compatibility components to use shadcn primitives (`Card`, `Tabs`, `Spinner`, `Button`, `Empty`) while preserving Relay Dog behavior and accessibility
 - Reduced `@relayscope/ui` package exports to a minimal shared surface (`StatusDot`) and moved web-facing shared primitives to app-local ownership
+- Switched app-level toast delivery from custom component to shadcn Sonner host
+- Migrated additional core forms and actions to shadcn field/control primitives (`Field`, `Input`, `Textarea`, `Button`, `Progress`) for stronger visible Rhea-style consistency
+- Migrated directory/nav/event interaction controls to shadcn primitives (including `Checkbox` and semantic button variants)
+- Replaced shared `AccessibleTabs` wrapper usage with direct shadcn `Tabs` in core app surfaces and removed the wrapper file
+- Removed additional shared compatibility wrappers (`LoadingSpinner`, `ErrorMessage`) after switching call-sites to direct shadcn `Spinner`/`Alert` composition
+- Replaced `SectionCard` usage across web call-sites with direct shadcn `Card` composition and removed the wrapper file
 
 ### Documentation
 

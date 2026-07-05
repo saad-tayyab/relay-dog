@@ -1,5 +1,8 @@
 <script lang="ts">
-import { SectionCard } from "@/components/shared/ui";
+import { Alert, AlertDescription } from "$lib/components/ui/alert";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { Spinner } from "$lib/components/ui/spinner";
 import { useAddRelay } from "../../lib/composables/useAddRelay.svelte";
 
 let {
@@ -41,10 +44,7 @@ function cancel() {
 
 <!-- Already in directory -->
 {#if inDirectory && !addRelayState.success}
-  <div
-    role="status"
-    class="px-3 py-2 rounded-lg bg-success-dim border border-success/20 text-xs text-success flex items-center gap-2"
-  >
+  <Alert role="status" class="text-xs">
     <svg
       aria-hidden="true"
       class="w-3.5 h-3.5 shrink-0"
@@ -55,14 +55,11 @@ function cancel() {
     >
       <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
     </svg>
-    <span>Already in directory</span>
-  </div>
+    <AlertDescription>Already in directory</AlertDescription>
+  </Alert>
 {:else if addRelayState.success}
   <!-- Success after adding -->
-  <div
-    role="status"
-    class="px-3 py-2 rounded-lg bg-success-dim border border-success/20 text-xs text-success flex items-center gap-2"
-  >
+  <Alert role="status" class="text-xs">
     <svg
       aria-hidden="true"
       class="w-3.5 h-3.5 shrink-0"
@@ -73,11 +70,12 @@ function cancel() {
     >
       <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
     </svg>
-    <span class="flex-1">Added to directory</span>
-    <button
+    <AlertDescription class="flex-1">Added to directory</AlertDescription>
+    <Button
       type="button"
+      variant="ghost"
+      size="icon"
       onclick={() => addRelayState.dismissSuccess()}
-      class="min-h-[44px] min-w-[44px] flex items-center justify-center text-success/60 hover:text-success transition-colors"
       aria-label="Dismiss"
     >
       <svg
@@ -90,11 +88,11 @@ function cancel() {
       >
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
-    </button>
-  </div>
+    </Button>
+  </Alert>
 {:else if !showForm}
   <!-- Add prompt (primary CTA — ephemeral, appears after inspection) -->
-  <SectionCard className="animate-slide-up">
+  <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md animate-slide-up"><Card.Content class="p-5 lg:p-6">
     <div class="flex items-center gap-3">
       <div class="flex-1 min-w-0">
         <p class="text-sm text-text-primary font-medium">
@@ -104,10 +102,11 @@ function cancel() {
           {relayUrl}
         </p>
       </div>
-      <button
+      <Button
         type="button"
+        variant="default"
         onclick={() => (showForm = true)}
-        class="min-h-[44px] px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 transition-all flex items-center gap-2 shrink-0"
+        class="min-h-[44px] shrink-0 px-4 py-2 text-sm font-semibold"
       >
         <svg
           aria-hidden="true"
@@ -120,12 +119,12 @@ function cancel() {
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
         Add
-      </button>
+      </Button>
     </div>
-  </SectionCard>
+  </Card.Content></Card.Root>
 {:else}
   <!-- Add form (expanded) -->
-  <SectionCard className="animate-slide-up">
+  <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md animate-slide-up"><Card.Content class="p-5 lg:p-6">
     <form
       onsubmit={(e) => {
         e.preventDefault();
@@ -135,10 +134,11 @@ function cancel() {
     >
       <div class="flex items-center justify-between">
         <h3 class="text-sm font-semibold text-text-primary">Add to Directory</h3>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onclick={cancel}
-          class="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
           aria-label="Cancel"
         >
           <svg
@@ -151,37 +151,34 @@ function cancel() {
           >
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
-        </button>
+        </Button>
       </div>
 
       <!-- Error -->
       {#if addRelayState.error}
-        <div
-          role="alert"
-          class="px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-xs text-error"
-        >
-          <span aria-hidden="true">⚠</span> {addRelayState.error}
-        </div>
+        <Alert variant="destructive" class="text-xs">
+          <AlertDescription><span aria-hidden="true">⚠</span> {addRelayState.error}</AlertDescription>
+        </Alert>
       {/if}
 
       <!-- Submit -->
       <div class="flex gap-2">
-        <button
+        <Button
           type="button"
+          variant="outline"
           onclick={cancel}
-          class="min-h-[44px] px-4 py-2.5 rounded-lg border border-dark-border text-sm text-text-muted hover:text-text-primary hover:border-dark-border/80 transition-all"
+          class="min-h-[44px] px-4 py-2.5 text-sm"
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
+          variant="default"
           disabled={addRelayState.submitting}
-          class="flex-1 min-h-[44px] px-4 py-2.5 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          class="flex-1 min-h-[44px] px-4 py-2.5 text-sm font-semibold"
         >
           {#if addRelayState.submitting}
-            <div
-              class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
-            ></div>
+            <Spinner class="size-4" />
             Adding…
           {:else}
             <svg
@@ -196,8 +193,8 @@ function cancel() {
             </svg>
             Add Relay
           {/if}
-        </button>
+        </Button>
       </div>
     </form>
-  </SectionCard>
+  </Card.Content></Card.Root>
 {/if}

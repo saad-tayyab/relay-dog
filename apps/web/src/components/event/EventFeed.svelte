@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
-import { SectionCard } from "@/components/shared/ui";
+import * as Card from "$lib/components/ui/card";
 import EventCard from "./EventCard.svelte";
 
 let { events }: { events: NostrEvent[] } = $props();
@@ -28,7 +28,7 @@ $effect(() => {
 });
 </script>
 
-<SectionCard className="flex flex-col">
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md flex flex-col"><Card.Content class="p-5 lg:p-6">
   <!-- Event count header -->
   <div class="flex items-center justify-between mb-3">
     <h3 class="text-sm font-semibold text-text-primary">Event Feed</h3>
@@ -53,4 +53,4 @@ $effect(() => {
       {/each}
     </ol>
   {/if}
-</SectionCard>
+</Card.Content></Card.Root>

@@ -1,5 +1,13 @@
 <script lang="ts">
-import { SectionCard } from "@/components/shared/ui";
+import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import * as Field from "$lib/components/ui/field";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { Spinner } from "$lib/components/ui/spinner";
+import { Textarea } from "$lib/components/ui/textarea";
 import { useEventComposer } from "../../lib/composables/useEventComposer.svelte";
 import TagEditor from "./TagEditor.svelte";
 
@@ -51,55 +59,55 @@ async function handlePublish() {
 }
 </script>
 
-<SectionCard>
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">Event Composer</h3>
-      <span class="text-xs text-text-muted">NIP-01, NIP-07</span>
+      <Badge variant="outline" class="text-xs text-muted-foreground">NIP-01, NIP-07</Badge>
     </div>
 
     <!-- Kind Selector -->
     <div>
-      <label for="kind-input" class="block text-xs text-text-muted mb-1">Kind</label>
+      <Label for="kind-input" class="mb-1 block text-xs text-muted-foreground">Kind</Label>
       <div class="flex gap-1 mb-2">
         {#each commonKinds as k (k.kind)}
-          <button
+          <Button
             type="button"
+            variant={composer.state.kind === k.kind ? "default" : "outline"}
+            size="sm"
             aria-pressed={composer.state.kind === k.kind}
             onclick={() => composer.setKind(k.kind)}
-            class="min-h-[44px] px-3 py-2 rounded text-xs transition-all {composer.state.kind === k.kind
-              ? 'bg-accent text-white'
-              : 'bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary'}"
+            class="min-h-[44px] px-3 py-2 text-xs"
           >
             {k.label}
-          </button>
+          </Button>
         {/each}
       </div>
-      <input
+      <Input
         id="kind-input"
         type="number"
         min="0"
         value={composer.state.kind}
         oninput={(e) => composer.setKind(Number((e.target as HTMLInputElement).value))}
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary focus:outline-none focus:border-accent-border transition-all font-mono"
+        class="h-11 border-border bg-card px-3 font-mono text-sm text-foreground"
       />
     </div>
 
     <!-- Content -->
     <div>
       <div class="flex items-center justify-between mb-1">
-        <label for="event-content" class="text-xs text-text-muted">Content</label>
+        <Label for="event-content" class="text-xs text-muted-foreground">Content</Label>
         <span class="text-xs {isOverLimit ? 'text-error' : 'text-text-muted'}">
           {charCount.toLocaleString()} / {maxChars.toLocaleString()}
         </span>
       </div>
-      <textarea
+      <Textarea
         id="event-content"
         bind:value={composer.state.content}
-        rows="6"
+        rows={6}
         placeholder="Event content..."
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all resize-none"
-      ></textarea>
+        class="border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground"
+      />
     </div>
 
     <!-- Tags -->
@@ -112,8 +120,8 @@ async function handlePublish() {
 
     <!-- Created At -->
     <div>
-      <label for="created-at" class="block text-xs text-text-muted mb-1">Created At</label>
-      <input
+      <Label for="created-at" class="mb-1 block text-xs text-muted-foreground">Created At</Label>
+      <Input
         id="created-at"
         type="datetime-local"
         value={new Date(composer.state.createdAt * 1000).toISOString().slice(0, 16)}
@@ -121,56 +129,56 @@ async function handlePublish() {
           const val = (e.target as HTMLInputElement).value;
           composer.setCreatedAt(Math.floor(new Date(val).getTime() / 1000));
         }}
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary focus:outline-none focus:border-accent-border transition-all"
+        class="h-11 border-border bg-card px-3 text-sm text-foreground [color-scheme:dark]"
       />
     </div>
 
     <!-- Target Relay -->
     <div>
-      <label for="target-relay" class="block text-xs text-text-muted mb-1">Target Relay</label>
-      <input
+      <Label for="target-relay" class="mb-1 block text-xs text-muted-foreground">Target Relay</Label>
+      <Input
         id="target-relay"
         type="text"
         bind:value={composer.state.targetRelay}
         placeholder="wss://relay.example.com"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+        class="h-11 border-border bg-card px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground"
       />
     </div>
 
     <!-- Publish Button -->
-    <button
+    <Button
       type="button"
+      variant="default"
       aria-label={composer.publishing ? 'Publishing event...' : 'Sign and publish event'}
       aria-busy={composer.publishing}
       onclick={handlePublish}
       disabled={composer.publishing || !composer.state.targetRelay || isOverLimit}
-      class="w-full min-h-[44px] px-4 py-3 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      class="min-h-[44px] w-full px-4 py-3 text-sm font-semibold"
     >
       {#if composer.publishing}
         <span class="flex items-center justify-center gap-2">
-          <span class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></span>
+          <Spinner class="size-4" />
           Publishing...
         </span>
       {:else}
         Sign & Publish
       {/if}
-    </button>
+    </Button>
 
     <!-- Result -->
     {#if composer.result}
-      <div
-        role="status"
-        class="px-3 py-2 rounded-lg text-xs {composer.result.success
-          ? 'bg-success-dim border border-success/20 text-success'
-          : 'bg-error-dim border border-error/20 text-error'}"
-      >
+      <Alert variant={composer.result.success ? 'default' : 'destructive'} class="text-xs">
         {#if composer.result.success}
-          <span aria-hidden="true">✓</span> Published! Event ID: <span class="font-mono">{composer.result.eventId}</span>
-          <span class="text-text-muted ml-2">({Math.round(composer.result.latencyMs)}ms)</span>
+          <AlertTitle>Published</AlertTitle>
+          <AlertDescription>
+            <span aria-hidden="true">✓</span> Event ID: <span class="font-mono">{composer.result.eventId}</span>
+            <span class="text-text-muted ml-2">({Math.round(composer.result.latencyMs)}ms)</span>
+          </AlertDescription>
         {:else}
-          <span aria-hidden="true">✕</span> {composer.result.error}
+          <AlertTitle>Publish failed</AlertTitle>
+          <AlertDescription><span aria-hidden="true">✕</span> {composer.result.error}</AlertDescription>
         {/if}
-      </div>
+      </Alert>
     {/if}
   </div>
-</SectionCard>
+</Card.Content></Card.Root>

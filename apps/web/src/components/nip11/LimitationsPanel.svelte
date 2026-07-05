@@ -1,5 +1,5 @@
 <script lang="ts">
-import { SectionCard } from "@/components/shared/ui";
+import * as Card from "$lib/components/ui/card";
 
 let { limitation }: { limitation?: Record<string, unknown> } = $props();
 
@@ -31,7 +31,7 @@ const items = $derived(
 </script>
 
 {#if limitation && items.length > 0}
-  <SectionCard className="animate-fade-in">
+  <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md animate-fade-in"><Card.Content class="p-5 lg:p-6">
     <h3 class="text-sm font-semibold text-text-primary mb-4">
       Limitations & Policies
     </h3>
@@ -64,5 +64,5 @@ const items = $derived(
         </div>
       {/each}
     </dl>
-  </SectionCard>
+  </Card.Content></Card.Root>
 {/if}

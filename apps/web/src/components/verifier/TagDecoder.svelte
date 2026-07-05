@@ -1,5 +1,5 @@
 <script lang="ts">
-import { SectionCard } from "@/components/shared/ui";
+import * as Card from "$lib/components/ui/card";
 import { decodeTag } from "../../utils/nostrVerify";
 
 let { tags }: { tags: string[][] } = $props();
@@ -21,7 +21,7 @@ function getBadgeColor(type: string): string {
 }
 </script>
 
-<SectionCard className="space-y-3">
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md space-y-3"><Card.Content class="p-5 lg:p-6">
   <h3 class="text-sm font-semibold text-text-primary">
     Tags
     {#if tags.length > 0}
@@ -54,4 +54,4 @@ function getBadgeColor(type: string): string {
       {/each}
     </div>
   {/if}
-</SectionCard>
+</Card.Content></Card.Root>

@@ -1,5 +1,12 @@
 <script lang="ts">
-import { SectionCard } from "@/components/shared/ui";
+import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import * as Field from "$lib/components/ui/field";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { Textarea } from "$lib/components/ui/textarea";
 import { useEventDeleter } from "../../lib/composables/useEventDeleter.svelte";
 
 let { targetRelay }: { targetRelay: string } = $props();
@@ -46,34 +53,36 @@ async function handleDelete() {
 }
 </script>
 
-<SectionCard>
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-text-primary">Event Deleter</h3>
-      <span class="text-xs text-text-muted">NIP-09</span>
+      <Badge variant="outline" class="text-xs text-muted-foreground">NIP-09</Badge>
     </div>
 
     <!-- Manual Input -->
-    <div>
-      <label for="event-ids" class="block text-xs text-text-muted mb-1">
+    <Field.Field>
+      <Label for="event-ids" class="mb-1 block text-xs text-muted-foreground">
         Event IDs (comma or newline separated)
-      </label>
-      <textarea
+      </Label>
+      <Textarea
         id="event-ids"
         bind:value={inputIds}
-        rows="3"
+        rows={3}
         placeholder="abc123..., def456..."
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all resize-none"
-      ></textarea>
-      <button
+        class="border-border bg-card px-3 font-mono text-xs text-foreground placeholder:text-muted-foreground"
+      />
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         onclick={handleAddIds}
         disabled={!inputIds.trim()}
-        class="min-h-[44px] mt-2 px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-primary hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        class="mt-2 min-h-[44px] text-xs"
       >
         Add IDs
-      </button>
-    </div>
+      </Button>
+    </Field.Field>
 
     <!-- Event ID List -->
     {#if deleter.eventIds.length > 0}
@@ -85,14 +94,16 @@ async function handleDelete() {
           {#each deleter.eventIds as id (id)}
             <div class="flex items-center justify-between px-2 py-1 rounded bg-dark-surface/50 text-xs">
               <span class="font-mono text-text-secondary truncate">{id}</span>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 aria-label="Remove event ID"
                 onclick={() => deleter.removeEventId(id)}
-                class="flex items-center justify-center p-2 -m-2 text-text-muted hover:text-error transition-colors ml-2"
+                class="ml-2 text-muted-foreground hover:text-destructive"
               >
                 <span aria-hidden="true">✕</span>
-              </button>
+              </Button>
             </div>
           {/each}
         </div>
@@ -100,72 +111,77 @@ async function handleDelete() {
     {/if}
 
     <!-- Reason -->
-    <div>
-      <label for="delete-reason" class="block text-xs text-text-muted mb-1">
+    <Field.Field>
+      <Label for="delete-reason" class="mb-1 block text-xs text-muted-foreground">
         Reason (optional)
-      </label>
-      <input
+      </Label>
+      <Input
         id="delete-reason"
         type="text"
         bind:value={deleter.reason}
         placeholder="Why are you deleting these events?"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+        class="h-11 border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground"
       />
-    </div>
+    </Field.Field>
 
     <!-- Target Relay -->
-    <div>
-      <label for="delete-relay" class="block text-xs text-text-muted mb-1">Target Relay</label>
-      <input
+    <Field.Field>
+      <Label for="delete-relay" class="mb-1 block text-xs text-muted-foreground">Target Relay</Label>
+      <Input
         id="delete-relay"
         type="text"
         value={deleter.targetRelay}
         oninput={handleRelayInput}
         placeholder="wss://relay.example.com"
-        class="w-full px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-border transition-all"
+        class="h-11 border-border bg-card px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground"
       />
-    </div>
+    </Field.Field>
 
     <!-- Warning -->
-    <div role="note" class="px-3 py-2 rounded-lg bg-warning-dim border border-warning/20 text-xs text-warning">
-      <span aria-hidden="true">⚠</span> Deletion is a request — relays may not honor it.
-    </div>
+    <Alert>
+      <AlertTitle>Deletion notice</AlertTitle>
+      <AlertDescription><span aria-hidden="true">⚠</span> Deletion is a request — relays may not honor it.</AlertDescription>
+    </Alert>
 
     <!-- Confirmation Banner -->
     {#if confirmDelete}
-      <div role="alert" class="p-3 bg-warning-dim border border-warning/20 rounded-lg text-xs">
-        <p class="text-warning mb-2">
+      <Alert variant="destructive" class="text-xs">
+        <AlertTitle>Confirm deletion</AlertTitle>
+        <AlertDescription class="mb-2">
           Confirm deletion of {deleter.eventIds.length} event{deleter.eventIds.length !== 1 ? 's' : ''} from {deleter.targetRelay || 'relay'}?
-        </p>
+        </AlertDescription>
         <div class="flex gap-2">
-          <button
+          <Button
             type="button"
+            variant="destructive"
             onclick={handleDelete}
             disabled={deleter.deleting}
-            class="min-h-[44px] px-4 py-2.5 bg-error text-white text-xs font-semibold rounded-lg hover:opacity-90 disabled:opacity-40 transition-all"
+            class="min-h-[44px] px-4 py-2.5 text-xs font-semibold"
           >
             {deleter.deleting ? 'Deleting...' : 'Yes, delete'}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="outline"
             onclick={() => (confirmDelete = false)}
-            class="min-h-[44px] px-4 py-2.5 bg-dark-surface border border-dark-border text-text-secondary text-xs rounded-lg hover:text-text-primary transition-all"
+            class="min-h-[44px] px-4 py-2.5 text-xs"
           >
             Cancel
-          </button>
+          </Button>
         </div>
-      </div>
+      </Alert>
     {:else}
       <!-- Delete Button -->
-      <button
+      <Button
         type="button"
+        variant="destructive"
         aria-label={`Delete ${deleter.eventIds.length} events`}
         onclick={handleDelete}
         disabled={deleter.deleting || deleter.eventIds.length === 0 || !deleter.targetRelay}
-        class="w-full min-h-[44px] px-4 py-3 rounded-lg bg-error text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        class="w-full min-h-[44px] px-4 py-3 text-sm font-semibold"
       >
         Delete {deleter.eventIds.length} Event{deleter.eventIds.length !== 1 ? 's' : ''}
-      </button>
+      </Button>
     {/if}
 
     <!-- Results -->
@@ -189,4 +205,4 @@ async function handleDelete() {
       </div>
     {/if}
   </div>
-</SectionCard>
+</Card.Content></Card.Root>

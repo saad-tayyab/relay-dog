@@ -61,11 +61,11 @@ function truncateContent(content: string, maxLen = 200): string {
 }
 
 /** Derive a deterministic color from a hex pubkey for the avatar fallback.
- *  Uses 33% lightness to guarantee ≥4.5:1 contrast with white text (SC 1.4.3). */
+ *  Uses 33% lightness in OKLCH to guarantee ≥4.5:1 contrast with white text (SC 1.4.3). */
 function pubkeyColor(pubkey: string): string {
 	const hash = Number.parseInt(pubkey.slice(0, 8), 16);
 	const hue = hash % 360;
-	return `hsl(${hue}, 60%, 33%)`;
+	return `oklch(0.33 0.12 ${hue})`;
 }
 
 /** Format a tag array into a short display string */

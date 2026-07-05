@@ -1,7 +1,7 @@
 <script lang="ts">
 import * as Card from "$lib/components/ui/card";
 import * as Popover from "$lib/components/ui/popover";
-import { NIP_INFO } from "../../utils/nip-constants";
+import { getNipStyle, NIP_INFO } from "../../utils/nip-constants";
 
 let { nips }: { nips: number[] } = $props();
 
@@ -9,14 +9,6 @@ const nipLink = (n: number) =>
 	`https://github.com/nostr-protocol/nips/blob/master/${String(n).padStart(2, "0")}.md`;
 
 const sortedNips = $derived([...nips].sort((a, b) => a - b));
-
-/** Pick light or dark color based on current theme class */
-function nipColor(info: { color?: string; colorDark?: string } | undefined, fallback = "#1d4ed8"): string {
-	if (!info) return fallback;
-	const isDark = document.documentElement.classList.contains("dark");
-	const hex = isDark ? (info.colorDark ?? info.color) : info.color;
-	return hex ?? fallback;
-}
 </script>
 
 {#if nips && nips.length > 0}
@@ -27,11 +19,11 @@ function nipColor(info: { color?: string; colorDark?: string } | undefined, fall
     <ul class="flex flex-wrap gap-2">
       {#each sortedNips as n (n)}
         {@const info = NIP_INFO[n]}
-        {@const hex = nipColor(info)}
+        {@const nipStyle = getNipStyle(info?.category)}
         <li>
           <Popover.Root>
             <Popover.Trigger class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:brightness-110 hover:shadow-sm cursor-pointer"
-              style="background-color: {hex}20; color: {hex}; border: 1px solid {hex}40"
+              style="background-color: {nipStyle.backgroundColor}; color: {nipStyle.color}; border: 1px solid {nipStyle.borderColor}"
             >
               <span class="font-bold">NIP-{n}</span>
               {#if info?.desc}

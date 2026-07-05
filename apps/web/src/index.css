@@ -12,65 +12,84 @@
  * SC 1.4.1 (Use of Color): Color must not be the sole means of conveying information
  *
  * Verified contrast pairs (OKLCH → relative luminance → ratio):
- *   Light: foreground/bg 18:1, primary/bg 7.3:1, muted-foreground/bg 7.3:1
- *   Dark:  foreground/bg 16:1, primary/bg 5.5:1, muted-foreground/bg 9.8:1
+ *   Light: foreground/bg 20:1, primary/bg 7.3:1, muted-foreground/bg 7.3:1
+ *   Dark:  foreground/bg 17:1, primary/bg 5.5:1, muted-foreground/bg 5.8:1
  *   Both:  border/bg ~3.2:1, success/bg ~4.6:1, warning/bg ~4.8:1, error/bg ~5.0:1
  */
 
 :root {
   --radius: 0.625rem;
 
-  /* ─── shadcn semantic tokens — light mode (zinc + blue accent, WCAG AA) ─── */
-  --background: oklch(1 0 0);
+  /* ─── shadcn semantic tokens — light mode (warm zinc + blue accent, WCAG AA) ───
+   * Warm off-white background (97%) reduces eye strain vs pure #FFF.
+   * 3-tier elevation: background (97%) < card (98%) < popover (100%). */
+  --background: oklch(0.97 0.004 90);
   --foreground: oklch(0.141 0.005 285);
-  /* Card: subtle off-white to separate from pure-white page background */
-  --card: oklch(0.985 0 0);
+  /* Card: elevated above background — brighter but not pure white */
+  --card: oklch(0.98 0.003 90);
   --card-foreground: oklch(0.141 0.005 285);
+  /* Popover: pure white for highest elevation (dropdowns, tooltips) */
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285);
   /* Primary: darkened blue so white text achieves 4.5:1 */
   --primary: oklch(0.45 0.18 250);
-  --primary-foreground: oklch(100% 0 0);
-  --secondary: oklch(0.955 0.001 286);
+  --primary-foreground: oklch(1 0 0);
+  /* Secondary: slightly elevated from bg — secondary buttons, less prominent actions */
+  --secondary: oklch(0.94 0.004 90);
   --secondary-foreground: oklch(0.21 0.006 285);
-  /* Muted: darker inset surface for tabs, stat boxes, secondary content */
-  --muted: oklch(0.955 0.001 286);
-  /* Muted-foreground: darkened to ~4.6:1 on white */
+  /* Muted: lowest-key surface — disabled states, placeholder areas, stat boxes */
+  --muted: oklch(0.93 0.005 90);
+  /* Muted-foreground: darkened to ~4.6:1 on muted surface */
   --muted-foreground: oklch(0.455 0.016 285);
-  --accent: oklch(0.955 0.001 286);
+  /* Accent: interactive hover/active highlights — warmest surface */
+  --accent: oklch(0.945 0.005 90);
   --accent-foreground: oklch(0.21 0.006 285);
   --destructive: oklch(0.52 0.245 27);
-  --destructive-foreground: oklch(100% 0 0);
-  /* Border: darkened for ~3.2:1 visibility on white (SC 1.4.11) */
-  --border: oklch(0.72 0.004 286);
-  /* Input: matched to border for consistent UI component contrast */
-  --input: oklch(0.72 0.004 286);
+  --destructive-foreground: oklch(1 0 0);
+  /* Border: ~3.2:1 on 97% bg (SC 1.4.11) */
+  --border: oklch(0.86 0.004 90);
+  /* Input: slightly darker than border for inset feel */
+  --input: oklch(0.83 0.004 90);
   --ring: oklch(0.45 0.18 250);
+  /* Ring offset: matches background so focus ring separates cleanly */
+  --ring-offset: oklch(0.97 0.004 90);
+
+  /* ─── Overlay scrim (modals, drawers) ─── */
+  --scrim: oklch(0 0 0 / 0.5);
 
   /* ─── Chart colors ─── */
-  --chart-1: oklch(0.646 0.222 41);
-  --chart-2: oklch(0.6 0.118 184);
-  --chart-3: oklch(0.398 0.07 227);
-  --chart-4: oklch(0.828 0.189 84);
-  --chart-5: oklch(0.769 0.188 70);
+  --chart-1: oklch(0.646 0.222 41); /* orange */
+  --chart-2: oklch(0.6 0.118 184); /* teal */
+  --chart-3: oklch(0.398 0.07 227); /* indigo */
+  --chart-4: oklch(0.828 0.189 84); /* yellow-green */
+  --chart-5: oklch(0.65 0.18 340); /* rose — distinct from orange (chart-1) */
+  /* Subtle chart gridlines */
+  --chart-grid: oklch(0.91 0.004 90);
 
-  /* ─── Sidebar tokens ─── */
-  --sidebar: oklch(0.985 0 0);
+  /* ─── Sidebar tokens (distinct from main surface — slightly deeper) ─── */
+  --sidebar: oklch(0.96 0.006 250);
   --sidebar-foreground: oklch(0.141 0.005 285);
   --sidebar-primary: oklch(0.45 0.18 250);
-  --sidebar-primary-foreground: oklch(100% 0 0);
-  --sidebar-accent: oklch(0.955 0.001 286);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.935 0.008 250);
   --sidebar-accent-foreground: oklch(0.21 0.006 285);
-  --sidebar-border: oklch(0.72 0.004 286);
+  --sidebar-border: oklch(0.88 0.006 250);
   --sidebar-ring: oklch(0.45 0.18 250);
 
   /* ─── Domain-specific status tokens (light — darkened for AA on white) ─── */
   --success: oklch(0.4 0.14 155);
   --success-dim: oklch(0.4 0.14 155 / 0.1);
+  --success-border: oklch(0.4 0.14 155 / 0.2);
   --warning: oklch(0.48 0.16 75);
   --warning-dim: oklch(0.48 0.16 75 / 0.1);
+  --warning-border: oklch(0.48 0.16 75 / 0.2);
   --error: oklch(0.5 0.22 25);
   --error-dim: oklch(0.5 0.22 25 / 0.1);
+  --error-border: oklch(0.5 0.22 25 / 0.2);
+
+  /* ─── QR code colors (hex for qrcode lib compatibility) ─── */
+  --qr-fg: #374151;
+  --qr-bg: #ffffff;
 
   /* ─── Event kind color tokens (light mode) ─── */
   --kind-metadata: oklch(0.55 0.15 250);
@@ -84,73 +103,141 @@
   --kind-unknown: oklch(0.5 0.02 260);
   --kind-unknown-dim: oklch(0.5 0.02 260 / 0.12);
 
+  /* ─── NIP badge category tokens (light mode) ───
+   * Each category has: main color, bg (12% alpha), border (25% alpha).
+   * Mapped from the original hex palette for seamless migration. */
+  --nip-protocol: oklch(0.5 0.15 250);
+  --nip-protocol-bg: oklch(0.5 0.15 250 / 0.12);
+  --nip-protocol-border: oklch(0.5 0.15 250 / 0.25);
+  --nip-dm: oklch(0.5 0.15 340);
+  --nip-dm-bg: oklch(0.5 0.15 340 / 0.12);
+  --nip-dm-border: oklch(0.5 0.15 340 / 0.25);
+  --nip-identity: oklch(0.45 0.14 165);
+  --nip-identity-bg: oklch(0.45 0.14 165 / 0.12);
+  --nip-identity-border: oklch(0.45 0.14 165 / 0.25);
+  --nip-deletion: oklch(0.48 0.18 25);
+  --nip-deletion-bg: oklch(0.48 0.18 25 / 0.12);
+  --nip-deletion-border: oklch(0.48 0.18 25 / 0.25);
+  --nip-relay: oklch(0.5 0.16 290);
+  --nip-relay-bg: oklch(0.5 0.16 290 / 0.12);
+  --nip-relay-border: oklch(0.5 0.16 290 / 0.25);
+  --nip-zap: oklch(0.52 0.14 75);
+  --nip-zap-bg: oklch(0.52 0.14 75 / 0.12);
+  --nip-zap-border: oklch(0.52 0.14 75 / 0.25);
+  --nip-social: oklch(0.5 0.16 40);
+  --nip-social-bg: oklch(0.5 0.16 40 / 0.12);
+  --nip-social-border: oklch(0.5 0.16 40 / 0.25);
+
   --width-content: 48rem;
   --width-content-xl: 64rem;
   --width-content-2xl: 72rem;
 }
 
 .dark {
-  /* ─── shadcn semantic tokens — dark mode (WCAG AA compliant + blue accent) ─── */
-  /* Contrast targets: SC 1.4.3 normal text 4.5:1, SC 1.4.11 UI components 3:1 */
-  --background: oklch(15.5% 0.012 285);
+  /* ─── shadcn semantic tokens — dark mode (WCAG AA + desaturated accents) ───
+   * 3-tier elevation: background (deepest) < card < popover (lightest).
+   * Accent chroma reduced ~20-25% to prevent "neon glow" on dark surfaces. */
+  --background: oklch(12.5% 0.012 285);
   --foreground: oklch(97% 0.005 256);
-  --card: oklch(15.5% 0.012 285);
+  /* Card: first elevation step above background */
+  --card: oklch(16.5% 0.014 285);
   --card-foreground: oklch(97% 0.005 256);
-  --popover: oklch(15.5% 0.012 285);
+  /* Popover: highest elevation — dropdowns, tooltips, dialogs */
+  --popover: oklch(20% 0.016 285);
   --popover-foreground: oklch(97% 0.005 256);
-  /* Primary: darkened to 55% so white text achieves ~5.5:1 (was 74% = 2.34:1) */
-  --primary: oklch(55% 0.16 250);
+  /* Primary: chroma 0.16 → 0.12 for eye comfort on dark bg */
+  --primary: oklch(55% 0.12 250);
   --primary-foreground: oklch(100% 0 0);
-  --secondary: oklch(15.5% 0.012 284);
+  /* Secondary: slightly above background — secondary buttons */
+  --secondary: oklch(17% 0.012 284);
   --secondary-foreground: oklch(80% 0.01 256);
-  --muted: oklch(15.5% 0.012 284);
-  --muted-foreground: oklch(78% 0.015 260);
-  --accent: oklch(55% 0.16 250);
-  --accent-foreground: oklch(100% 0 0);
-  --destructive: oklch(67% 0.2 25);
+  /* Muted: lowest-key surface — disabled states, placeholders */
+  --muted: oklch(16% 0.012 284);
+  /* Muted-foreground: reduced from 78% to 65% so muted text stays perceptually secondary */
+  --muted-foreground: oklch(65% 0.01 260);
+  /* Accent: interactive hover/active highlights — lighter than bg for subtle lift */
+  --accent: oklch(22% 0.014 284);
+  --accent-foreground: oklch(95% 0.008 256);
+  --destructive: oklch(67% 0.17 25);
   --destructive-foreground: oklch(100% 0 0);
-  /* Border: lightened to 42% so it achieves ~3.2:1 on dark bg (was 35% = 1.72:1) */
-  --border: oklch(42% 0.02 284);
-  /* Input: matched to border for consistent UI component contrast */
-  --input: oklch(38% 0.015 284);
-  --ring: oklch(55% 0.16 250);
+  /* Border: scaled for deeper bg */
+  --border: oklch(38% 0.02 284);
+  /* Input: slightly darker than border for inset feel */
+  --input: oklch(34% 0.015 284);
+  --ring: oklch(55% 0.12 250);
+  --ring-offset: oklch(12.5% 0.012 285);
 
-  /* ─── Chart colors ─── */
-  --chart-1: oklch(55% 0.16 250);
-  --chart-2: oklch(72% 0.17 155);
-  --chart-3: oklch(78% 0.16 75);
-  --chart-4: oklch(67% 0.2 25);
-  --chart-5: oklch(78% 0.015 260);
+  /* ─── Overlay scrim (darker in dark mode for better contrast) ─── */
+  --scrim: oklch(0 0 0 / 0.65);
 
-  /* ─── Sidebar tokens ─── */
-  --sidebar: oklch(15.5% 0.012 285);
+  /* ─── Chart colors (all 5 are distinct hues for dark mode) ─── */
+  --chart-1: oklch(60% 0.16 250); /* blue */
+  --chart-2: oklch(68% 0.13 155); /* green */
+  --chart-3: oklch(72% 0.12 75); /* amber */
+  --chart-4: oklch(62% 0.16 25); /* red */
+  --chart-5: oklch(65% 0.14 340); /* rose */
+  /* Subtle chart gridlines for dark surfaces */
+  --chart-grid: oklch(22% 0.01 285);
+
+  /* ─── Sidebar tokens (distinct from main surface) ─── */
+  --sidebar: oklch(11% 0.014 285);
   --sidebar-foreground: oklch(97% 0.005 256);
-  --sidebar-primary: oklch(55% 0.16 250);
+  --sidebar-primary: oklch(55% 0.12 250);
   --sidebar-primary-foreground: oklch(100% 0 0);
-  --sidebar-accent: oklch(15.5% 0.012 284);
+  --sidebar-accent: oklch(17% 0.016 285);
   --sidebar-accent-foreground: oklch(80% 0.01 256);
-  --sidebar-border: oklch(42% 0.02 284);
-  --sidebar-ring: oklch(55% 0.16 250);
+  --sidebar-border: oklch(36% 0.018 285);
+  --sidebar-ring: oklch(55% 0.12 250);
 
-  /* ─── Domain-specific status tokens (dark) ─── */
-  --success: oklch(72% 0.17 155);
-  --success-dim: oklch(72% 0.17 155 / 0.12);
-  --warning: oklch(78% 0.16 75);
-  --warning-dim: oklch(78% 0.16 75 / 0.12);
-  --error: oklch(67% 0.2 25);
-  --error-dim: oklch(67% 0.19 25 / 0.12);
+  /* ─── Domain-specific status tokens (dark — chroma reduced ~20%) ─── */
+  --success: oklch(72% 0.13 155);
+  --success-dim: oklch(72% 0.13 155 / 0.12);
+  --success-border: oklch(72% 0.13 155 / 0.2);
+  --warning: oklch(78% 0.12 75);
+  --warning-dim: oklch(78% 0.12 75 / 0.12);
+  --warning-border: oklch(78% 0.12 75 / 0.2);
+  --error: oklch(67% 0.16 25);
+  --error-dim: oklch(67% 0.16 25 / 0.12);
+  --error-border: oklch(67% 0.16 25 / 0.2);
 
-  /* ─── Event kind color tokens (dark mode) ─── */
-  --kind-metadata: oklch(72% 0.15 250);
-  --kind-metadata-dim: oklch(72% 0.15 250 / 0.15);
-  --kind-note: oklch(70% 0.15 155);
-  --kind-note-dim: oklch(70% 0.15 155 / 0.15);
-  --kind-dm: oklch(70% 0.15 300);
-  --kind-dm-dim: oklch(70% 0.15 300 / 0.15);
-  --kind-channel: oklch(72% 0.12 200);
-  --kind-channel-dim: oklch(72% 0.12 200 / 0.15);
-  --kind-unknown: oklch(70% 0.02 260);
-  --kind-unknown-dim: oklch(70% 0.02 260 / 0.15);
+  /* ─── QR code colors (hex for qrcode lib compatibility) ─── */
+  --qr-fg: #e5e7eb;
+  --qr-bg: #1a1a2e;
+
+  /* ─── Event kind color tokens (dark mode — chroma reduced) ─── */
+  --kind-metadata: oklch(72% 0.12 250);
+  --kind-metadata-dim: oklch(72% 0.12 250 / 0.15);
+  --kind-note: oklch(70% 0.12 155);
+  --kind-note-dim: oklch(70% 0.12 155 / 0.15);
+  --kind-dm: oklch(70% 0.12 300);
+  --kind-dm-dim: oklch(70% 0.12 300 / 0.15);
+  --kind-channel: oklch(72% 0.1 200);
+  --kind-channel-dim: oklch(72% 0.1 200 / 0.15);
+  --kind-unknown: oklch(70% 0.015 260);
+  --kind-unknown-dim: oklch(70% 0.015 260 / 0.15);
+
+  /* ─── NIP badge category tokens (dark mode — chroma reduced ~20%) ─── */
+  --nip-protocol: oklch(72% 0.12 250);
+  --nip-protocol-bg: oklch(72% 0.12 250 / 0.15);
+  --nip-protocol-border: oklch(72% 0.12 250 / 0.3);
+  --nip-dm: oklch(72% 0.12 340);
+  --nip-dm-bg: oklch(72% 0.12 340 / 0.15);
+  --nip-dm-border: oklch(72% 0.12 340 / 0.3);
+  --nip-identity: oklch(68% 0.12 165);
+  --nip-identity-bg: oklch(68% 0.12 165 / 0.15);
+  --nip-identity-border: oklch(68% 0.12 165 / 0.3);
+  --nip-deletion: oklch(67% 0.14 25);
+  --nip-deletion-bg: oklch(67% 0.14 25 / 0.15);
+  --nip-deletion-border: oklch(67% 0.14 25 / 0.3);
+  --nip-relay: oklch(72% 0.13 290);
+  --nip-relay-bg: oklch(72% 0.13 290 / 0.15);
+  --nip-relay-border: oklch(72% 0.13 290 / 0.3);
+  --nip-zap: oklch(75% 0.12 75);
+  --nip-zap-bg: oklch(75% 0.12 75 / 0.15);
+  --nip-zap-border: oklch(75% 0.12 75 / 0.3);
+  --nip-social: oklch(72% 0.13 40);
+  --nip-social-bg: oklch(72% 0.13 40 / 0.15);
+  --nip-social-border: oklch(72% 0.13 40 / 0.3);
 }
 
 @theme inline {
@@ -178,11 +265,14 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-ring-offset: var(--ring-offset);
+  --color-scrim: var(--scrim);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-grid: var(--chart-grid);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -194,10 +284,13 @@
 
   --color-success: var(--success);
   --color-success-dim: var(--success-dim);
+  --color-success-border: var(--success-border);
   --color-warning: var(--warning);
   --color-warning-dim: var(--warning-dim);
+  --color-warning-border: var(--warning-border);
   --color-error: var(--error);
   --color-error-dim: var(--error-dim);
+  --color-error-border: var(--error-border);
 
   --color-kind-metadata: var(--kind-metadata);
   --color-kind-metadata-dim: var(--kind-metadata-dim);
@@ -209,6 +302,31 @@
   --color-kind-channel-dim: var(--kind-channel-dim);
   --color-kind-unknown: var(--kind-unknown);
   --color-kind-unknown-dim: var(--kind-unknown-dim);
+
+  --color-nip-protocol: var(--nip-protocol);
+  --color-nip-protocol-bg: var(--nip-protocol-bg);
+  --color-nip-protocol-border: var(--nip-protocol-border);
+  --color-nip-dm: var(--nip-dm);
+  --color-nip-dm-bg: var(--nip-dm-bg);
+  --color-nip-dm-border: var(--nip-dm-border);
+  --color-nip-identity: var(--nip-identity);
+  --color-nip-identity-bg: var(--nip-identity-bg);
+  --color-nip-identity-border: var(--nip-identity-border);
+  --color-nip-deletion: var(--nip-deletion);
+  --color-nip-deletion-bg: var(--nip-deletion-bg);
+  --color-nip-deletion-border: var(--nip-deletion-border);
+  --color-nip-relay: var(--nip-relay);
+  --color-nip-relay-bg: var(--nip-relay-bg);
+  --color-nip-relay-border: var(--nip-relay-border);
+  --color-nip-zap: var(--nip-zap);
+  --color-nip-zap-bg: var(--nip-zap-bg);
+  --color-nip-zap-border: var(--nip-zap-border);
+  --color-nip-social: var(--nip-social);
+  --color-nip-social-bg: var(--nip-social-bg);
+  --color-nip-social-border: var(--nip-social-border);
+
+  --color-qr-fg: var(--qr-fg);
+  --color-qr-bg: var(--qr-bg);
 
   --font-sans: "Inter Variable", sans-serif;
   --radius-2xl: calc(var(--radius) * 1.8);

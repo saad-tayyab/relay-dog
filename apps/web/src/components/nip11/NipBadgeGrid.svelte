@@ -67,7 +67,7 @@ const sortedNips = $derived([...nips].sort((a, b) => a - b));
             target="_blank"
             rel="noopener noreferrer"
             class="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:brightness-110 hover:shadow-sm"
-            style="background-color: {info?.color || '#60a5fa'}15; color: {info?.color || '#60a5fa'}; border: 1px solid {info?.color || '#60a5fa'}30"
+            style="background-color: {info?.color || '#60a5fa'}20; color: {info?.color || '#60a5fa'}; border: 1px solid {info?.color || '#60a5fa'}40"
             title={info?.desc || `NIP-${n}`}
           >
             <span class="font-bold">NIP-{n}</span>

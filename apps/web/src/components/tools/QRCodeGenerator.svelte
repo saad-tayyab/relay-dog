@@ -15,6 +15,10 @@ let size = $state<200 | 300 | 500>(300);
 let detectedType = $state<string>("text");
 let generating = $state(false);
 
+function isDarkMode(): boolean {
+	return document.documentElement.classList.contains("dark");
+}
+
 function generateQR() {
 	if (!input.trim()) {
 		qrDataUrl = null;
@@ -24,12 +28,13 @@ function generateQR() {
 	generating = true;
 	qrDataUrl = null;
 
+	const dark = isDarkMode();
 	QRCode.toDataURL(input.trim(), {
 		width: size,
 		margin: 2,
 		color: {
-			dark: "#ffffff",
-			light: "#1a1a2e",
+			dark: dark ? "#ffffff" : "#1a1a2e",
+			light: dark ? "#1a1a2e" : "#ffffff",
 		},
 	})
 		.then((url) => {
@@ -118,7 +123,7 @@ async function copyImage() {
       </div>
     {:else if qrDataUrl}
       <div class="flex flex-col items-center gap-4">
-        <div class="p-4 rounded-xl bg-white shadow-lg">
+        <div class="p-4 rounded-xl bg-background border border-border shadow-lg">
           <img src={qrDataUrl} alt="QR code for: {input.slice(0, 50)}{input.length > 50 ? '...' : ''}" width={size} height={size} />
         </div>
 

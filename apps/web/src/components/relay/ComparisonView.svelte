@@ -1,4 +1,6 @@
 <script lang="ts">
+import CheckIcon from "@lucide/svelte/icons/check";
+import XIcon from "@lucide/svelte/icons/x";
 import type { DirectoryRelay } from "@relayscope/shared";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
@@ -25,6 +27,12 @@ function winnerClass(winner: "A" | "B" | "tie", side: "A" | "B"): string {
 	if (winner === "tie") return "";
 	if (winner === side) return "text-success";
 	return "text-error";
+}
+
+function winnerIcon(winner: "A" | "B" | "tie", side: "A" | "B"): "win" | "lose" | "tie" {
+	if (winner === "tie") return "tie";
+	if (winner === side) return "win";
+	return "lose";
 }
 
 function latencyDisplay(relay: DirectoryRelay): string {
@@ -86,22 +94,34 @@ function healthStatus(relay: DirectoryRelay): string {
       <!-- Health -->
       <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-muted border border-border">
         <td class="text-xs text-center {winnerClass(diff.healthWinner, 'A')}">
-          {healthStatus(relayA)}
+          <span class="inline-flex items-center gap-1">
+            {#if winnerIcon(diff.healthWinner, 'A') === 'win'}<CheckIcon class="size-3" aria-hidden="true" />{:else if winnerIcon(diff.healthWinner, 'A') === 'lose'}<XIcon class="size-3" aria-hidden="true" />{/if}
+            {healthStatus(relayA)}
+          </span>
         </td>
         <th scope="row" class="text-xs text-muted-foreground text-center font-normal">Health</th>
         <td class="text-xs text-center {winnerClass(diff.healthWinner, 'B')}">
-          {healthStatus(relayB)}
+          <span class="inline-flex items-center gap-1">
+            {#if winnerIcon(diff.healthWinner, 'B') === 'win'}<CheckIcon class="size-3" aria-hidden="true" />{:else if winnerIcon(diff.healthWinner, 'B') === 'lose'}<XIcon class="size-3" aria-hidden="true" />{/if}
+            {healthStatus(relayB)}
+          </span>
         </td>
       </tr>
 
       <!-- Latency -->
       <tr class="grid grid-cols-[1fr_auto_1fr] gap-4 py-2 px-3 rounded-lg bg-muted border border-border">
         <td class="text-xs text-center font-mono {winnerClass(diff.latencyWinner, 'A')}">
-          {latencyDisplay(relayA)}
+          <span class="inline-flex items-center gap-1">
+            {#if winnerIcon(diff.latencyWinner, 'A') === 'win'}<CheckIcon class="size-3" aria-hidden="true" />{:else if winnerIcon(diff.latencyWinner, 'A') === 'lose'}<XIcon class="size-3" aria-hidden="true" />{/if}
+            {latencyDisplay(relayA)}
+          </span>
         </td>
         <th scope="row" class="text-xs text-muted-foreground text-center font-normal">Latency</th>
         <td class="text-xs text-center font-mono {winnerClass(diff.latencyWinner, 'B')}">
-          {latencyDisplay(relayB)}
+          <span class="inline-flex items-center gap-1">
+            {#if winnerIcon(diff.latencyWinner, 'B') === 'win'}<CheckIcon class="size-3" aria-hidden="true" />{:else if winnerIcon(diff.latencyWinner, 'B') === 'lose'}<XIcon class="size-3" aria-hidden="true" />{/if}
+            {latencyDisplay(relayB)}
+          </span>
         </td>
       </tr>
 

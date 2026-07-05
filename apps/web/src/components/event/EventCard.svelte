@@ -2,7 +2,9 @@
 import type { NostrEvent } from "@relayscope/shared";
 import { Badge } from "$lib/components/ui/badge";
 import { Button } from "$lib/components/ui/button";
+import * as ScrollArea from "$lib/components/ui/scroll-area";
 import { parseExpiration } from "../../utils/relay";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
 import ExpiredBadge from "./ExpiredBadge.svelte";
 
 let { event }: { event: NostrEvent } = $props();
@@ -157,11 +159,13 @@ const expirationInfo = $derived(parseExpiration(event.tags));
 
   <!-- Expanded JSON -->
   {#if expanded}
-    <pre
-      class="mt-2 p-4 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed max-h-64 overflow-y-auto">{JSON.stringify(
-        event,
-        null,
-        2,
-      )}</pre>
+    <ScrollArea.Root class="mt-2 max-h-64">
+      <pre
+        class="p-4 rounded-lg bg-dark-surface border border-dark-border text-xs text-text-secondary overflow-x-auto font-mono leading-relaxed">{JSON.stringify(
+          event,
+          null,
+          2,
+        )}</pre>
+    </ScrollArea.Root>
   {/if}
 </article>

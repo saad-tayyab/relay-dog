@@ -3,7 +3,9 @@ import type { DirectoryRelay } from "@relayscope/shared";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 import { Checkbox } from "$lib/components/ui/checkbox";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 import { safeHttpsIconUrl } from "../../utils/relay";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
 
 let {
 	relay,
@@ -153,29 +155,31 @@ function isSoftwareUrl(raw: string): boolean {
 
       <!-- Actions — always visible on mobile, hover-reveal on desktop -->
       <div class="shrink-0 flex flex-col items-center gap-1">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onclick={handleInspect}
-          aria-label="Inspect relay"
-          class="text-muted-foreground transition-all hover:text-primary sm:opacity-0 sm:group-hover:opacity-100"
-        >
-          <svg
-            aria-hidden="true"
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
+        <TooltipWrap label="Inspect relay">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onclick={handleInspect}
+            aria-label="Inspect relay"
+            class="text-muted-foreground transition-all hover:text-primary sm:opacity-0 sm:group-hover:opacity-100"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </Button>
+            <svg
+              aria-hidden="true"
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </Button>
+        </TooltipWrap>
 
         <!-- biome-ignore lint/a11y/noLabelWithoutControl: label wraps input, valid association -->
         <label class="relative flex items-center justify-center p-1 cursor-pointer">
@@ -189,6 +193,32 @@ function isSoftwareUrl(raw: string): boolean {
             }}
           />
         </label>
+
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger
+            type="button"
+            aria-label="Relay actions"
+            onclick={(e: MouseEvent) => e.stopPropagation()}
+            onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+            class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors sm:opacity-0 sm:group-hover:opacity-100"
+          >
+            <svg aria-hidden="true" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+            </svg>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end">
+            <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); onInspect(relay.url); }}>
+              Inspect
+            </DropdownMenu.Item>
+            <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); navigator.clipboard.writeText(relay.url); }}>
+              Copy URL
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); window.open(relay.url, '_blank', 'noopener,noreferrer'); }}>
+              Open in new tab
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
       </div>
     </div>
   </Card.Content></Card.Root>

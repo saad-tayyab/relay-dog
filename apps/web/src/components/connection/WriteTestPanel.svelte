@@ -1,5 +1,7 @@
 <script lang="ts">
 import type { WriteTestStatus } from "@relayscope/shared";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 
 let {
@@ -54,23 +56,21 @@ const statusDisplay = $derived.by(() => {
   <div class="flex items-center justify-between mb-3">
     <h3 class="text-sm font-semibold text-text-primary">Write Test</h3>
     {#if onRunTest}
-      <button
-        type="button"
+      <Button
+        variant="outline"
         onclick={onRunTest}
         disabled={status === 'testing'}
-        class="min-h-[44px] text-xs px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
+        class="bg-dark-surface text-text-muted hover:text-text-primary hover:border-accent-border disabled:opacity-40 transition-all"
       >
         {status === 'testing' ? 'Testing…' : 'Run Test'}
-      </button>
+      </Button>
     {/if}
   </div>
 
   <div class="flex items-center gap-3">
-    <span
-      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border {statusDisplay.color} {statusDisplay.bg} {statusDisplay.border}"
-    >
+    <Badge variant="outline" class="{statusDisplay.color} {statusDisplay.bg} {statusDisplay.border}">
       {statusDisplay.label}
-    </span>
+    </Badge>
 
     {#if latencyMs !== null}
       <span class="text-xs text-text-muted">

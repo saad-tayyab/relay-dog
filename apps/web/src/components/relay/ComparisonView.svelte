@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { DirectoryRelay } from "@relayscope/shared";
+import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 
 let {
@@ -47,14 +48,15 @@ function healthStatus(relay: DirectoryRelay): string {
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-sm font-semibold text-text-primary">Relay Comparison</h3>
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="icon"
       aria-label="Close comparison view"
       onclick={onClose}
-      class="min-h-[44px] min-w-[44px] text-xs px-3 py-2 rounded-lg bg-dark-surface border border-dark-border text-text-muted hover:text-text-primary transition-all"
+      class="bg-dark-surface text-text-muted hover:text-text-primary transition-all"
     >
       <span aria-hidden="true">✕</span> Close
-    </button>
+    </Button>
   </div>
 
   <!-- Relay Headers -->

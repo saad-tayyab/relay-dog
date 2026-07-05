@@ -1,5 +1,7 @@
 <script lang="ts">
 import type { AuthStatus } from "@relayscope/shared";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
 
 let {
 	status,
@@ -53,20 +55,19 @@ const displayConfig = $derived.by(() => {
 </script>
 
 <div class="flex items-center gap-2">
-  <span
-    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border {displayConfig.color} {displayConfig.bg} {displayConfig.border}"
-  >
+  <Badge variant="outline" class="{displayConfig.color} {displayConfig.bg} {displayConfig.border}">
     <span>{displayConfig.icon}</span>
     {displayConfig.label}
-  </span>
+  </Badge>
 
   {#if status === 'auth_required' && onAuthenticate}
-    <button
-      type="button"
+    <Button
+      variant="default"
+      size="sm"
       onclick={onAuthenticate}
-      class="min-h-[44px] text-xs px-3 py-2 rounded-lg bg-accent text-white hover:opacity-90 transition-all"
+      class="bg-accent text-white hover:opacity-90 transition-all"
     >
       Authenticate
-    </button>
+    </Button>
   {/if}
 </div>

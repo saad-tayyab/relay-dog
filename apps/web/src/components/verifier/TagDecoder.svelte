@@ -1,5 +1,6 @@
 <script lang="ts">
 import * as Card from "$lib/components/ui/card";
+import * as Empty from "$lib/components/ui/empty";
 import { decodeTag } from "../../utils/nostrVerify";
 
 let { tags }: { tags: string[][] } = $props();
@@ -30,7 +31,11 @@ function getBadgeColor(type: string): string {
   </h3>
 
   {#if tags.length === 0}
-    <p class="text-xs text-text-muted py-2">No tags</p>
+    <Empty.Root class="py-4">
+      <Empty.Header>
+        <Empty.Title class="text-xs">No tags</Empty.Title>
+      </Empty.Header>
+    </Empty.Root>
   {:else}
     <div class="space-y-2">
       {#each tags as tag, i (i)}

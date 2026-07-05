@@ -2,6 +2,7 @@
 import type { DirectoryFilters } from "@relayscope/shared";
 import { Button } from "$lib/components/ui/button";
 import { Input } from "$lib/components/ui/input";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
 
 let {
 	filters,
@@ -138,14 +139,16 @@ function handleCountryChange() {
     <option value="latency">Latency</option>
   </select>
 
-  <Button
-    type="button"
-    variant="outline"
-    size="icon"
-    onclick={() => onSort(sortLocal, sortDirection === 'asc' ? 'desc' : 'asc')}
-    aria-label="Toggle sort order (currently {sortDirection === 'asc' ? 'ascending' : 'descending'})"
-    class="min-h-[44px] min-w-[44px] border-border bg-background text-muted-foreground hover:text-foreground"
-  >
-    {sortDirection === 'asc' ? '↑' : '↓'}
-  </Button>
+  <TooltipWrap label="Toggle sort order">
+    <Button
+      type="button"
+      variant="outline"
+      size="icon"
+      onclick={() => onSort(sortLocal, sortDirection === 'asc' ? 'desc' : 'asc')}
+      aria-label="Toggle sort order (currently {sortDirection === 'asc' ? 'ascending' : 'descending'})"
+      class="min-h-[44px] min-w-[44px] border-border bg-background text-muted-foreground hover:text-foreground"
+    >
+      {sortDirection === 'asc' ? '↑' : '↓'}
+    </Button>
+  </TooltipWrap>
 </div>

@@ -1,12 +1,13 @@
 <script lang="ts">
 import type { NostrEvent } from "@relayscope/shared";
+import { Button } from "$lib/components/ui/button";
+import { Textarea } from "$lib/components/ui/textarea";
 
 let { onEvent }: { onEvent: (event: NostrEvent) => void } = $props();
 
 let rawInput = $state("");
 let error = $state<string | null>(null);
 let isValid = $state(false);
-let textarea = $state<HTMLTextAreaElement | null>(null);
 
 const REQUIRED_FIELDS: (keyof NostrEvent)[] = [
 	"id",
@@ -125,15 +126,14 @@ function handleInput(): void {
 function loadExample(): void {
 	rawInput = JSON.stringify(EXAMPLE_EVENT, null, 2);
 	validateAndParse(rawInput);
-	if (textarea) {
-		autoResize();
-	}
+	autoResize();
 }
 
 function autoResize(): void {
-	if (!textarea) return;
-	textarea.style.height = "auto";
-	textarea.style.height = `${textarea.scrollHeight}px`;
+	const el = document.getElementById("event-json-input") as HTMLTextAreaElement | null;
+	if (!el) return;
+	el.style.height = "auto";
+	el.style.height = `${el.scrollHeight}px`;
 }
 
 $effect(() => {
@@ -146,30 +146,30 @@ $effect(() => {
     <label for="event-json-input" class="text-sm font-medium text-text-secondary">
       Event JSON
     </label>
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="sm"
       onclick={loadExample}
-      class="min-h-[44px] text-xs px-3 py-2 text-accent hover:text-accent/80 transition-colors"
+      class="text-accent hover:text-accent/80 transition-colors"
     >
       Load Example
-    </button>
+    </Button>
   </div>
 
-  <textarea
+  <Textarea
     id="event-json-input"
-    bind:this={textarea}
     bind:value={rawInput}
     oninput={handleInput}
     placeholder="Paste Nostr event JSON here..."
     rows={8}
     aria-invalid={!!error}
     aria-describedby="event-input-feedback"
-    class="w-full px-4 py-3 rounded-xl bg-dark-surface border text-sm text-text-primary placeholder:text-text-muted font-mono leading-relaxed resize-none focus:outline-none transition-colors {error
+    class="w-full px-4 py-3 text-sm font-mono leading-relaxed {error
       ? 'border-error/50 focus:border-error'
       : isValid
         ? 'border-success/50 focus:border-success'
-        : 'border-dark-border focus:border-accent-border'}"
-  ></textarea>
+        : ''}"
+  />
 
   <div id="event-input-feedback" role="status" aria-live="polite" class="sr-only">
     {error || (isValid ? 'Valid event JSON' : '')}

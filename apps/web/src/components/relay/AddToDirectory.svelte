@@ -4,6 +4,7 @@ import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 import { Spinner } from "$lib/components/ui/spinner";
 import { useAddRelay } from "../../lib/composables/useAddRelay.svelte";
+import TooltipWrap from "../shared/TooltipWrap.svelte";
 
 let {
 	relayUrl,
@@ -71,24 +72,26 @@ function cancel() {
       <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
     </svg>
     <AlertDescription class="flex-1">Added to directory</AlertDescription>
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      onclick={() => addRelayState.dismissSuccess()}
-      aria-label="Dismiss"
-    >
-      <svg
-        aria-hidden="true"
-        class="w-3.5 h-3.5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
+    <TooltipWrap label="Dismiss">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onclick={() => addRelayState.dismissSuccess()}
+        aria-label="Dismiss"
       >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </Button>
+        <svg
+          aria-hidden="true"
+          class="w-3.5 h-3.5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </Button>
+    </TooltipWrap>
   </Alert>
 {:else if !showForm}
   <!-- Add prompt (primary CTA — ephemeral, appears after inspection) -->

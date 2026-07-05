@@ -1,5 +1,8 @@
 <script lang="ts">
 import type { RelayDiscovery } from "@relayscope/shared";
+import { Badge } from "$lib/components/ui/badge";
+import * as Empty from "$lib/components/ui/empty";
+import * as ScrollArea from "$lib/components/ui/scroll-area";
 
 let {
 	discoveries,
@@ -47,26 +50,30 @@ let {
 
   <!-- Individual Observations -->
   {#if discoveries.length > 0}
-    <div class="space-y-1 max-h-48 overflow-y-auto">
-      {#each discoveries.slice(0, 5) as discovery (discovery.id)}
-        <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-dark-surface/50 text-xs">
-          <span class="text-text-muted font-mono truncate max-w-[120px]">
-            {discovery.monitorPubkey.slice(0, 8)}…
-          </span>
-          <div class="flex items-center gap-2 text-text-muted">
-            {#if discovery.rttOpen}
-              <span>O:{discovery.rttOpen}ms</span>
-            {/if}
-            {#if discovery.networkType}
-              <span class="px-1 py-0.5 rounded bg-dark-border text-text-secondary">
-                {discovery.networkType}
-              </span>
-            {/if}
+    <ScrollArea.Root class="max-h-48">
+      <div class="space-y-1">
+        {#each discoveries.slice(0, 5) as discovery (discovery.id)}
+          <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-dark-surface/50 text-xs">
+            <span class="text-text-muted font-mono truncate max-w-[120px]">
+              {discovery.monitorPubkey.slice(0, 8)}…
+            </span>
+            <div class="flex items-center gap-2 text-text-muted">
+              {#if discovery.rttOpen}
+                <span>O:{discovery.rttOpen}ms</span>
+              {/if}
+              {#if discovery.networkType}
+                <Badge variant="secondary">{discovery.networkType}</Badge>
+              {/if}
+            </div>
           </div>
-        </div>
-      {/each}
-    </div>
+        {/each}
+      </div>
+    </ScrollArea.Root>
   {:else}
-    <p class="text-xs text-text-muted text-center py-2">No monitor observations yet</p>
+    <Empty.Root class="py-4">
+      <Empty.Header>
+        <Empty.Title class="text-xs">No monitor observations yet</Empty.Title>
+      </Empty.Header>
+    </Empty.Root>
   {/if}
 </div>

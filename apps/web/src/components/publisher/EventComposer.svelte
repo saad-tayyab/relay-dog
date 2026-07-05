@@ -8,6 +8,7 @@ import { Input } from "$lib/components/ui/input";
 import { Label } from "$lib/components/ui/label";
 import { Spinner } from "$lib/components/ui/spinner";
 import { Textarea } from "$lib/components/ui/textarea";
+import * as ToggleGroup from "$lib/components/ui/toggle-group";
 import { useEventComposer } from "../../lib/composables/useEventComposer.svelte";
 import TagEditor from "./TagEditor.svelte";
 
@@ -69,20 +70,13 @@ async function handlePublish() {
     <!-- Kind Selector -->
     <div>
       <Label for="kind-input" class="mb-1 block text-xs text-muted-foreground">Kind</Label>
-      <div class="flex gap-1 mb-2">
+      <ToggleGroup.Root type="single" value={String(composer.state.kind)} onValueChange={(v) => { if (v) composer.setKind(Number(v)); }} class="mb-2 flex flex-wrap">
         {#each commonKinds as k (k.kind)}
-          <Button
-            type="button"
-            variant={composer.state.kind === k.kind ? "default" : "outline"}
-            size="sm"
-            aria-pressed={composer.state.kind === k.kind}
-            onclick={() => composer.setKind(k.kind)}
-            class="min-h-[44px] px-3 py-2 text-xs"
-          >
+          <ToggleGroup.Item value={String(k.kind)}>
             {k.label}
-          </Button>
+          </ToggleGroup.Item>
         {/each}
-      </div>
+      </ToggleGroup.Root>
       <Input
         id="kind-input"
         type="number"

@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { DirectoryRelay } from "@relayscope/shared";
+import * as Avatar from "$lib/components/ui/avatar";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 import { Checkbox } from "$lib/components/ui/checkbox";
@@ -20,11 +21,6 @@ let {
 } = $props();
 
 const iconUrl = $derived(safeHttpsIconUrl(relay.icon));
-
-function handleImageError(e: Event) {
-	const img = e.target as HTMLImageElement;
-	img.style.display = "none";
-}
 
 function handleUrlClick(e: MouseEvent) {
 	e.stopPropagation();
@@ -61,6 +57,17 @@ function softwareHref(raw: string): string {
 function isSoftwareUrl(raw: string): boolean {
 	return /^git\+https?:\/\//.test(raw) || /^https?:\/\//.test(raw);
 }
+
+/** Derive a deterministic color from the relay name for avatar fallback */
+function relayColor(name: string | null): string {
+	if (!name) return "hsl(220, 60%, 40%)";
+	let hash = 0;
+	for (const ch of name) {
+		hash = (hash * 31 + ch.charCodeAt(0)) | 0;
+	}
+	const hue = Math.abs(hash) % 360;
+	return `hsl(${hue}, 60%, 40%)`;
+}
 </script>
 
 <button
@@ -72,23 +79,24 @@ function isSoftwareUrl(raw: string): boolean {
 >
   <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
     <div class="flex items-start gap-3">
-      {#if iconUrl}
-        <img
-          src={iconUrl}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          class="w-10 h-10 rounded-lg border border-border object-cover shrink-0"
-          referrerpolicy="no-referrer"
-          onerror={handleImageError}
-        />
-      {:else}
-        <div
-          class="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0"
+      <Avatar.Root class="h-10 w-10 shrink-0 rounded-lg">
+        {#if iconUrl}
+          <Avatar.Image
+            src={iconUrl}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            class="rounded-lg object-cover"
+          />
+        {/if}
+        <Avatar.Fallback
+          class="rounded-lg text-sm font-semibold text-white"
+          style="background-color: {relayColor(relay.name)}"
         >
-          <span class="text-muted-foreground text-sm" aria-hidden="true">⚡</span>
-        </div>
-      {/if}
+          {(relay.name || '⚡').slice(0, 2).toUpperCase()}
+        </Avatar.Fallback>
+      </Avatar.Root>
 
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
@@ -136,10 +144,10 @@ function isSoftwareUrl(raw: string): boolean {
 
         <div class="flex items-center gap-3 text-xs text-muted-foreground">
           <span>{nipCount} NIPs</span>
-          <span>·</span>
+          <span aria-hidden="true">·</span>
           <span>{latencyDisplay}</span>
           {#if relay.software}
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             {#if isSoftwareUrl(relay.software)}
               <a
                 href={softwareHref(relay.software)}

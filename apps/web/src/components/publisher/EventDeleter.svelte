@@ -53,7 +53,7 @@ async function handleDelete() {
 </script>
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
-  <div class="space-y-4">
+  <div class="flex flex-col gap-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-foreground">Event Deleter</h3>
       <Badge variant="outline" class="text-xs text-muted-foreground">NIP-09</Badge>
@@ -85,12 +85,12 @@ async function handleDelete() {
 
     <!-- Event ID List -->
     {#if deleter.eventIds.length > 0}
-      <div class="space-y-1">
+      <div class="flex flex-col gap-1">
         <p class="text-xs text-muted-foreground">
           {deleter.eventIds.length} event{deleter.eventIds.length !== 1 ? 's' : ''} to delete
         </p>
         <ScrollArea.Root class="max-h-32">
-          <div class="space-y-1">
+          <div class="flex flex-col gap-1">
             {#each deleter.eventIds as id (id)}
               <div class="flex items-center justify-between px-2 py-1 rounded bg-muted/50 text-xs">
                 <span class="font-mono text-muted-foreground truncate">{id}</span>
@@ -178,7 +178,7 @@ async function handleDelete() {
 
     <!-- Results -->
     {#if deleter.results.length > 0}
-      <div role="status" aria-live="polite" class="space-y-1">
+      <div role="status" aria-live="polite" class="flex flex-col gap-1">
         <p class="text-xs text-muted-foreground">Results</p>
         {#each deleter.results as r (r.eventId)}
           <div

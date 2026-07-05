@@ -15,7 +15,7 @@ function formatAmount(amount: number, unit: string): string {
 {#if fees}
   <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
     <h3 class="text-sm font-semibold text-foreground mb-3">Fees</h3>
-    <div class="space-y-2">
+    <div class="flex flex-col gap-2">
       {#if fees.admission && fees.admission.length > 0}
         <div>
           <p class="text-xs text-muted-foreground mb-1">Admission Fee</p>

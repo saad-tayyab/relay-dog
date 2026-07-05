@@ -1,4 +1,7 @@
 <script lang="ts">
+import CheckIcon from "@lucide/svelte/icons/check";
+import PlusIcon from "@lucide/svelte/icons/plus";
+import XIcon from "@lucide/svelte/icons/x";
 import { Alert, AlertDescription } from "$lib/components/ui/alert";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
@@ -46,31 +49,13 @@ function cancel() {
 <!-- Already in directory -->
 {#if inDirectory && !addRelayState.success}
   <Alert role="status" class="text-xs">
-    <svg
-      aria-hidden="true"
-      class="w-3.5 h-3.5 shrink-0"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2.5"
-    >
-      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
+    <CheckIcon class="size-3.5 shrink-0" aria-hidden="true" />
     <AlertDescription>Already in directory</AlertDescription>
   </Alert>
 {:else if addRelayState.success}
   <!-- Success after adding -->
   <Alert role="status" class="text-xs">
-    <svg
-      aria-hidden="true"
-      class="w-3.5 h-3.5 shrink-0"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2.5"
-    >
-      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
+    <CheckIcon class="size-3.5 shrink-0" aria-hidden="true" />
     <AlertDescription class="flex-1">Added to directory</AlertDescription>
     <TooltipWrap label="Dismiss">
       <Button
@@ -80,16 +65,7 @@ function cancel() {
         onclick={() => addRelayState.dismissSuccess()}
         aria-label="Dismiss"
       >
-        <svg
-          aria-hidden="true"
-          class="w-3.5 h-3.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <XIcon class="size-3.5" aria-hidden="true" />
       </Button>
     </TooltipWrap>
   </Alert>
@@ -111,16 +87,7 @@ function cancel() {
         onclick={() => (showForm = true)}
         class="min-h-[44px] shrink-0 px-4 py-2 text-sm font-semibold"
       >
-        <svg
-          aria-hidden="true"
-          class="w-4 h-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
+        <PlusIcon class="size-4" aria-hidden="true" />
         Add
       </Button>
     </div>
@@ -133,7 +100,7 @@ function cancel() {
         e.preventDefault();
         handleAdd();
       }}
-      class="space-y-3"
+      class="flex flex-col gap-3"
     >
       <div class="flex items-center justify-between">
         <h3 class="text-sm font-semibold text-foreground">Add to Directory</h3>
@@ -144,16 +111,7 @@ function cancel() {
           onclick={cancel}
           aria-label="Cancel"
         >
-          <svg
-            aria-hidden="true"
-            class="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <XIcon class="size-4" aria-hidden="true" />
         </Button>
       </div>
 
@@ -184,16 +142,7 @@ function cancel() {
             <Spinner class="size-4" />
             Adding…
           {:else}
-            <svg
-              aria-hidden="true"
-              class="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
+            <PlusIcon class="size-4" aria-hidden="true" />
             Add Relay
           {/if}
         </Button>

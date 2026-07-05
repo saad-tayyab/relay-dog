@@ -1,4 +1,6 @@
 <script lang="ts">
+import CheckIcon from "@lucide/svelte/icons/check";
+import CopyIcon from "@lucide/svelte/icons/copy";
 import type { NostrEvent } from "@relayscope/shared";
 import * as Accordion from "$lib/components/ui/accordion";
 import { Button } from "$lib/components/ui/button";
@@ -64,7 +66,7 @@ async function copyToClipboard(
 }
 </script>
 
-<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md space-y-4"><Card.Content class="p-5 lg:p-6">
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="flex flex-col gap-4 p-5 lg:p-6">
   <h3 class="text-sm font-semibold text-foreground">Event Details</h3>
 
   <!-- Screen reader live region for copy feedback -->
@@ -73,7 +75,7 @@ async function copyToClipboard(
     {copiedPubkey ? 'Pubkey copied to clipboard' : ''}
   </div>
 
-  <dl class="space-y-4">
+  <dl class="flex flex-col gap-4">
     <!-- Kind — always visible -->
     <div>
       <dt class="text-xs text-muted-foreground mb-1">Kind</dt>
@@ -90,7 +92,7 @@ async function copyToClipboard(
     </div>
 
     <!-- Collapsible sections via Accordion -->
-    <Accordion.Root type="multiple" class="space-y-2">
+    <Accordion.Root type="multiple" class="flex flex-col gap-2">
       <!-- ID -->
       <Accordion.Item value="id" class="rounded-lg border border-border">
         <Accordion.Trigger class="px-4 py-2.5 text-xs font-medium text-muted-foreground hover:no-underline">
@@ -107,14 +109,10 @@ async function copyToClipboard(
                 class="text-muted-foreground hover:text-primary transition-colors gap-1"
               >
                 {#if copiedId}
-                  <svg aria-hidden="true" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+                  <CheckIcon class="size-3" aria-hidden="true" />
                   Copied
                 {:else}
-                  <svg aria-hidden="true" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
+                  <CopyIcon class="size-3" aria-hidden="true" />
                   Copy
                 {/if}
               </Button>
@@ -142,14 +140,10 @@ async function copyToClipboard(
                 class="text-muted-foreground hover:text-primary transition-colors gap-1"
               >
                 {#if copiedPubkey}
-                  <svg aria-hidden="true" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+                  <CheckIcon class="size-3" aria-hidden="true" />
                   Copied
                 {:else}
-                  <svg aria-hidden="true" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
+                  <CopyIcon class="size-3" aria-hidden="true" />
                   Copy
                 {/if}
               </Button>

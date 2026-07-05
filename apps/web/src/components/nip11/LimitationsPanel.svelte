@@ -77,7 +77,7 @@ const otherItems = $derived(
     <h3 class="text-sm font-semibold text-foreground mb-4">
       Limitations & Policies
     </h3>
-    <Accordion.Root type="multiple" class="space-y-2">
+    <Accordion.Root type="multiple" class="flex flex-col gap-2">
       <!-- Limits -->
       {#if limitsItems.length > 0}
         <Accordion.Item value="limits" class="rounded-lg border border-border">

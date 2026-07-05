@@ -1,4 +1,6 @@
 <script lang="ts">
+import CheckCircleIcon from "@lucide/svelte/icons/circle-check";
+import XCircleIcon from "@lucide/svelte/icons/circle-x";
 import type { NostrEvent } from "@relayscope/shared";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
@@ -24,7 +26,7 @@ function truncateHex(hex: string, chars = 8): string {
 }
 </script>
 
-<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md space-y-4"><Card.Content class="p-5 lg:p-6">
+<Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="flex flex-col gap-4 p-5 lg:p-6">
   <h3 class="text-sm font-semibold text-foreground">Verification</h3>
 
   <!-- Signature check -->
@@ -36,27 +38,9 @@ function truncateHex(hex: string, chars = 8): string {
   >
     <div class="shrink-0 mt-0.5">
       {#if sigResult}
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-success"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <CheckCircleIcon class="size-5 text-success" aria-hidden="true" />
       {:else}
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-error"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <XCircleIcon class="size-5 text-error" aria-hidden="true" />
       {/if}
     </div>
     <div class="min-w-0">
@@ -78,27 +62,9 @@ function truncateHex(hex: string, chars = 8): string {
   >
     <div class="shrink-0 mt-0.5">
       {#if idResult.matches}
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-success"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <CheckCircleIcon class="size-5 text-success" aria-hidden="true" />
       {:else}
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-error"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <XCircleIcon class="size-5 text-error" aria-hidden="true" />
       {/if}
     </div>
     <div class="min-w-0">
@@ -109,7 +75,7 @@ function truncateHex(hex: string, chars = 8): string {
         SHA-256 of canonical serialization
       </p>
       {#if !idResult.matches}
-        <div class="mt-2 space-y-1">
+        <div class="mt-2 flex flex-col gap-1">
           <div class="text-xs">
             <span class="text-muted-foreground">Stored: </span>
             <code class="font-mono text-error">{truncateHex(event.id)}</code>

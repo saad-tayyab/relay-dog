@@ -30,7 +30,7 @@ const sortedNips = $derived([...nips].sort((a, b) => a - b));
               {/if}
             </Popover.Trigger>
             <Popover.Content class="w-72 p-4" align="start">
-              <div class="space-y-2">
+              <div class="flex flex-col gap-2">
                 <div class="flex items-center justify-between">
                   <h4 class="text-sm font-semibold text-foreground">
                     {info?.name || `NIP-${n}`}

@@ -1,4 +1,6 @@
 <script lang="ts">
+import PlusIcon from "@lucide/svelte/icons/plus";
+import XIcon from "@lucide/svelte/icons/x";
 import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
 import { Button } from "$lib/components/ui/button";
 import * as Field from "$lib/components/ui/field";
@@ -81,7 +83,7 @@ function cancel() {
 }
 </script>
 
-<div class="space-y-3">
+<div class="flex flex-col gap-3">
   <!-- Success message -->
   {#if success}
     <Alert role="status">
@@ -97,7 +99,7 @@ function cancel() {
     onclick={() => (showSheet = true)}
     class="w-full min-h-[44px] border-dashed text-sm text-muted-foreground"
   >
-    <span aria-hidden="true">+</span> Add Relay
+    <PlusIcon class="size-4" aria-hidden="true" /> Add Relay
   </Button>
 
   <!-- Add Relay Sheet -->
@@ -108,7 +110,7 @@ function cancel() {
         <Sheet.Description>Add a new relay to the directory</Sheet.Description>
       </Sheet.Header>
 
-      <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-4 mt-4">
+      <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="flex flex-col gap-4 mt-4">
         <!-- Error -->
         {#if error}
           <Alert variant="destructive" role="alert">

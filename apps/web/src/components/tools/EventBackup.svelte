@@ -129,7 +129,7 @@ const importedKindsBreakdown = $derived.by(() => {
 </script>
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
-  <div class="space-y-4">
+  <div class="flex flex-col gap-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-foreground">Event Backup & Restore</h3>
       <span class="text-xs text-muted-foreground">NIP-01</span>
@@ -160,7 +160,7 @@ const importedKindsBreakdown = $derived.by(() => {
       <Tabs.Content value={activeTab} class="pt-5 focus:outline-none">
       {#if activeTab === 'backup'}
         <!-- Backup Form -->
-        <div class="space-y-3">
+        <div class="flex flex-col gap-3">
           <Field.Field>
             <Label for="backup-pubkey" class="text-xs text-muted-foreground">
               Author Pubkey (hex)
@@ -225,7 +225,7 @@ const importedKindsBreakdown = $derived.by(() => {
         </div>
       {:else}
         <!-- Restore Form -->
-        <div class="space-y-3">
+        <div class="flex flex-col gap-3">
           <!-- File Import -->
           <Field.Field>
             <Label for="restore-file" class="text-xs text-muted-foreground">

@@ -4,6 +4,7 @@ import "./index.css";
 
 import MoonIcon from "@lucide/svelte/icons/moon";
 import SunIcon from "@lucide/svelte/icons/sun";
+import ZapIcon from "@lucide/svelte/icons/zap";
 import { ModeWatcher, toggleMode } from "mode-watcher";
 import { toast } from "svelte-sonner";
 import { Button } from "$lib/components/ui/button";
@@ -82,16 +83,7 @@ function handleEditAndRepublish(event: unknown) {
       <div
         class="w-9 h-9 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center"
       >
-        <svg
-          aria-hidden="true"
-          class="w-5 h-5 text-primary"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
+        <ZapIcon class="size-5 text-primary" aria-hidden="true" />
       </div>
       <div>
         <h1 class="text-lg font-bold text-foreground leading-tight">Relay Dog</h1>
@@ -173,17 +165,7 @@ function handleEditAndRepublish(event: unknown) {
       <Empty.Root class="animate-fade-in py-20 text-center" aria-label="Welcome">
         <Empty.Header class="items-center">
           <Empty.Media class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-card">
-            <svg
-              aria-hidden="true"
-              class="h-10 w-10 text-muted-foreground"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              <circle cx="12" cy="12" r="10" />
-            </svg>
+            <ZapIcon class="h-10 w-10 text-muted-foreground" aria-hidden="true" />
           </Empty.Media>
           <Empty.Title class="mb-2 text-xl text-foreground">Inspect a Nostr Relay</Empty.Title>
           <Empty.Description class="mb-6 max-w-sm text-sm text-muted-foreground">Enter a relay URL above to fetch its NIP-11 info document, check connection status, and explore supported features.</Empty.Description>

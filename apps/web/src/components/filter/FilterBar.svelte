@@ -1,4 +1,7 @@
 <script lang="ts">
+import CheckIcon from "@lucide/svelte/icons/check";
+import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
+import SearchIcon from "@lucide/svelte/icons/search";
 import type { DirectoryFilters } from "@relayscope/shared";
 import { tick } from "svelte";
 import { Button } from "$lib/components/ui/button";
@@ -6,6 +9,7 @@ import * as Command from "$lib/components/ui/command";
 import { Input } from "$lib/components/ui/input";
 import * as Popover from "$lib/components/ui/popover";
 import * as Select from "$lib/components/ui/select";
+import { cn } from "$lib/shadcn/utils";
 import { NIP_OPTIONS } from "../../utils/nip-constants";
 import TooltipWrap from "../shared/TooltipWrap.svelte";
 
@@ -78,7 +82,7 @@ let nipComboboxOpen = $state(false);
 let nipComboboxRef = $state<HTMLButtonElement | null>(null);
 let nipSearchValue = $state("");
 
-const selectedNipLabels = $derived(() => {
+const selectedNipLabels = $derived.by(() => {
 	if (!filters.nips || filters.nips.length === 0) return [];
 	return filters.nips
 		.map((n) => NIP_OPTIONS.find((o) => o.value === n))
@@ -155,20 +159,7 @@ function handleCountrySelect(countryValue: string) {
   <!-- Search -->
   <div class="relative flex-1 min-w-[200px]">
     <div class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-      <svg
-        aria-hidden="true"
-        class="w-3.5 h-3.5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />
-      </svg>
+      <SearchIcon class="size-3.5" aria-hidden="true" />
     </div>
     <label for="dir-search" class="sr-only">Search relays</label>
     <Input
@@ -193,14 +184,12 @@ function handleCountrySelect(countryValue: string) {
           aria-label="Filter by NIPs"
           class="h-10 min-w-[140px] max-w-[200px] justify-between rounded-lg border border-border bg-background px-3 text-xs text-foreground hover:bg-accent/5 truncate {props.class ?? ''}"
         >
-          {#if selectedNipLabels().length > 0}
-            <span class="truncate">{selectedNipLabels().length} NIP{selectedNipLabels().length !== 1 ? 's' : ''} selected</span>
+          {#if selectedNipLabels.length > 0}
+            <span class="truncate">{selectedNipLabels.length} NIP{selectedNipLabels.length !== 1 ? 's' : ''} selected</span>
           {:else}
             <span class="text-muted-foreground">NIPs…</span>
           {/if}
-          <svg aria-hidden="true" class="ml-2 h-4 w-4 shrink-0 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-          </svg>
+          <ChevronDownIcon class="ml-2 size-4 shrink-0 opacity-50" aria-hidden="true" />
         </button>
       {/snippet}
     </Popover.Trigger>
@@ -216,16 +205,7 @@ function handleCountrySelect(countryValue: string) {
                 value={String(nip.value)}
                 onSelect={() => handleNipSelect(String(nip.value))}
               >
-                <svg
-                  aria-hidden="true"
-                  class="mr-2 h-4 w-4 {isSelected ? 'opacity-100' : 'opacity-0'}"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+                <CheckIcon class="size-4 mr-2 {isSelected ? 'opacity-100' : 'opacity-0'}" aria-hidden="true" />
                 <span class="truncate">{nip.label}</span>
               </Command.Item>
             {/each}
@@ -264,9 +244,7 @@ function handleCountrySelect(countryValue: string) {
           {:else}
             <span class="text-muted-foreground">Country…</span>
           {/if}
-          <svg aria-hidden="true" class="ml-2 h-4 w-4 shrink-0 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-          </svg>
+          <ChevronDownIcon class="ml-2 size-4 shrink-0 opacity-50" aria-hidden="true" />
         </button>
       {/snippet}
     </Popover.Trigger>
@@ -282,16 +260,7 @@ function handleCountrySelect(countryValue: string) {
                 value={`${country.value} ${country.label}`}
                 onSelect={() => handleCountrySelect(country.value)}
               >
-                <svg
-                  aria-hidden="true"
-                  class="mr-2 h-4 w-4 {isSelected ? 'opacity-100' : 'opacity-0'}"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+                <CheckIcon class="size-4 mr-2 {isSelected ? 'opacity-100' : 'opacity-0'}" aria-hidden="true" />
                 <span class="truncate">{country.label}</span>
                 <span class="ml-auto text-[10px] text-muted-foreground font-mono">{country.value}</span>
               </Command.Item>
@@ -324,10 +293,12 @@ function handleCountrySelect(countryValue: string) {
       {sortLocal === 'name' ? 'Name' : sortLocal === 'url' ? 'URL' : sortLocal === 'lastChecked' ? 'Last Checked' : 'Latency'}
     </Select.Trigger>
     <Select.Content>
-      <Select.Item value="name">Name</Select.Item>
-      <Select.Item value="url">URL</Select.Item>
-      <Select.Item value="lastChecked">Last Checked</Select.Item>
-      <Select.Item value="latency">Latency</Select.Item>
+      <Select.Group>
+        <Select.Item value="name">Name</Select.Item>
+        <Select.Item value="url">URL</Select.Item>
+        <Select.Item value="lastChecked">Last Checked</Select.Item>
+        <Select.Item value="latency">Latency</Select.Item>
+      </Select.Group>
     </Select.Content>
   </Select.Root>
 

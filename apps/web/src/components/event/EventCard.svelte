@@ -1,4 +1,7 @@
 <script lang="ts">
+import CheckIcon from "@lucide/svelte/icons/check";
+import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
+import CopyIcon from "@lucide/svelte/icons/copy";
 import type { NostrEvent } from "@relayscope/shared";
 import * as Avatar from "$lib/components/ui/avatar";
 import { Badge } from "$lib/components/ui/badge";
@@ -15,10 +18,10 @@ let expanded = $state(false);
 let copied = $state(false);
 
 const KIND_COLORS: Record<number, string> = {
-	0: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-	1: "bg-green-500/15 text-green-400 border-green-500/30",
-	4: "bg-purple-500/15 text-purple-400 border-purple-500/30",
-	42: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+	0: "bg-kind-metadata-dim text-kind-metadata border-kind-metadata/30",
+	1: "bg-kind-note-dim text-kind-note border-kind-note/30",
+	4: "bg-kind-dm-dim text-kind-dm border-kind-dm/30",
+	42: "bg-kind-channel-dim text-kind-channel border-kind-channel/30",
 };
 
 const KIND_LABELS: Record<number, string> = {
@@ -29,7 +32,7 @@ const KIND_LABELS: Record<number, string> = {
 };
 
 function getKindColor(kind: number): string {
-	return KIND_COLORS[kind] || "bg-gray-500/15 text-gray-400 border-gray-500/30";
+	return KIND_COLORS[kind] || "bg-kind-unknown-dim text-kind-unknown border-kind-unknown/30";
 }
 
 function getKindLabel(kind: number): string {
@@ -160,20 +163,7 @@ const remainingTagCount = $derived(event.tags.length - 5);
         onclick={() => (expanded = !expanded)}
         class="size-7 text-muted-foreground hover:text-primary"
       >
-        <svg
-          aria-hidden="true"
-          class="w-3.5 h-3.5 transition-transform {expanded ? "rotate-90" : ""}"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
+        <ChevronRightIcon class="size-3.5 transition-transform {expanded ? "rotate-90" : ""}" aria-hidden="true" />
       </Button>
     </TooltipWrap>
     <TooltipWrap label={copied ? "Copied!" : "Copy event JSON"}>
@@ -185,35 +175,9 @@ const remainingTagCount = $derived(event.tags.length - 5);
         class="size-7 text-muted-foreground hover:text-primary"
       >
         {#if copied}
-          <svg
-            aria-hidden="true"
-            class="w-3.5 h-3.5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+          <CheckIcon class="size-3.5" aria-hidden="true" />
         {:else}
-          <svg
-            aria-hidden="true"
-            class="w-3.5 h-3.5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-            />
-          </svg>
+          <CopyIcon class="size-3.5" aria-hidden="true" />
         {/if}
       </Button>
     </TooltipWrap>

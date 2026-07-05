@@ -61,7 +61,7 @@ async function handlePublish() {
 </script>
 
 <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
-  <div class="space-y-4">
+  <div class="flex flex-col gap-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-foreground">Event Composer</h3>
       <Badge variant="outline" class="text-xs text-muted-foreground">NIP-01, NIP-07</Badge>

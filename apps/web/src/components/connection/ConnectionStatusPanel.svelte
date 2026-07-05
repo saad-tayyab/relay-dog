@@ -49,7 +49,7 @@ const checks = $derived(
         </span>
       {/if}
     </h3>
-    <ul class="space-y-2">
+    <ul class="flex flex-col gap-2">
       {#each checks as { label, key, detail } (key)}
         <li
           class="flex items-center gap-3 px-4 py-3 rounded-lg bg-muted border border-border"

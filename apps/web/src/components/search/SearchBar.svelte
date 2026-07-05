@@ -1,6 +1,9 @@
 <script lang="ts">
+import SearchIcon from "@lucide/svelte/icons/search";
+import ZapIcon from "@lucide/svelte/icons/zap";
 import { Button } from "$lib/components/ui/button";
 import { Input } from "$lib/components/ui/input";
+import { Spinner } from "$lib/components/ui/spinner";
 
 let {
 	url = $bindable(""),
@@ -32,20 +35,7 @@ const POPULAR_RELAYS = [
   <div class="flex gap-2">
     <div class="relative flex-1">
       <div class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-        <svg
-          aria-hidden="true"
-          class="w-4 h-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
+        <SearchIcon class="size-4" aria-hidden="true" />
       </div>
       <label for="relay-url" class="sr-only">Relay URL</label>
       <Input
@@ -64,26 +54,11 @@ const POPULAR_RELAYS = [
     >
       {#if loading}
         <div role="status" class="flex items-center gap-2">
-          <div
-            class="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin"
-          ></div>
+          <Spinner class="size-4" />
           Inspecting
         </div>
       {:else}
-        <svg
-          aria-hidden="true"
-          class="w-4 h-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M13 10V3L4 14h7v7l9-11h-7z"
-          />
-        </svg>
+        <ZapIcon class="size-4" aria-hidden="true" />
         Inspect
       {/if}
     </Button>

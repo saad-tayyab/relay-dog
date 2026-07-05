@@ -1,5 +1,6 @@
 <script lang="ts">
 import { Button } from "$lib/components/ui/button";
+import { cn } from "$lib/shadcn/utils";
 import { hasBackend } from "../../utils/api";
 import type { Section } from "../../utils/router";
 
@@ -28,9 +29,10 @@ const sections: { id: Section; label: string; icon: string }[] = [
         variant="ghost"
         onclick={() => onNavigate(section.id)}
         aria-current={activeSection === section.id ? 'page' : undefined}
-        class="min-h-[44px] min-w-[44px] rounded-lg px-3 py-1.5 transition-all {activeSection === section.id
-          ? 'text-primary'
-          : 'text-muted-foreground'}"
+        class={cn(
+        "min-h-[44px] min-w-[44px] rounded-lg px-3 py-1.5 transition-all",
+        activeSection === section.id ? "text-primary" : "text-muted-foreground",
+      )}
       >
         <span class="text-lg" aria-hidden="true">{section.icon}</span>
         <span class="text-xs font-medium">{section.label}</span>

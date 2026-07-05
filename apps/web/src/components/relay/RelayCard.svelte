@@ -1,4 +1,7 @@
 <script lang="ts">
+import EllipsisVerticalIcon from "@lucide/svelte/icons/ellipsis-vertical";
+import ExternalLinkIcon from "@lucide/svelte/icons/external-link";
+import SearchIcon from "@lucide/svelte/icons/search";
 import type { DirectoryRelay } from "@relayscope/shared";
 import * as Avatar from "$lib/components/ui/avatar";
 import { Button } from "$lib/components/ui/button";
@@ -79,7 +82,7 @@ function relayColor(name: string | null): string {
 >
   <Card.Root class="rounded-2xl border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"><Card.Content class="p-5 lg:p-6">
     <div class="flex items-start gap-3">
-      <Avatar.Root class="h-10 w-10 shrink-0 rounded-lg">
+      <Avatar.Root class="size-10 shrink-0 rounded-lg">
         {#if iconUrl}
           <Avatar.Image
             src={iconUrl}
@@ -104,10 +107,10 @@ function relayColor(name: string | null): string {
             {relay.name || 'Unknown Relay'}
           </h3>
           {#if isOnline}
-            <span class="w-2 h-2 rounded-full bg-success shrink-0" aria-hidden="true"></span>
+            <span class="size-2 rounded-full bg-success shrink-0" aria-hidden="true"></span>
             <span class="sr-only">Online</span>
           {:else}
-            <span class="w-2 h-2 rounded-full bg-error shrink-0" aria-hidden="true"></span>
+            <span class="size-2 rounded-full bg-error shrink-0" aria-hidden="true"></span>
             <span class="sr-only">Offline</span>
           {/if}
         </div>
@@ -122,20 +125,7 @@ function relayColor(name: string | null): string {
           title="Open relay URL"
         >
           {relay.url}
-          <svg
-            aria-hidden="true"
-            class="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            />
-          </svg>
+          <ExternalLinkIcon class="size-3 opacity-0 group-hover:opacity-60 transition-opacity shrink-0" aria-hidden="true" />
         </Button>
 
         {#if relay.description}
@@ -174,20 +164,7 @@ function relayColor(name: string | null): string {
             aria-label="Inspect relay"
             class="text-muted-foreground transition-all hover:text-primary sm:opacity-0 sm:group-hover:opacity-100"
           >
-            <svg
-              aria-hidden="true"
-              class="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+            <SearchIcon class="size-5" aria-hidden="true" />
           </Button>
         </TooltipWrap>
 
@@ -212,21 +189,21 @@ function relayColor(name: string | null): string {
             onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
             class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors sm:opacity-0 sm:group-hover:opacity-100"
           >
-            <svg aria-hidden="true" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-            </svg>
+            <EllipsisVerticalIcon class="size-4" aria-hidden="true" />
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end">
-            <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); onInspect(relay.url); }}>
-              Inspect
-            </DropdownMenu.Item>
-            <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); navigator.clipboard.writeText(relay.url); }}>
-              Copy URL
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); window.open(relay.url, '_blank', 'noopener,noreferrer'); }}>
-              Open in new tab
-            </DropdownMenu.Item>
+            <DropdownMenu.Group>
+              <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); onInspect(relay.url); }}>
+                Inspect
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); navigator.clipboard.writeText(relay.url); }}>
+                Copy URL
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item onclick={(e: MouseEvent) => { e.stopPropagation(); window.open(relay.url, '_blank', 'noopener,noreferrer'); }}>
+                Open in new tab
+              </DropdownMenu.Item>
+            </DropdownMenu.Group>
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       </div>

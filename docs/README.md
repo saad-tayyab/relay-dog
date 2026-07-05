@@ -123,7 +123,7 @@ mindmap
 | [Phase 9: Accessibility](features/phase-9-accessibility.md) | ✅ |
 | [Phase 10: Infra](features/phase-10-infrastructure-hardening.md) | ✅ |
 | [Phase 11: Deploy](features/phase-11-production-deployment.md) | 📋 |
-| [Phase 12: NIP-66](features/phase-12-nip66-passive-monitoring.md) | 📋 |
+| [Phase 12: NIP-66](features/phase-12-nip66-passive-monitoring.md) | ✅ |
 | [Phase 13: shadcn-svelte Migration](features/phase-13-shadcn-svelte-migration.md) | ✅ |
 
     </td>

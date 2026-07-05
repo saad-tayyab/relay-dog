@@ -23,6 +23,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Con
 
 ### Added
 
+#### API (`@relayscope/api`)
+- **Phase 12: NIP-66 Passive Monitoring completed**
+  - Added `apps/api/src/jobs/nip66Ingestor.ts` — passive WebSocket subscriber for `kind:30166` events from NIP-66 monitor relays
+  - Added auto-reconnect with exponential backoff (1s → 30s max) on monitor disconnect
+  - Added auto-create relay records from monitor discovery events
+  - Rewrote `POST /api/relays/:id/check` to store in `relay_discoveries` with `monitorPubkey='self'`
+  - Removed `apps/api/src/jobs/relayMonitor.ts` (active `setInterval` probing loop)
+  - Removed `GET /api/relays/:id/history` endpoint (health check history)
+  - Removed `POST /api/relays/:id/discoveries` endpoint (server ingests directly)
+
+#### Database
+- Added migration to drop legacy `health_checks` and `monitoring_jobs` tables
+
 #### Web (`@relayscope/web`)
 - **Phase 13 shadcn-svelte migration completed**
   - Added `apps/web/components.json` with `$lib`-based aliases and `utils` mapped to `$lib/shadcn/utils` (`style: rhea`)

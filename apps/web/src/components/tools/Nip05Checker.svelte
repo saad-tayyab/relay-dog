@@ -124,6 +124,7 @@ const clipboard = useClipboard();
       <div class="space-y-3">
         <!-- Status -->
         <div
+          role="status"
           class="px-3 py-2 rounded-lg text-xs {result.verified
             ? 'bg-success-dim border border-success/20 text-success'
             : 'bg-error-dim border border-error/20 text-error'}"
@@ -230,9 +231,10 @@ const clipboard = useClipboard();
               class="w-full justify-between text-xs hover:bg-muted"
             >
               <span class="text-muted-foreground font-mono truncate">{item.identifier}</span>
-              <span class={item.verified ? 'text-success' : 'text-error'}>
+              <span class={item.verified ? 'text-success' : 'text-error'} aria-hidden="true">
                 {item.verified ? '✓' : '✗'}
               </span>
+              <span class="sr-only">{item.verified ? 'Verified' : 'Not verified'}</span>
             </Button>
           </li>
         {/each}

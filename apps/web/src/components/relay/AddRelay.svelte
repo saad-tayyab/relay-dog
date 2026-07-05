@@ -124,7 +124,7 @@ function cancel() {
 
         <!-- Error -->
         {#if error}
-          <Alert variant="destructive">
+          <Alert variant="destructive" role="alert">
             <AlertTitle>Add relay failed</AlertTitle>
             <AlertDescription><span aria-hidden="true">⚠</span> {error}</AlertDescription>
           </Alert>

@@ -2,7 +2,11 @@
 import { getHashSection, type Section, setHashSection } from "./utils/router";
 import "./index.css";
 
+import MoonIcon from "@lucide/svelte/icons/moon";
+import SunIcon from "@lucide/svelte/icons/sun";
+import { ModeWatcher, toggleMode } from "mode-watcher";
 import { toast } from "svelte-sonner";
+import { Button } from "$lib/components/ui/button";
 import * as Empty from "$lib/components/ui/empty";
 import { Toaster } from "$lib/components/ui/sonner";
 // Components
@@ -69,6 +73,8 @@ function handleEditAndRepublish(event: unknown) {
 }
 </script>
 
+<ModeWatcher defaultTheme="dark" />
+
 <div class="min-h-screen bg-background">
   <!-- Header -->
   <header class="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
@@ -91,6 +97,17 @@ function handleEditAndRepublish(event: unknown) {
         <h1 class="text-lg font-bold text-foreground leading-tight">Relay Dog</h1>
         <p class="text-xs text-muted-foreground">Nostr relay inspector</p>
       </div>
+      <Button
+        onclick={toggleMode}
+        variant="ghost"
+        size="icon"
+        class="ml-auto min-h-[44px] min-w-[44px]"
+        aria-label="Toggle theme"
+      >
+        <SunIcon class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <MoonIcon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <span class="sr-only">Toggle theme</span>
+      </Button>
     </div>
   </header>
 

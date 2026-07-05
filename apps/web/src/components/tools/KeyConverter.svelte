@@ -64,10 +64,11 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
         bind:value={input}
         oninput={handleConvert}
         placeholder="npub1... or nsec1... or 64-char hex"
+        aria-describedby={detectedFormat !== 'unknown' && input.trim() ? 'key-format-hint' : undefined}
         class="h-11 border-border bg-muted px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground"
       />
       {#if detectedFormat !== 'unknown' && input.trim()}
-        <p class="mt-1 text-xs text-muted-foreground">
+        <p id="key-format-hint" class="mt-1 text-xs text-muted-foreground">
           Detected: <span class="text-primary">{detectedFormat}</span>
         </p>
       {/if}
@@ -75,8 +76,8 @@ const detectedFormat = $derived(detectKeyFormat(input.trim()));
 
     <!-- Error -->
     {#if error}
-      <div class="px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-xs text-error">
-        ⚠ {error}
+      <div role="alert" class="px-3 py-2 rounded-lg bg-error-dim border border-error/20 text-xs text-error">
+        <span aria-hidden="true">⚠</span> {error}
       </div>
     {/if}
 

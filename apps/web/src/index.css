@@ -8,28 +8,75 @@
 :root {
   --radius: 0.625rem;
 
-  /* ─── shadcn semantic tokens (WCAG AA compliant dark theme) ─── */
-  /* Background separation: same lightness for bg/card (shadcn pattern) — separation via ring-1 + shadow-sm */
+  /* ─── shadcn semantic tokens — light mode (zinc + blue accent) ─── */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285);
+  --primary: oklch(0.55 0.18 250);
+  --primary-foreground: oklch(100% 0 0);
+  --secondary: oklch(0.967 0.001 286);
+  --secondary-foreground: oklch(0.21 0.006 285);
+  --muted: oklch(0.967 0.001 286);
+  --muted-foreground: oklch(0.552 0.016 285);
+  --accent: oklch(0.967 0.001 286);
+  --accent-foreground: oklch(0.21 0.006 285);
+  --destructive: oklch(0.577 0.245 27);
+  --destructive-foreground: oklch(100% 0 0);
+  --border: oklch(0.92 0.004 286);
+  --input: oklch(0.92 0.004 286);
+  --ring: oklch(0.55 0.18 250);
+
+  /* ─── Chart colors ─── */
+  --chart-1: oklch(0.646 0.222 41);
+  --chart-2: oklch(0.6 0.118 184);
+  --chart-3: oklch(0.398 0.07 227);
+  --chart-4: oklch(0.828 0.189 84);
+  --chart-5: oklch(0.769 0.188 70);
+
+  /* ─── Sidebar tokens ─── */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285);
+  --sidebar-primary: oklch(0.55 0.18 250);
+  --sidebar-primary-foreground: oklch(100% 0 0);
+  --sidebar-accent: oklch(0.967 0.001 286);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285);
+  --sidebar-border: oklch(0.92 0.004 286);
+  --sidebar-ring: oklch(0.55 0.18 250);
+
+  /* ─── Domain-specific status tokens ─── */
+  --success: oklch(0.52 0.14 155);
+  --success-dim: oklch(0.52 0.14 155 / 0.1);
+  --warning: oklch(0.68 0.16 75);
+  --warning-dim: oklch(0.68 0.16 75 / 0.1);
+  --error: oklch(0.55 0.22 25);
+  --error-dim: oklch(0.55 0.22 25 / 0.1);
+
+  --width-content: 48rem;
+  --width-content-xl: 64rem;
+  --width-content-2xl: 72rem;
+}
+
+.dark {
+  /* ─── shadcn semantic tokens — dark mode (WCAG AA compliant + blue accent) ─── */
   --background: oklch(15.5% 0.012 285);
   --foreground: oklch(97% 0.005 256);
   --card: oklch(15.5% 0.012 285);
   --card-foreground: oklch(97% 0.005 256);
   --popover: oklch(15.5% 0.012 285);
   --popover-foreground: oklch(97% 0.005 256);
-  /* Primary/accent: blue, light enough for AA normal text on dark bg */
   --primary: oklch(74% 0.16 250);
   --primary-foreground: oklch(100% 0 0);
-  /* Muted: same as bg — recessed surfaces use input border for distinction */
   --secondary: oklch(15.5% 0.012 284);
   --secondary-foreground: oklch(80% 0.01 256);
   --muted: oklch(15.5% 0.012 284);
-  /* Muted-foreground: L=78% for 4.5:1+ contrast on dark backgrounds */
   --muted-foreground: oklch(78% 0.015 260);
   --accent: oklch(74% 0.16 250);
   --accent-foreground: oklch(100% 0 0);
   --destructive: oklch(67% 0.2 25);
   --destructive-foreground: oklch(100% 0 0);
-  /* Border: visible against bg via ring-1 pattern, not standalone contrast */
   --border: oklch(28% 0.02 284);
   --input: oklch(22% 0.015 284);
   --ring: oklch(74% 0.16 250);
@@ -51,17 +98,13 @@
   --sidebar-border: oklch(28% 0.02 284);
   --sidebar-ring: oklch(74% 0.16 250);
 
-  /* ─── Domain-specific status tokens ─── */
+  /* ─── Domain-specific status tokens (dark) ─── */
   --success: oklch(72% 0.17 155);
   --success-dim: oklch(72% 0.17 155 / 0.12);
   --warning: oklch(78% 0.16 75);
   --warning-dim: oklch(78% 0.16 75 / 0.12);
-  --error: oklch(67% 0.19 25);
+  --error: oklch(67% 0.2 25);
   --error-dim: oklch(67% 0.19 25 / 0.12);
-
-  --width-content: 48rem;
-  --width-content-xl: 64rem;
-  --width-content-2xl: 72rem;
 }
 
 @theme inline {
@@ -225,7 +268,7 @@ html {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: 4px;
-  box-shadow: 0 0 0 4px oklch(74% 0.15 250 / 0.25);
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--color-primary) 25%, transparent);
 }
 
 /* Remove default outline for mouse users only */

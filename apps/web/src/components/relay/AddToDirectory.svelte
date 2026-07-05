@@ -159,7 +159,7 @@ function cancel() {
 
       <!-- Error -->
       {#if addRelayState.error}
-        <Alert variant="destructive" class="text-xs">
+        <Alert variant="destructive" class="text-xs" role="alert">
           <AlertDescription><span aria-hidden="true">⚠</span> {addRelayState.error}</AlertDescription>
         </Alert>
       {/if}

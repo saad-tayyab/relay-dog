@@ -130,16 +130,6 @@
         "typescript": "^6.0.3",
       },
     },
-    "packages/ui": {
-      "name": "@relayscope/ui",
-      "version": "0.8.0",
-      "devDependencies": {
-        "@relayscope/tsconfig": "workspace:*",
-        "svelte": "^5.56.4",
-        "svelte-check": "^4.7.1",
-        "typescript": "^6.0.3",
-      },
-    },
   },
   "packages": {
     "@ark/schema": ["@ark/schema@0.56.1", "", { "dependencies": { "@ark/util": "0.56.1" } }, "sha512-1Cf2g9nKD8K/3JGRu+gCCfYw5d4qR8YLLjDs5W5kpmaButCYWAPFUJqSXyBATPjglzCd4tIkp398iPYVs8MjRA=="],
@@ -295,8 +285,6 @@
     "@relayscope/shared": ["@relayscope/shared@workspace:packages/shared"],
 
     "@relayscope/tsconfig": ["@relayscope/tsconfig@workspace:packages/config/tsconfig"],
-
-    "@relayscope/ui": ["@relayscope/ui@workspace:packages/ui"],
 
     "@relayscope/web": ["@relayscope/web@workspace:apps/web"],
 

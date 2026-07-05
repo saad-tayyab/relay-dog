@@ -86,7 +86,7 @@ function isSoftwareUrl(raw: string): boolean {
         <div
           class="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0"
         >
-          <span class="text-muted-foreground text-sm">⚡</span>
+          <span class="text-muted-foreground text-sm" aria-hidden="true">⚡</span>
         </div>
       {/if}
 
@@ -96,9 +96,11 @@ function isSoftwareUrl(raw: string): boolean {
             {relay.name || 'Unknown Relay'}
           </h3>
           {#if isOnline}
-            <span class="w-2 h-2 rounded-full bg-success shrink-0"></span>
+            <span class="w-2 h-2 rounded-full bg-success shrink-0" aria-hidden="true"></span>
+            <span class="sr-only">Online</span>
           {:else}
-            <span class="w-2 h-2 rounded-full bg-error shrink-0"></span>
+            <span class="w-2 h-2 rounded-full bg-error shrink-0" aria-hidden="true"></span>
+            <span class="sr-only">Offline</span>
           {/if}
         </div>
 

@@ -63,10 +63,12 @@ const POPULAR_RELAYS = [
       class="h-12 px-6 text-sm font-semibold"
     >
       {#if loading}
-        <div
-          class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
-        ></div>
-        Inspecting
+        <div role="status" class="flex items-center gap-2">
+          <div
+            class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
+          ></div>
+          Inspecting
+        </div>
       {:else}
         <svg
           aria-hidden="true"

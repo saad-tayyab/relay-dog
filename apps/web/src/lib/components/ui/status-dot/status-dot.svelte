@@ -7,7 +7,7 @@ const COLORS: Record<CheckStatus, string> = {
   success: 'bg-success',
   error: 'bg-error',
   checking: 'bg-warning',
-  pending: 'bg-text-muted',
+  pending: 'bg-muted-foreground',
 };
 </script>
 

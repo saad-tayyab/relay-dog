@@ -91,7 +91,7 @@ async function handlePublish() {
     <div>
       <div class="flex items-center justify-between mb-1">
         <Label for="event-content" class="text-xs text-muted-foreground">Content</Label>
-        <span class="text-xs {isOverLimit ? 'text-error' : 'text-muted-foreground'}">
+        <span id="event-content-hint" class="text-xs {isOverLimit ? 'text-error' : 'text-muted-foreground'}">
           {charCount.toLocaleString()} / {maxChars.toLocaleString()}
         </span>
       </div>
@@ -100,6 +100,7 @@ async function handlePublish() {
         bind:value={composer.state.content}
         rows={6}
         placeholder="Event content..."
+        aria-describedby="event-content-hint"
         class="border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground"
       />
     </div>

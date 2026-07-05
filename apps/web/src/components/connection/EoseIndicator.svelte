@@ -13,10 +13,10 @@ let { eoseResult }: { eoseResult: EoseResult | null } = $props();
       : 'bg-warning-dim border border-warning/20 text-warning'}"
   >
     {#if eoseResult.complete}
-      <span>✓</span>
+      <span aria-hidden="true">✓</span>
       <span>All stored events received</span>
     {:else}
-      <span>⚠</span>
+      <span aria-hidden="true">⚠</span>
       <span>More events available — use older filters to paginate</span>
     {/if}
   </div>

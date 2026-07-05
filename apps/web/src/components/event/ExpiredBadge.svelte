@@ -19,12 +19,12 @@ function formatRemaining(ms: number): string {
 
 {#if expirationInfo?.isExpired}
   <Badge variant="destructive" class="bg-error-dim border-error/20 text-error">
-    <span>⚠</span>
+    <span aria-hidden="true">⚠</span>
     <span>Expired</span>
   </Badge>
 {:else if expirationInfo?.expiresAt}
   <Badge variant="outline" class="bg-warning-dim border-warning/20 text-warning">
-    <span>⏰</span>
+    <span aria-hidden="true">⏰</span>
     <span>Expires in {formatRemaining(expirationInfo.remainingMs ?? 0)}</span>
   </Badge>
 {/if}

@@ -12,7 +12,6 @@ import * as Empty from "$lib/components/ui/empty";
 import { Toaster } from "$lib/components/ui/sonner";
 // Components
 import InspectorSection from "./components/inspector/InspectorSection.svelte";
-import MobileNav from "./components/nav/MobileNav.svelte";
 import NavBar from "./components/nav/NavBar.svelte";
 import PublisherSection from "./components/publisher/PublisherSection.svelte";
 import RelayDirectory from "./components/relay/RelayDirectory.svelte";
@@ -103,7 +102,7 @@ function handleEditAndRepublish(event: unknown) {
     </div>
   </header>
 
-  <main id="main-content" class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 lg:px-10 py-10 pb-24 sm:pb-10">
+  <main id="main-content" class="max-w-content xl:max-w-content-xl 2xl:max-w-content-2xl mx-auto px-5 sm:px-8 lg:px-10 py-10">
     <!-- URL Input -->
     <SearchBar
       bind:url={inspector.url}
@@ -186,9 +185,6 @@ function handleEditAndRepublish(event: unknown) {
     {/if}
   </main>
 
-  <!-- Mobile Navigation -->
-  <MobileNav {activeSection} onNavigate={handleNavigate} />
-
   <!-- Footer -->
   <footer class="border-t border-border mt-auto">
     <div
@@ -199,5 +195,5 @@ function handleEditAndRepublish(event: unknown) {
     </div>
   </footer>
 
-  <Toaster richColors position="bottom-center" />
+  <Toaster richColors position="top-center" />
 </div>

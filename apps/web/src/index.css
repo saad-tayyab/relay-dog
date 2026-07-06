@@ -413,6 +413,15 @@ html {
   min-width: 44px;
 }
 
+/* Scrollbar hiding for horizontal scroll containers (tab bars, etc.) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Visually hidden but accessible to screen readers */
 .sr-only {
   position: absolute;

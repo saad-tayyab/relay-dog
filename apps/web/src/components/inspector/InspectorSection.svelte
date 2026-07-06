@@ -95,7 +95,7 @@ const tabs = $derived([
   <Tabs.Root value={activeTab} onValueChange={(id) => (activeTab = id as typeof activeTab)} aria-label="Inspector views">
     <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0">
       {#each tabs as tab (tab.id)}
-        <Tabs.Trigger value={tab.id} class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary">
+        <Tabs.Trigger value={tab.id} class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:after:opacity-100 data-[state=active]:bg-card data-[state=active]:text-primary">
           {tab.label}
           {#if tab.badge}
             <span class="ml-2 rounded-full bg-primary/15 px-1.5 py-0.5 font-mono text-xs text-primary">

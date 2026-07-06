@@ -23,7 +23,7 @@ const sections: { id: Section; label: string; icon: string }[] = [
 ];
 </script>
 
-<nav aria-label="Section navigation" class="mb-6 flex gap-1 rounded-xl border border-border bg-card p-1">
+<nav aria-label="Section navigation" class="mb-6 flex overflow-x-auto gap-1 rounded-xl border border-border bg-card p-1 scrollbar-hide">
   {#each sections as section (section.id)}
     <Button
       type="button"
@@ -31,10 +31,10 @@ const sections: { id: Section; label: string; icon: string }[] = [
       aria-current={activeSection === section.id ? 'page' : undefined}
       onclick={() => onNavigate(section.id)}
       class={cn(
-        "min-h-[44px] flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all",
+        "min-h-[44px] flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all border-b-2 border-b-transparent",
         activeSection === section.id
-          ? "border border-primary/30 bg-primary/15 text-primary"
-          : "text-muted-foreground hover:bg-background hover:text-foreground",
+          ? "border-b-primary bg-primary/15 text-primary"
+          : "text-muted-foreground hover:bg-background hover:text-foreground hover:border-b-border",
       )}
     >
       <span aria-hidden="true">{section.icon}</span> {section.label}

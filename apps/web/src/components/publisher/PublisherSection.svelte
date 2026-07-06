@@ -24,10 +24,10 @@ $effect(() => {
 <div class="flex flex-col gap-7">
   <Tabs.Root value={activeTab} onValueChange={(id) => (activeTab = id)} aria-label="Publisher tools">
     <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0">
-      <Tabs.Trigger value="compose" class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary">
+      <Tabs.Trigger value="compose" class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:after:opacity-100 data-[state=active]:bg-card data-[state=active]:text-primary">
         <span aria-hidden="true">✍️</span> Compose
       </Tabs.Trigger>
-      <Tabs.Trigger value="delete" class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary">
+      <Tabs.Trigger value="delete" class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:after:opacity-100 data-[state=active]:bg-card data-[state=active]:text-primary">
         <span aria-hidden="true">🗑️</span> Delete
       </Tabs.Trigger>
     </Tabs.List>

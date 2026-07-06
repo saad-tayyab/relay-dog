@@ -19,9 +19,9 @@ const tools = [
 
 <div class="flex flex-col gap-7">
   <Tabs.Root value={activeTool} onValueChange={(id) => (activeTool = id as typeof activeTool)} aria-label="Developer tools">
-    <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0">
+    <Tabs.List variant="line" class="flex w-full gap-1 border-b border-border p-0 overflow-x-auto scrollbar-hide">
       {#each tools as tool (tool.id)}
-        <Tabs.Trigger value={tool.id} class="min-h-[44px] rounded-t-lg px-4 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-card data-[state=active]:text-primary">
+        <Tabs.Trigger value={tool.id} class="min-h-[44px] rounded-lg px-4 py-2.5 text-sm font-medium text-muted-foreground active:translate-y-0 data-[state=active]:!bg-primary/15 data-[state=active]:text-primary data-[state=active]:shadow-[0_2px_8px_-2px_var(--color-primary)]">
           <span aria-hidden="true">{tool.icon}</span>
           {tool.label}
         </Tabs.Trigger>
